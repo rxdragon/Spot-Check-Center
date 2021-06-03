@@ -1,0 +1,3 @@
+src/assets/styles/variables.module.less
+src/assets/styles/sidebar.less
+src/components/PreviewPhoto/index.less

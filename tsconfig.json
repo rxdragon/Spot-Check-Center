@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noImplicitThis": false,
     "allowSyntheticDefaultImports": true, // 允许从没有设置默认导出的模块中默认导入。这并不影响代码的输出，仅为了类型检查
     "baseUrl": ".", // 解析非相对模块名的基准目录
     "esModuleInterop": true,
@@ -8,24 +9,27 @@
     "moduleResolution": "node", // 决定如何处理模块。
     "strict": true, // 启用所有严格类型检查选项。
     "sourceMap": true,
+    "allowJs": true,
     "target": "esnext", // 指定ECMAScript目标版本 
     "jsx": "preserve",
     "resolveJsonModule": true,
     "lib": ["esnext", "dom"], // 编译过程中需要引入的库文件的列表
     "paths": { // 模块名到基于 baseUrl的路径映射的列表。
+      "~/*": [ "src/*" ],
       "@/*": [ "src/renderer/*" ],
       "@assetsDir/*:": [ "src/renderer/assets/*" ],
       "@selectBox/*:": [ "src/renderer/components/SelectBox/*" ]
     },
-    "types": [],
+    "types": ["@types/webpack-env"],
     "typeRoots": ["./node_modules/@types/", "./types"],
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
-, "src/main/preload.js"  ],
+    "src/**/*.vue", 
+    "src/main/preload.js"
+  ],
   "exclude": [
     "node_modules",
   ]

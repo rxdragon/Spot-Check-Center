@@ -1,0 +1,105 @@
+.search-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+// 搜素盒子
+.search-item {
+  display: flex;
+  align-items: center;
+  margin-right: 0;
+  margin-bottom: 20px;
+
+  & > span {
+    flex-shrink: 0;
+    margin-right: 12px;
+    font-size: 14px;
+    color: #303133;
+  }
+
+  .el-range-editor.el-input__inner {
+    width: 100% !important;
+  }
+
+  .date-picker,
+  .issue-label-select,
+  .evaluate-select,
+  .cloud-spot-grass-select,
+  .quality-select,
+  .el-select,
+  .return-select,
+  .cloud-spot,
+  .el-cascader {
+    width: 100%;
+  }
+
+  &.tip-box {
+    margin: 0 0 0 auto;
+  }
+}
+
+// 标题信息
+.panel-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #303133;
+
+  &::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    content: '';
+    background-color: @blue;
+    transform: translateY(-50%);
+  }
+
+  .panel-slot {
+    margin-left: auto;
+  }
+
+  .desc {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #606266;
+  }
+}
+
+// 模块框
+.module-panel {
+  padding: 20px 24px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: @boxShadow;
+
+  .panel-title {
+    .panel-title;
+  }
+}
+
+// 门店图片
+.standard-icon {
+  display: inline-block;
+  width: 16px;
+  height: 17px;
+  margin-left: 5px;
+  vertical-align: text-top;
+}
+
+// 分页
+.page-box {
+  text-align: right;
+
+  .el-pagination {
+    margin-top: 24px;
+  }
+}

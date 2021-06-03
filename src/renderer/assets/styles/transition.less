@@ -1,0 +1,36 @@
+// 面包屑动画
+.breadcrumb-box-leave-active,
+.breadcrumb-box-enter-active {
+  position: absolute !important;
+  transition: all 0.28s;
+}
+
+.breadcrumb-box-enter-from {
+  opacity: 0;
+  transform: translateY(-98px) !important;
+}
+
+.breadcrumb-box-leave-to {
+  opacity: 0;
+  transform: translateY(-98px) !important;
+}
+
+/* breadcrumb transition */
+.breadcrumb-enter-active,
+.breadcrumb-leave-active {
+  transition: all 0.5s;
+}
+
+.breadcrumb-enter-from,
+.breadcrumb-leave-active {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.breadcrumb-move {
+  transition: all 0.5s;
+}
+
+.breadcrumb-leave-active {
+  position: absolute;
+}

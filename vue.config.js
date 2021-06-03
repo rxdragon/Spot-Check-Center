@@ -1,5 +1,12 @@
 /* eslint-disable no-console */
 const path = require('path')
+const pkg = require('./package.json')
+
+const { dependencies, devDependencies, name, version } = pkg
+const __APP_INFO__ = {
+  pkg: { dependencies, devDependencies, name, version },
+  lastBuildTime: +Date.now(),
+}
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -25,7 +32,9 @@ module.exports = {
     const config = {
       resolve: {
         alias: {
+          "~": resolve('src/'),
           '@': resolve('src/renderer/'),
+          '@assetsDir': resolve('src/renderer/assets/'),
           '@SelectBox': resolve('src/renderer/components/SelectBox'),
           '@AssessmentComponents': resolve('src/renderer/components/AssessmentComponents'),
           '@electronMain': resolve('src/main')
@@ -44,6 +53,11 @@ module.exports = {
     if (config.plugins.has('progress') && process.env.CI_RUNNER_ID) {
       config.plugins.delete('progress')
     }
+    config.plugin('define')
+      .tap(args => {
+        args[0].__APP_INFO__ = JSON.stringify(__APP_INFO__)
+        return args
+      })
   },
   css: {
   },
@@ -60,7 +74,7 @@ module.exports = {
     'style-resources-loader': {
       preProcessor: 'less',
       patterns: [
-        resolve('src/styles/variables.less')
+        resolve('src/renderer/assets/styles/variables.module.less')
       ]
     }
   }

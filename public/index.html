@@ -11,7 +11,61 @@
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"></div>
+    <div id="app">
+      <link rel="stylesheet" type="text/css" href="/loader.css">
+      <div id="loading-bg">
+        <div class="loading-main">
+          <div class="square">
+            <span></span>
+            <span></span>
+            <span></span>
+            <div class="content">
+              <svg width="128" height="128" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 669 406">
+                <defs>
+                  <filter id="c" x="-9.2%" y="-10.7%" width="118.4%" height="130.3%" name="c">
+                    <feOffset result="shadowOffsetOuter1" dy="18" in="SourceAlpha"/>
+                    <feGaussianBlur result="shadowBlurOuter1" stdDeviation="17.5" in="shadowOffsetOuter1"/>
+                    <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.64 0" in="shadowBlurOuter1"/>
+                  </filter>
+                </defs>
+                <g style="filter:url(#c)">
+                  <path id="b" d="M662.12,369c1.58.76,3.15,1.56,4.67,2.4a93.76,93.76,0,0,1,43.14,50.79c4.07-.38,8.19-.61,12.36-.61A130.94,130.94,0,0,1,853,552.78C853,625.25,794.49,684,722.29,684H295.9C234.1,684,184,633.71,184,571.67A112.24,112.24,0,0,1,227.21,483L367.78,620.7a26.82,26.82,0,0,0,37.37,0ZM444.8,278c1.14,0,2.26,0,3.39.05A166.65,166.65,0,0,1,591,364.85q-.12.4-204.84,201.15Q278.59,460.39,278.67,460.37c-.42-4.88-.67-9.82-.67-14.82C278,353,352.67,278,444.8,278Z" transform="translate(-184 -278)" style="fill-rule:evenodd"/>
+                </g>
+                <path id="b-2" data-name="b" d="M662.12,369c1.58.76,3.15,1.56,4.67,2.4a93.76,93.76,0,0,1,43.14,50.79c4.07-.38,8.19-.61,12.36-.61A130.94,130.94,0,0,1,853,552.78C853,625.25,794.49,684,722.29,684H295.9C234.1,684,184,633.71,184,571.67A112.24,112.24,0,0,1,227.21,483L367.78,620.7a26.82,26.82,0,0,0,37.37,0ZM444.8,278c1.14,0,2.26,0,3.39.05A166.65,166.65,0,0,1,591,364.85q-.12.4-204.84,201.15Q278.59,460.39,278.67,460.37c-.42-4.88-.67-9.82-.67-14.82C278,353,352.67,278,444.8,278Z" transform="translate(-184 -278)" style="fill:#fff;fill-rule:evenodd"/>
+              </svg>
+            </div>
+          </div>
+          <div class="app-name"><b>MAINTO CLOUD</b></div>
+          <svg class="editorial"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 24 150 28 "
+            preserveAspectRatio="none">
+            <defs>
+              <path id="gentle-wave"
+                d="M-160 44c30 0 
+                  58-18 88-18s
+                  58 18 88 18 
+                  58-18 88-18 
+                  58 18 88 18
+                  v44h-352z" />
+            </defs>
+            <g class="parallax1">
+              <use xlink:href="#gentle-wave" x="50" y="3" fill="#3861EE"/>
+            </g>
+            <g class="parallax2">
+              <use xlink:href="#gentle-wave" x="50" y="0" fill="#8A23C3"/>
+            </g>
+            <g class="parallax3">
+             <use xlink:href="#gentle-wave" x="50" y="9" fill="#5F43D9"/>
+            </g>
+            <g class="parallax4">
+              <use xlink:href="#gentle-wave" x="50" y="6" fill="#4B40C1"/>  
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
     <!-- built files will be auto injected -->
   </body>
 </html>
