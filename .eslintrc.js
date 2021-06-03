@@ -7,10 +7,14 @@ module.exports = {
     commonjs: true,
     es6: true
   },
-  parser: 'vue-eslint-parser',
+  parser: "vue-eslint-parser",
+  extends: [
+    'plugin:vue/vue3-recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
   // 指定解析器选项
   parserOptions: {
-    parser: '@typescript-eslint/parser',
+    parser: "@typescript-eslint/parser",
     // 启用ES6语法支持
     ecmaVersion: 2015,
     // module表示ECMAScript模块
@@ -19,10 +23,6 @@ module.exports = {
   plugins: [
     'vue',
     "attributes"
-  ],
-  extends: [
-    'plugin:vue/vue3-recommended',
-    'plugin:@typescript-eslint/recommended',
   ],
   // 脚本在执行期间访问的额外的全局变量
   globals: {
@@ -115,7 +115,6 @@ module.exports = {
     'no-dupe-keys': 2, // 禁止对象出现重名键值
     'no-dupe-class-members': 2, // 类方法禁止重名
     'no-duplicate-case': 2, // 禁止 switch 中出现相同的 case\
-    'no-duplicate-imports': 2, // 禁止重复 import
     'keyword-spacing': 2, // 关键字前后必须有空格
     'object-curly-spacing': ['error', 'always'], // 对象内的空格
     'space-before-function-paren': 2, // 方法前的空格

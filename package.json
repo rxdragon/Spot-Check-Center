@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve --mode development",
     "build": "vue-cli-service build --dest=dist_vue",
+    "lint": "vue-tsc --noEmit --skipLibCheck && eslint \"src/render/**/*.{vue,ts,tsx}\" --fix",
     "build-asar": "yarn build && yarn build-background",
     "build-asar-dev": "yarn build-dev && yarn build-background-dev && yarn pack-vue && rm -rf dist_vue",
     "build-asar-release": "yarn build-release && yarn build-background-release && yarn pack-vue && rm -rf dist_vue",
@@ -13,14 +14,15 @@
     "build-background-release": "webpack-cli --mode=development --config='build/background-main.webpack-config.js'",
     "build-dev": "vue-cli-service build --mode development --dest=dist_vue",
     "build-release": "vue-cli-service build --mode release --dest=dist_vue",
+    "cz": "npm run log && git add . && git cz",
     "eserve-dev": "vue-cli-service electron:serve --mode development",
     "eserve-pre": "vue-cli-service electron:serve --mode pre",
     "eserve-release": "vue-cli-service electron:serve --mode release",
+    "log": "conventional-changelog --config ./node_modules/vue-cli-plugin-commitlint/lib/log -i CHANGELOG.md -s -r 0",
     "pack-vue": "asar pack dist_vue dist_electron/dist_vue.asar",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "slint": "stylelint 'src/**/*.{less,vue}' --config '.stylelintrc' --fix",
-    "lint": "vue-cli-service lint"
+    "slint": "stylelint 'src/**/*.{less,vue}' --config '.stylelintrc' --fix"
   },
   "main": "background.js",
   "dependencies": {
@@ -28,6 +30,7 @@
     "@vueuse/core": "^4.11.2",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.45",
+    "eslint-config-prettier": "^8.3.0",
     "js-base64": "^3.6.1",
     "lodash": "^4.17.21",
     "nprogress": "^0.2.0",
@@ -42,6 +45,8 @@
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/nprogress": "^0.2.0",
     "@types/webpack-env": "^1.16.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "4.23.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-typescript": "~4.5.0",
@@ -50,13 +55,22 @@
     "@vue/compiler-sfc": "^3.0.0",
     "autoprefixer": "^9",
     "axios": "^0.18.0",
+    "commitizen": "^4.0.3",
+    "commitlint": "^8.2.0",
+    "conventional-changelog-cli": "^2.1.1",
     "electron": "^12.0.0",
     "electron-devtools-installer": "^3.1.0",
+    "eslint": "^7.27.0",
     "eslint-plugin-attributes": "^1.1.8",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-vue": "^7.10.0",
+    "husky": "^3.0.9",
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
+    "lint-staged": "^11.0.0",
     "node-sass": "^6.0.0",
     "postcss": "^8.3.0",
+    "right-pad": "^1.0.1",
     "sass-loader": "10.1.1",
     "style-resources-loader": "^1.4.1",
     "stylelint": "^13.13.1",
@@ -65,13 +79,33 @@
     "ts-loader": "6.2.2",
     "typescript": "~4.1.5",
     "vue-cli-plugin-axios": "~0.0.4",
+    "vue-cli-plugin-commitlint": "~1.0.12",
     "vue-cli-plugin-electron-builder": "~2.0.0",
     "vue-cli-plugin-style-resources-loader": "~0.1.5",
+    "vue-eslint-parser": "^7.6.0",
+    "vue-tsc": "^0.1.7",
     "webpack-cli": "^4.7.0"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/vue-cli-plugin-commitlint/lib/cz"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint && lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{less,vue}": [
+      "yarn slint",
+      "git add ."
+    ]
+  }
 }

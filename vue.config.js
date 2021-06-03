@@ -22,7 +22,7 @@ module.exports = {
   integrity: false, // 内容安全策略及子资源完整性
   pages: {
     index: {
-      entry: 'src/renderer/main.ts',
+      entry: 'src/render/main.ts',
       template: 'public/index.html',
       filename: 'index.html',
       chunks: ['chunk-vendors', 'chunk-common', 'index']
@@ -33,10 +33,10 @@ module.exports = {
       resolve: {
         alias: {
           "~": resolve('src/'),
-          '@': resolve('src/renderer/'),
-          '@assetsDir': resolve('src/renderer/assets/'),
-          '@SelectBox': resolve('src/renderer/components/SelectBox'),
-          '@AssessmentComponents': resolve('src/renderer/components/AssessmentComponents'),
+          '@': resolve('src/render/'),
+          '@assetsDir': resolve('src/render/assets/'),
+          '@SelectBox': resolve('src/render/components/SelectBox'),
+          '@AssessmentComponents': resolve('src/render/components/AssessmentComponents'),
           '@electronMain': resolve('src/main')
         }
       },
@@ -74,7 +74,7 @@ module.exports = {
     'style-resources-loader': {
       preProcessor: 'less',
       patterns: [
-        resolve('src/renderer/assets/styles/variables.module.less')
+        resolve('src/render/assets/styles/variables.module.less')
       ]
     }
   }

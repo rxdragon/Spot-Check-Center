@@ -1,4 +1,4 @@
-import { app, Menu, MenuItemConstructorOptions, shell } from 'electron';
+import { app, Menu, MenuItemConstructorOptions, shell } from 'electron'
 
 const appName = 'vite-electron'
 const template: MenuItemConstructorOptions[] = [
@@ -20,7 +20,7 @@ const template: MenuItemConstructorOptions[] = [
     role: 'window',
     label: '窗口',
     submenu: [
-      {label: '重新加载', role: 'reload'},
+      { label: '重新加载', role: 'reload' },
       { label: '最小化', role: 'minimize' }
     ]
   },
@@ -30,13 +30,13 @@ const template: MenuItemConstructorOptions[] = [
     submenu: [
       {
         label: '反馈建议',
-        click() {
+        click () {
           shell.openExternal('https://github.com/cyytemplate/vite-electron-ts/issues')
         }
       },
       {
         label: 'GitHub',
-        click() {
+        click () {
           shell.openExternal('https://github.com/cyytemplate/vite-electron-ts')
         }
       }

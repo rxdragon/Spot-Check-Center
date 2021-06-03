@@ -60,6 +60,7 @@ declare module '@vue/runtime-core' {
     $showTags: boolean
     $showHeader: boolean
     $showTitle: boolean
+    $isElectron: boolean
     $msgbox: ElMessageBoxShortcutMethod
     $alert: ElMessageBoxShortcutMethod
     $confirm: ElMessageBoxShortcutMethod

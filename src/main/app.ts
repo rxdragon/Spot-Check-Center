@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+
 import type { BrowserWindow } from 'electron'
 
 import { app, ipcMain } from 'electron'

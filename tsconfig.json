@@ -16,9 +16,9 @@
     "lib": ["esnext", "dom"], // 编译过程中需要引入的库文件的列表
     "paths": { // 模块名到基于 baseUrl的路径映射的列表。
       "~/*": [ "src/*" ],
-      "@/*": [ "src/renderer/*" ],
-      "@assetsDir/*:": [ "src/renderer/assets/*" ],
-      "@selectBox/*:": [ "src/renderer/components/SelectBox/*" ]
+      "@/*": [ "src/render/*" ],
+      "@assetsDir/*:": [ "src/render/assets/*" ],
+      "@selectBox/*:": [ "src/render/components/SelectBox/*" ]
     },
     "types": ["@types/webpack-env"],
     "typeRoots": ["./node_modules/@types/", "./types"],
