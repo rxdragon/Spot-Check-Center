@@ -3,25 +3,25 @@
   <div class="ml-reportMain pb-0">
     <el-row class="search-box" :gutter="20">
       <!-- 抽查时间 -->
-      <el-col v-bind="{...colConfig}">
+      <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>评分时间</span>
           <DatePicker v-model="timeSpan" :disabled="Boolean(orderNum)" />
         </div>
       </el-col>
-      <el-col v-bind="{...colConfig}">
+      <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>订单号</span>
           <el-input v-model="orderNum" placeholder="请输入订单号" clearable />
         </div>
       </el-col>
-      <el-col v-bind="{...colConfig}">
+      <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>产品</span>
           <ProductSelect v-model="productIds" />
         </div>
       </el-col>
-      <el-col v-bind="{...colConfig}">
+      <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>伙伴</span>
           <StaffSelect v-model="staffs" />

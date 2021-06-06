@@ -4,6 +4,7 @@
 范围|描述|commitId
 --|--|--
  - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
+ - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)
  更新 代码 | 更改带啊么 | [68e16b1](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/68e16b1)
 
 
