@@ -7,6 +7,7 @@ import { setupElementUi } from '@/plugins/element'
 import { setupRouterGuard } from '@/router/guard/index'
 import { setupGlobalProperties } from '@/setting/globalPropertiesSetting'
 import { setupLodashPlugin } from '@/plugins/lodashPlugin'
+import { setupDirective } from '@/directive/index'
 
 import '@/assets/styles/index.less'
 
@@ -31,9 +32,13 @@ import '@/assets/styles/index.less'
   // 配置全局字段
   setupGlobalProperties(app)
 
+  // 注册自定义指令
+  setupDirective(app)
+
   // 当路由加载完渲染页面
   // https://next.router.vuejs.org/api/#isready
   await router.isReady()
+
   app.mount('#app')
 
   window.__APP__ = app
