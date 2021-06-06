@@ -1,13 +1,21 @@
 <template>
-  <div class="family-makeup-appeal">
-    family化妆申述中心
+  <div class="himo-makeup-appeal">
+    <AppealComponents />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, provide } from 'vue'
+import AppealComponents from '@/components/AppealComponents/index.vue'
+import { SPOT_TYPE } from '@/model/SpotCheckRecordModel'
+import { ORGANIZATION_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
-  name: 'FamilyMakeupAppeal'
+  name: 'FamilyMakeupAppeal',
+  components: { AppealComponents },
+  setup () {
+    provide('type', SPOT_TYPE.MAKEUP)
+    provide('organizationType', ORGANIZATION_TYPE.FAMILY)
+  }
 })
 </script>

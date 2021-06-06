@@ -5,7 +5,7 @@ const FamilyPhotographyEvaluateCenter = {
   component: Layout,
   name: 'familyPhotographyEvaluateCenter',
   redirect: '/family-photography-evaluate-center/family-photography-evaluate',
-  meta: { title: 'Family化妆评价中心', icon: 'el-icon-s-custom' },
+  meta: { title: 'Family摄影评价中心', icon: 'el-icon-edit' },
   children: [
     {
       path: 'family-photography-evaluate',

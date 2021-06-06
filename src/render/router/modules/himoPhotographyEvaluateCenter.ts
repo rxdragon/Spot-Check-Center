@@ -5,7 +5,7 @@ const HimoPhotographyEvaluateCenter = {
   component: Layout,
   name: 'HimoPhotographyEvaluateCenter',
   redirect: '/himo-photography-evaluate-center/himo-photography-evaluate',
-  meta: { title: '海马体摄影评价中心', icon: 'el-icon-s-custom' },
+  meta: { title: '海马体摄影评价中心', icon: 'el-icon-edit' },
   children: [
     {
       path: 'himo-photography-evaluate',

@@ -5,7 +5,7 @@ const FamilyMakeupEvaluateCenter = {
   component: Layout,
   name: 'FamilyMakeupEvaluateCenter',
   redirect: '/family-makeup-evaluate-center/family-makeup-evaluate',
-  meta: { title: 'Family化妆评价中心', icon: 'el-icon-s-custom' },
+  meta: { title: 'Family化妆评价中心', icon: 'el-icon-edit' },
   children: [
     {
       path: 'family-makeup-evaluate',
