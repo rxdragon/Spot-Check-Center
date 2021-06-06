@@ -5,7 +5,7 @@ const himoMakeupEvaluateCenter = {
   component: Layout,
   name: 'HimoMakeupEvaluateCenter',
   redirect: '/himo-makeup-evaluate-center/himo-makeup-evaluate',
-  meta: { title: '海马体化妆评价中心', icon: 'el-icon-s-custom' },
+  meta: { title: '海马体化妆评价中心', icon: 'el-icon-edit' },
   children: [
     {
       path: 'himo-makeup-evaluate',

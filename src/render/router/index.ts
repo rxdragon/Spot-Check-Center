@@ -3,15 +3,15 @@ import type { App } from 'vue'
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/index.vue' // 布局
 
-import himoQualityReportCenter from './modules/himoQualityReportCenter' // 海马体质检报告中心
 import himoMakeupEvaluateCenter from './modules/himoMakeupEvaluateCenter' // 海马体化妆评价中心
 import himoPhotographyEvaluateCenter from './modules/himoPhotographyEvaluateCenter' // 海马体摄影评价中心
-import familyMakeupEvaluateCenter from './modules/familyMakeupEvaluateCenter' // 海马体摄影评价中心
-import familyPhotographyEvaluateCenter from './modules/familyPhotographyEvaluateCenter' // 海马体摄影评价中心
+import familyMakeupEvaluateCenter from './modules/familyMakeupEvaluateCenter' // family化妆评价中心
+import familyPhotographyEvaluateCenter from './modules/familyPhotographyEvaluateCenter' // family摄影评价中心
 import familyQualityReportCenter from './modules/familyQualityReportCenter' // family质检报告中心
-import himoAppealCenter from './modules/himoAppealCenter' // family质检报告中心
-import familyAppealCenter from './modules/familyAppealCenter' // family质检报告中心
-import accountManage from './modules/accountManage' // family质检报告中心
+import himoQualityReportCenter from './modules/himoQualityReportCenter' // 海马体质检报告中心
+import himoAppealCenter from './modules/himoAppealCenter' // 海马体申诉中心
+import familyAppealCenter from './modules/familyAppealCenter' // family申诉中心
+import accountManage from './modules/accountManage' // 权限管理
 
 const base = window.__POWERED_BY_QIANKUN__ ? `/${__APP_INFO__.pkg.name}` : ''
 
@@ -86,11 +86,11 @@ const baseConstantRoutes: Array<RouteRecordRaw> = [
 export const constantRoutes = filterRoutes(baseConstantRoutes)
 
 const baseAsyncRoutes = [
-  himoQualityReportCenter,
   himoMakeupEvaluateCenter,
   himoPhotographyEvaluateCenter,
   familyMakeupEvaluateCenter,
   familyPhotographyEvaluateCenter,
+  himoQualityReportCenter,
   familyQualityReportCenter,
   himoAppealCenter,
   familyAppealCenter,
