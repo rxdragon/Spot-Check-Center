@@ -3,9 +3,7 @@
 ### 🌟 新功能
 范围|描述|commitId
 --|--|--
- - | 代码格式修改 | [5716de4](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/5716de4)
- - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
- - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)
+ - | 更新评价配置和历史相关组件 | [49697eb](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/49697eb)
  更新 代码 | 更改带啊么 | [68e16b1](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/68e16b1)
 
 
