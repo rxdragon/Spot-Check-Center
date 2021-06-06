@@ -1,13 +1,22 @@
 <template>
   <div class="makeup-quality-report-area">
-    海马体化妆质检报告（区域）
+    <QualityReportComponents />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, provide } from 'vue'
+import QualityReportComponents from '@/components/QualityReportComponents/index.vue'
+import { SPOT_TYPE } from '@/model/SpotCheckRecordModel'
+import { QUALITY_REPORT_RANGE, ORGANIZATION_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
-  name: 'MakeupQualityReportArea'
+  name: 'MakeupQualityReportArea',
+  components: { QualityReportComponents },
+  setup () {
+    provide('type', SPOT_TYPE.MAKEUP)
+    provide('organizationType', ORGANIZATION_TYPE.HIMO)
+    provide('rangeType', QUALITY_REPORT_RANGE.REGION)
+  }
 })
 </script>
