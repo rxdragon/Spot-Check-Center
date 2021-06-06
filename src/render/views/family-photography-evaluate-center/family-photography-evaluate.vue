@@ -1,13 +1,22 @@
 <template>
   <div class="family-makeup-evaluate">
-    family摄影评价
+    <EvaluateComponents />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, provide } from 'vue'
+
+import EvaluateComponents from '@/components/EvaluateComponents/index.vue'
+import { SPOT_TYPE } from '@/model/SpotCheckRecordModel'
+import { ORGANIZATION_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
-  name: 'FamilyMakeupEvaluate'
+  name: 'FamilyMakeupEvaluate',
+  components: { EvaluateComponents },
+  setup () {
+    provide('type', SPOT_TYPE.PHOTOGRAPHY)
+    provide('organizationType', ORGANIZATION_TYPE.FAMILY)
+  }
 })
 </script>
