@@ -1,3 +1,4 @@
+
 export default class EvaluateModel {
   totalScore: string // 总分
   scoringPerson: string // 评分人

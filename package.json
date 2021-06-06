@@ -14,7 +14,7 @@
     "build-background-release": "webpack-cli --mode=development --config='build/background-main.webpack-config.js'",
     "build-dev": "vue-cli-service build --mode development --dest=dist_vue",
     "build-release": "vue-cli-service build --mode release --dest=dist_vue",
-    "cz": "npm run log && git add . && git cz",
+    "cz": "yarn log && git add . && git cz",
     "eserve-dev": "vue-cli-service electron:serve --mode development",
     "eserve-pre": "vue-cli-service electron:serve --mode pre",
     "eserve-release": "vue-cli-service electron:serve --mode release",

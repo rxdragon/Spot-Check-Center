@@ -1,10 +1,10 @@
 <template>
   <div class="divide-y divide-gray-200">
     <div
-      v-for="(item,index) in gradeBoxData"
+      v-for="(item, index) in gradeBoxData"
       :key="item.id"
       class="grade-box mb-6"
-      :class="{'pt-6':index != 0}"
+      :class="{'pt-6': index !== 0}"
     >
       <!-- 列表 -->
       

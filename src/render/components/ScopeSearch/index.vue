@@ -40,10 +40,7 @@ export default defineComponent({
   props: {
     startPlaceholder: { type: String, default: '请输入' },
     endPlaceholder: { type: String, default: '请输入' },
-    value: { type: Array, default: () => {
-      return []
-    }
-    }
+    value: { type: Array, default: () => [] }
   },
   setup (props) {
     const componentData = reactive({
@@ -56,18 +53,15 @@ export default defineComponent({
       const val = props.value
       if (Array.isArray(val)) {
         for (let i = 0, len = val.length; i < len; i++) {
-          if (val[i]) {
-            return false
-          }
+          if (val[i]) return false
         }
       } else {
-        if (val) {
-          return false
-        }
+        if (val) return false
       }
       return true
     })
 
+    /** nxnn */
     const handleClickIcon = () => {
       if (componentData.showClose) {
         componentData.startInput = ''
@@ -80,6 +74,9 @@ export default defineComponent({
         componentData.showClose = true
       }
     }
+
+    /** sadasd */
+    // TODO
     const handleChange = () => {
       // const data = [componentData.startInput || '', componentData.endInput || '']
       // emit('change', data)

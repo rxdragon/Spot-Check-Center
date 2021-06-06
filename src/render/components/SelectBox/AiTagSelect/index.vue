@@ -12,15 +12,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, reactive } from 'vue'
 
 export default defineComponent({
   name: 'AiTagSelect',
   setup () {
-    const options = ref([{
+    
+    const options = reactive([{
       label: '全部',
       value: 0
-    },{
+    }, {
       label: '正常',
       value: 'normal'
     }, {

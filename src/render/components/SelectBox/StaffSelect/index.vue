@@ -29,13 +29,12 @@ export default defineComponent({
   props: {
     props: {
       type: Object,
-      default: () => {
-        return {}
-      }
+      default: () => ({})
     }
   },
   setup (props) {
     const type = inject('type')
+
     const deafultProps = reactive({
       multiple: true,
       emitPath: false
@@ -51,6 +50,7 @@ export default defineComponent({
     }
   },
   methods: {
+    // TODO: lj
     /**
     * @description 获取选中节点
     */

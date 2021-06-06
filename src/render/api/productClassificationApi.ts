@@ -1,5 +1,15 @@
 import axios from '@/plugins/axios'
 
+interface IProductSelect {
+  label: string
+  value: string | number
+}
+
+interface IFilterRetouchStandardData {
+  value: string
+  label: string
+  children: IProductSelect[]
+}
 
 /**
  * @description 过滤修图信息
@@ -7,7 +17,7 @@ import axios from '@/plugins/axios'
  * @returns 
  */
 function filterRetouchStandard (data:any) {
-  let createData = [
+  let createData: IFilterRetouchStandardData[] = [
     {
       value: 'blue',
       label: '蓝标',
@@ -27,7 +37,10 @@ function filterRetouchStandard (data:any) {
     }
   ]
   data.forEach((productItem: any) => {
-    const findType: any = createData.find((typeItem: any) => typeItem.value === productItem.retouch_standard)
+    // eslint-disable-next-line max-len
+    const findType: IFilterRetouchStandardData | undefined = createData.find((typeItem: IFilterRetouchStandardData) => {
+      return typeItem.value === productItem.retouch_standard
+    })
     if (findType) {
       findType.children.push({
         label: productItem.name,
@@ -35,7 +48,7 @@ function filterRetouchStandard (data:any) {
       })
     }
   })
-  createData = createData.filter((item: any) => item.children.length)
+  createData = createData.filter((item: IFilterRetouchStandardData) => item.children.length)
   return createData
 }
 

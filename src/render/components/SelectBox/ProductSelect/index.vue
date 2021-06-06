@@ -32,6 +32,8 @@ export default defineComponent({
   },
   setup (props) {
     const type = inject('type')
+
+    /** 组件基本属性 */
     const deafultProps = reactive({
       multiple: true,
       emitPath: false
@@ -42,11 +44,7 @@ export default defineComponent({
     })
     const propsValue = computed(() => Object.assign({}, deafultProps, props))
 
-    getAllProduct()
-
-    /**
-    * @description 获取全部产品
-    */
+    /** 获取全部产品 */
     async function getAllProduct () {
       const req = {
         rootId: 0,
@@ -54,13 +52,19 @@ export default defineComponent({
         showPicProduct: props.showPicProduct,
         himoProduct: props.himoProduct
       }
-      const list: any = await ProductClassificationApi.getClassificationProductTree(req)
+      const list = await ProductClassificationApi.getClassificationProductTree(req)
       componentData.options = list
       componentData.loadingDown = true
     }
-    
+    getAllProduct()
+
+
     return {
-      props,deafultProps,componentData,type,propsValue
+      props,
+      deafultProps,
+      componentData,
+      type,
+      propsValue
     }
   },
 })
