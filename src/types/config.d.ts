@@ -8,3 +8,8 @@ export interface ProjectConfig {
   // 是否显示标题
   showTitle: boolean
 }
+
+// 指令集合
+export interface DirectiveObjConfig {
+  [key: string]: any; // 索引签名
+}

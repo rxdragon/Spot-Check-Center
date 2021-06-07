@@ -1,17 +1,43 @@
 <template>
-  <div class="module-panel pb-0">
+  <!-- TODO: LJ -->
+  <div class="ml-reportMain pb-0">
     <el-row class="search-box" :gutter="20">
       <!-- 抽查时间 -->
-      <el-col v-bind="{...colConfig}">
+      <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>评分时间</span>
           <DatePicker v-model="timeSpan" :disabled="Boolean(orderNum)" />
         </div>
       </el-col>
-      <el-col v-bind="{...colConfig}">
+      <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>订单号</span>
           <el-input v-model="orderNum" placeholder="请输入订单号" clearable />
+        </div>
+      </el-col>
+      <el-col v-bind="{ ...colConfig }">
+        <div class="search-item">
+          <span>产品</span>
+          <ProductSelect v-model="productIds" />
+        </div>
+      </el-col>
+      <el-col v-bind="{ ...colConfig }">
+        <div class="search-item">
+          <span>伙伴</span>
+          <StaffSelect v-model="staffs" />
+        </div>
+      </el-col>
+      <!-- 分数 -->
+      <el-col :span="8" :xl="6">
+        <div class="grade-search search-item">
+          <span>分数</span>
+          <ScopeSearch v-model="scopeData" />
+        </div>
+      </el-col>
+      <el-col v-bind="{...colConfig}">
+        <div class="search-item">
+          <span>AI标签</span>
+          <AiTagSelect v-model="aiTag" />
         </div>
       </el-col>
       <el-col v-bind="{...colConfig, sm: 4, md: 4}">
@@ -21,6 +47,31 @@
       </el-col>
     </el-row>
   </div>
+
+  
+  <div class="module-panel mt-6">
+    <!-- 更换标签 -->
+    <el-tabs v-model="pageData.activeName">
+      <el-tab-pane :label="`评分明细`" name="GradeBox" />
+      <el-tab-pane :label="`AI审核报告`" name="ArraignmentRecordModule" />
+    </el-tabs>
+
+    <div class="table-box">
+      <transition name="fade-transform" mode="out-in">
+        <keep-alive>
+          <component :is="pageData.activeName" />
+        </keep-alive>
+      </transition>
+    </div>
+
+    <!-- 模块 -->
+    <!-- <div v-for="photoItem in photoList" :key="photoItem.businessId" class="photo-data ">
+      <GradeBox :photo-info="photoItem" @updateList="getSearchHistory" />
+    </div>
+    <div v-if="!photoList.length" class="no-data">暂无数据</div> -->
+  </div>
+
+
 
   <div class="module-panel mt-6">
     <div class="spot-info grid grid-cols-4">
@@ -60,7 +111,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive, Ref, ref } from 'vue'
+import { defineComponent, inject, reactive, Ref, ref, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
@@ -70,12 +121,18 @@ import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ArraignmentRecordModule from './ArraignmentRecordModule.vue'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
+import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
+import StaffSelect from '@/components/SelectBox/StaffSelect/index.vue'
+import AiTagSelect from '@/components/SelectBox/AiTagSelect/index.vue'
+import ScopeSearch from '@/components/ScopeSearch/index.vue'
+import GradeBox from '@/components/GradeBox/index.vue'
 
 import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
+import * as RatingApi from '@/api/ratingApi'
 
 export default defineComponent({
   name: 'MakeupQualityReport',
-  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto },
+  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StaffSelect, AiTagSelect, GradeBox, ScopeSearch },
   data () {
     return {
       colConfig: {
@@ -95,11 +152,21 @@ export default defineComponent({
 
     const timeSpan: Ref<string | never | any[]> = ref('')
     const orderNum = ref('')
+    const aiTag = ref('')
+    const scopeData = ref(null)
     const pager = reactive({
       page: 1,
       pageSize: 10,
       total: 10
     })
+    const pageData = reactive({
+      activeName: 'GradeBox'
+    })
+    const gradeBoxData = ref([])
+    const productIds = ref([])
+    const staffs = ref([])
+
+    provide('gradeBoxData', gradeBoxData)
 
     /** 获取提审统计数据 */
     const auditRecordTotal = ref({
@@ -108,6 +175,7 @@ export default defineComponent({
       photoQualityCount: 0,
       photoQualityProblemCount: 0
     })
+    
     /**
      * @description 获取统计信息
      */
@@ -184,6 +252,19 @@ export default defineComponent({
       searchData()
     }
 
+    
+    /**
+    * @description 获取mock数据
+    * @param {*} 
+    */
+    // console.log(RatingApi)
+    const getPhotoList = async () => {
+      const data:any = await RatingApi.getPhotoRating()
+      gradeBoxData.value = data
+      
+    }
+    getPhotoList()
+
     return {
       timeSpan,
       orderNum,
@@ -195,14 +276,19 @@ export default defineComponent({
       showPreview,
       photos,
       previewIndex,
-      onPreviewPhotoList
+      onPreviewPhotoList,
+      pageData,
+      aiTag,
+      scopeData,
+      productIds,
+      staffs
     }
   }
 })
 </script>
 
 <style lang="less" scoped>
-.spot-info {
+.ml-reportMain {
   .info-item {
     font-weight: 500;
 
