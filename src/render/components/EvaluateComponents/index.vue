@@ -41,9 +41,16 @@
     </div>
   </div>
   <!-- 页面数据 -->
-  <div class="module-panel mt-6">
-    编号
+  <div class="mt-6">
+    <PoolModule v-for="(poolItem, poolIndex) in poolList" :key="poolIndex" />
   </div>
+
+  <EvaluatePhoto
+    v-if="showEvaluate"
+    v-model:showEvaluate="showEvaluate"
+    :imgarray="imgarray"
+    :index="evaluateIndex"
+  />
 </template>
 
 <script lang="ts">
@@ -51,11 +58,17 @@ import { defineComponent, inject, ref } from 'vue'
 
 import PeopleNumber from './components/PeopleNumber.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
+import PoolModule from './components/PoolModule.vue'
+import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
+
 import { ORGANIZATION_TYPE } from '@/model/Enumerate'
+
+// TODO test 
+import StreamOrderModel from '@/model/StreamOrderModel'
 
 export default defineComponent({
   name: 'EvaluateComponents',
-  components: { PeopleNumber, ProductSelect },
+  components: { PeopleNumber, ProductSelect, PoolModule, EvaluatePhoto },
   data () {
     return {
       colConfig: {
@@ -65,7 +78,21 @@ export default defineComponent({
         md: 10,
         sm: 10,
         xs: 24
-      }
+      },
+      imgarray: [
+        {
+          src: 'https://cloud-dev.cdn-qn.hzmantu.com/compress/2020/06/17/ljj3UXg3uaY_C0DJ4kBsitaVV8UJ.jpg',
+          markPath: '',
+          photoInfo: new StreamOrderModel({})
+        },
+        {
+          src: 'https://cloud-dev.cdn-qn.hzmantu.com/upload_dev/2021/06/07/For1yk41pocbeTppJeqF95ijLvSz.jpg',
+          markPath: '',
+          photoInfo: new StreamOrderModel({})
+        }
+      ],
+      evaluateIndex: 0,
+      showEvaluate: true
     }
   },
   setup () {
@@ -89,12 +116,16 @@ export default defineComponent({
       showFamilyProduct.value = true
     }
 
+    /** 获取抽片信息 */
+    const poolList = ref(['', ''])
+
     return {
       type,
       organizationType, productIds,
       fullMember, newMember, spotPhoto,
       showHimoProduct,
-      showFamilyProduct
+      showFamilyProduct,
+      poolList
     }
   }
 })

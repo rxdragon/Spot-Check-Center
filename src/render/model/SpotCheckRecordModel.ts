@@ -1,22 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { STORE_TYPE, storeTypeToCN } from '@/model/Enumerate'
 
-/**
- * @description 抽查类型
- */
-export enum SPOT_TYPE {
-  MAKEUP = 'makeup',
-  PHOTOGRAPHY = 'photography'
-}
-
-/**
- * @description 身份中文
- */
-export const spotTypeCN = {
-  [SPOT_TYPE.MAKEUP]: '化妆',
-  [SPOT_TYPE.PHOTOGRAPHY]: '摄影',
-}
-
 export default class SpotCheckRecordModel {
   baseData?: any
   id: number | string = ''

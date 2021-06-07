@@ -115,7 +115,7 @@
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue'
 import PhotoBox from '@/components/PhotoBox/index.vue'
-import { SPOT_TYPE } from '@/model/SpotCheckRecordModel'
+import { SPOT_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
   name: 'GradeBox',

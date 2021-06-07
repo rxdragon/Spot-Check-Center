@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, inject, toRefs } from 'vue'
-import { SPOT_TYPE } from '@/model/SpotCheckRecordModel'
+import { SPOT_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
   name: 'AiCheckResult',
