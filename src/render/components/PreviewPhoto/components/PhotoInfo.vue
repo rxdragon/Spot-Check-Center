@@ -2,9 +2,21 @@
   <div class="photo-info">
     <div class="panel-title mb-3">照片信息</div>
     <div class="panel-content">
+      <div v-if="basePhotoInfo.spotNum" class="info-row">
+        <div class="info-title">编号：</div>
+        <div class="info-content">{{ basePhotoInfo.spotNum }}</div>
+      </div>
       <div class="info-row">
         <div class="info-title">订单号：</div>
         <div class="info-content">{{ basePhotoInfo.orderNum }}</div>
+      </div>
+      <div v-if="basePhotoInfo.productName" class="info-row">
+        <div class="info-title">产品名称：</div>
+        <div class="info-content">{{ basePhotoInfo.productName }}</div>
+      </div>
+      <div v-if="basePhotoInfo.photoCount" class="info-row">
+        <div class="info-title">照片张数：</div>
+        <div class="info-content">{{ basePhotoInfo.photoCount }}</div>
       </div>
       <div class="info-row">
         <div class="info-title">门店类型：</div>
@@ -18,6 +30,10 @@
       <div class="info-row">
         <div class="info-title">门店：</div>
         <div class="info-content">{{ basePhotoInfo.storeName }}</div>
+      </div>
+      <div v-if="basePhotoInfo.aiSpotLabel" class="info-row">
+        <div class="info-title">AI审核结果：</div>
+        <div class="info-content">{{ basePhotoInfo.aiSpotLabel }}</div>
       </div>
       <div class="info-row">
         <div class="info-title">订单备注：</div>
@@ -74,7 +90,7 @@ export default defineComponent({
 
       .info-title {
         flex-shrink: 0;
-        width: 70px;
+        width: 90px;
         text-align-last: justify;
       }
     }

@@ -42,8 +42,8 @@
 
 <script lang="ts">
 import { defineComponent, inject } from 'vue'
-import { SPOT_TYPE } from '@/model/SpotCheckRecordModel'
 
+import { SPOT_TYPE } from '@/model/Enumerate'
 import PhotoBox from '@/components/PhotoBox/index.vue'
 
 export default defineComponent({

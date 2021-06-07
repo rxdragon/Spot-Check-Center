@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-console */
 const path = require('path')
 const pkg = require('./package.json')
@@ -25,6 +26,7 @@ module.exports = {
       entry: 'src/render/main.ts',
       template: 'public/index.html',
       filename: 'index.html',
+      title: '质量检测系统',
       chunks: ['chunk-vendors', 'chunk-common', 'index']
     }
   },
