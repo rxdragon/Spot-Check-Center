@@ -131,7 +131,6 @@ import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import GradeBox from './gradeBox.vue'
 
 import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
-import * as RatingApi from '@/api/ratingApi'
 
 export default defineComponent({
   name: 'QualityReportComponents',
@@ -265,7 +264,7 @@ export default defineComponent({
     */
     // console.log(RatingApi)
     const getPhotoList = async () => {
-      const data:any = await RatingApi.getPhotoRating()
+      const data:any = {}
       gradeBoxData.value = data
       
     }

@@ -53,11 +53,12 @@ function filterRetouchStandard (data:any) {
 }
 
 
-interface ProductParams {
+interface IProductParams {
   rootId: number
   withProduct: boolean
   showPicProduct: boolean
   himoProduct: boolean
+  familyProduct: boolean
 }
 
 /**
@@ -65,8 +66,9 @@ interface ProductParams {
  * @param {*} params 
  * @returns 
  */
-export async function getClassificationProductTree (params:ProductParams) {
+export async function getClassificationProductTree (params: IProductParams) {
   const res: any = await axios({
+    // TODO: cf 模拟数据
     url: '/project_cloud/common/getProductCategoryTree',
     method: 'GET',
     params
@@ -98,12 +100,16 @@ export async function getClassificationProductTree (params:ProductParams) {
     return parentData
   })
   let filterEmtpyClass = createData.filter((item: any) => item.children.length)
+  
   // 过滤修修兽类型
   if (!params.showPicProduct) {
     filterEmtpyClass = filterEmtpyClass.filter((item: any) => item.label !== '修修兽')
   }
   if (!params.himoProduct) {
     filterEmtpyClass = filterEmtpyClass.filter((item: any) => item.label !== '海马体')
+  }
+  if (!params.familyProduct) {
+    filterEmtpyClass = filterEmtpyClass.filter((item: any) => item.label !== 'Family')
   }
   return Object.freeze(filterEmtpyClass)
 }
