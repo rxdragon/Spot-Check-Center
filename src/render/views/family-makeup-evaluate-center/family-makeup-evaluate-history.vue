@@ -1,13 +1,21 @@
 <template>
-  <div class="family-makeup-evaluate-history">
-    family化妆评价历史
+  <div class="himo-makeup-evaluate-history">
+    <EvaluateHistoryComponents />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, provide } from 'vue'
+import EvaluateHistoryComponents from '@/components/EvaluateHistoryComponents/index.vue'
+import { SPOT_TYPE } from '@/model/SpotCheckRecordModel'
+import { ORGANIZATION_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
-  name: 'FamilyMakeupEvaluateHistory'
+  name: 'HimoMakeupEvaluateHistory',
+  components: { EvaluateHistoryComponents },
+  setup () {
+    provide('type', SPOT_TYPE.MAKEUP)
+    provide('organizationType', ORGANIZATION_TYPE.FAMILY)
+  }
 })
 </script>
