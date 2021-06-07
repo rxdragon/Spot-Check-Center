@@ -1,5 +1,5 @@
 <template>
-  <div class="himo-makeup-evaluate-history">
+  <div class="family-makeup-evaluate-history">
     <EvaluateHistoryComponents />
   </div>
 </template>
@@ -11,7 +11,7 @@ import { SPOT_TYPE } from '@/model/SpotCheckRecordModel'
 import { ORGANIZATION_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
-  name: 'HimoMakeupEvaluateHistory',
+  name: 'FamilyMakeupEvaluateHistory',
   components: { EvaluateHistoryComponents },
   setup () {
     provide('type', SPOT_TYPE.MAKEUP)

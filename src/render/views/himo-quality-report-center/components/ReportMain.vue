@@ -35,7 +35,7 @@
         :key="item.id"
         class="mt-6"
         :record-info="item"
-        @previewPhoto="onPreviewPhotoList"
+        @preview-photo="onPreviewPhotoList"
       />
     </div>
     <!-- 分页 -->
