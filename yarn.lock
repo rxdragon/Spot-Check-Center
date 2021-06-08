@@ -1496,6 +1496,11 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/fabric@^4.2.6":
+  version "4.2.6"
+  resolved "https://npm.code.hzmantu.com/@types%2ffabric/-/fabric-4.2.6.tgz#bbcb3f2d9d12a55acf0712d2f7c4d493a29225d6"
+  integrity sha512-QWnbC9JV+CuieJ2PCHDiOhnR8uY/6cVbJuKm8sgddAm0ShdXQbtmJiGu/y5BvY10Rmeq28P+n+ujWVm8tJqKBQ==
+
 "@types/fs-extra@^9.0.11", "@types/fs-extra@^9.0.7":
   version "9.0.11"
   resolved "https://npm.code.hzmantu.com/@types%2ffs-extra/-/fs-extra-9.0.11.tgz#8cc99e103499eab9f347dbc6ca4e99fb8d2c2b87"
