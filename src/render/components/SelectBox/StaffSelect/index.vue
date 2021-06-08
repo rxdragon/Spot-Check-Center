@@ -2,14 +2,14 @@
   <div class="staff-select">
     <el-cascader
       ref="staffCascader"
-      :options="componentData.options"
+      :options="options"
       :props="propsValue"
       collapse-tags
       v-bind="$attrs"
       placeholder="请选择伙伴"
       :show-all-levels="false"
       :popper-append-to-body="false"
-      :disabled="componentData.loadingDown"
+      :disabled="loadingDown"
       filterable
       clearable
     >
@@ -22,7 +22,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive, computed } from 'vue'
+import { defineComponent, inject, reactive, ref, computed } from 'vue'
+import * as Staff from '@/api/staff'
 
 export default defineComponent({
   name: 'StaffSelect',
@@ -39,14 +40,22 @@ export default defineComponent({
       multiple: true,
       emitPath: false
     })
-    const componentData = reactive({
-      options: [],
-      loadingDown: true
-    })
     const propsValue = computed(() => Object.assign({}, deafultProps, props))
+
+    /**
+     * @description 获取伙伴列表
+     */
+    const options: any = ref([])
+    const loadingDown = ref(true)
+    const getStaffList = async () => {
+      const list = await Staff.getStaffSelectList()
+      options.value = list
+      loadingDown.value = false
+    }
+    getStaffList()
     
     return {
-      componentData, type, propsValue
+      options, loadingDown, type, propsValue
     }
   },
   methods: {

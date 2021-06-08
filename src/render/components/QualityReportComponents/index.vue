@@ -21,13 +21,26 @@
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>产品</span>
-          <ProductSelect v-model="productIds" />
+          <ProductSelect v-model="productIds" :himo-product="showHimoProduct" :family-product="showFamilyProduct" />
         </div>
       </el-col>
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>伙伴</span>
           <StaffSelect v-model="staffs" />
+        </div>
+      </el-col>
+      <el-col v-bind="{ ...colConfig }">
+        <div class="search-item">
+          <span>职能</span>
+          <JobContentSelect v-model="jobContentIds" />
+        </div>
+      </el-col>
+      <!-- 职能 -->
+      <el-col v-bind="{ ...colConfig }">
+        <div class="search-item">
+          <span>职能</span>
+          <JobContentSelect v-model="jobContentIds" />
         </div>
       </el-col>
       <!-- 分数 -->
@@ -128,13 +141,17 @@ import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
 import StaffSelect from '@/components/SelectBox/StaffSelect/index.vue'
 import AiTagSelect from '@/components/SelectBox/AiTagSelect/index.vue'
 import ScopeSearch from '@/components/ScopeSearch/index.vue'
+import JobContentSelect from '@/components/SelectBox/JobContentSelect/index.vue'
+import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import GradeBox from './gradeBox.vue'
 
 import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
 
+import { ORGANIZATION_TYPE } from '@/model/Enumerate'
+
 export default defineComponent({
   name: 'QualityReportComponents',
-  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StaffSelect, AiTagSelect, GradeBox, ScopeSearch },
+  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StaffSelect, AiTagSelect, GradeBox, ScopeSearch, JobContentSelect, EvaluateSelect },
   data () {
     return {
       colConfig: {
@@ -170,6 +187,17 @@ export default defineComponent({
     const gradeBoxData = ref([])
     const productIds = ref([])
     const staffs = ref([])
+    const jobContentIds = ref([])
+
+    /** 是否显示海马体产品 */
+    const showHimoProduct = ref(false)
+    const showFamilyProduct = ref(false)
+    if (organizationType === ORGANIZATION_TYPE.HIMO) {
+      showHimoProduct.value = true
+    }
+    if (organizationType === ORGANIZATION_TYPE.FAMILY) {
+      showFamilyProduct.value = true
+    }
 
     provide('gradeBoxData', gradeBoxData)
 
@@ -292,7 +320,10 @@ export default defineComponent({
       aiTag,
       scopeData,
       productIds,
-      staffs
+      staffs,
+      jobContentIds,
+      showHimoProduct,
+      showFamilyProduct
     }
   }
 })
