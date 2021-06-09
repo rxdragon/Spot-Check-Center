@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, ref } from 'vue'
+import { defineComponent, inject, reactive, ref } from 'vue'
 
 import PeopleNumber from './components/PeopleNumber.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
@@ -79,20 +79,8 @@ export default defineComponent({
         sm: 10,
         xs: 24
       },
-      imgarray: [
-        {
-          src: 'https://cloud-dev.cdn-qn.hzmantu.com/compress/2020/06/17/ljj3UXg3uaY_C0DJ4kBsitaVV8UJ.jpg',
-          markPath: '',
-          photoInfo: new StreamOrderModel({})
-        },
-        {
-          src: 'https://cloud-dev.cdn-qn.hzmantu.com/upload_dev/2021/06/07/For1yk41pocbeTppJeqF95ijLvSz.jpg',
-          markPath: '',
-          photoInfo: new StreamOrderModel({})
-        }
-      ],
       evaluateIndex: 0,
-      showEvaluate: true
+      showEvaluate: false
     }
   },
   setup () {
@@ -119,13 +107,43 @@ export default defineComponent({
     /** 获取抽片信息 */
     const poolList = ref(['', ''])
 
+    // mock
+    const imgarray = reactive([
+      {
+        src: 'https://cloud-dev.cdn-qn.hzmantu.com/compress/2020/06/17/ljj3UXg3uaY_C0DJ4kBsitaVV8UJ.jpg',
+        markPath: '',
+        photoInfo: new StreamOrderModel({}),
+        naturalWidth: 1000,
+        naturalHeight: 1000,
+        markJson: '',
+        markBase: ''
+      },
+      {
+        src: 'https://cloud-dev.cdn-qn.hzmantu.com/upload_dev/2021/06/07/For1yk41pocbeTppJeqF95ijLvSz.jpg',
+        markPath: '',
+        photoInfo: new StreamOrderModel({}),
+        naturalWidth: 1051,
+        naturalHeight: 1577,
+        markJson: '',
+        markBase: ''
+      }
+    ])
+
+    // const getImageInfo = async () => {
+    //   for (const imageItem of imgarray) {
+    //     await PhotoTool.getImageInfo(imageItem.src)
+    //   }
+    // }
+    // getImageInfo()
+
     return {
       type,
       organizationType, productIds,
       fullMember, newMember, spotPhoto,
       showHimoProduct,
       showFamilyProduct,
-      poolList
+      poolList,
+      imgarray
     }
   }
 })

@@ -20,7 +20,7 @@
         placement="right-start"
         width="30"
         popper-class="pen-weight"
-        trigger="click"
+        trigger="hover"
       >
         <template #reference>
           <div class="tool-dom">

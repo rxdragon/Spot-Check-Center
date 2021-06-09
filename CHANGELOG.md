@@ -12,6 +12,7 @@
  - | 新功能开发 | [729606c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/729606c)
  - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)
  - | 增加评价信息洁面 | [f778aef](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f778aef)
+ - | 质检报告 | [1b23561](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1b23561)
  - | 组件提交 | [bac422c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bac422c)
  更新 代码 | 更改带啊么 | [68e16b1](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/68e16b1)
 

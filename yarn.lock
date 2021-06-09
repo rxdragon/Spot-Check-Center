@@ -1496,6 +1496,11 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/fabric@^4.2.6":
+  version "4.2.6"
+  resolved "https://npm.code.hzmantu.com/@types%2ffabric/-/fabric-4.2.6.tgz#bbcb3f2d9d12a55acf0712d2f7c4d493a29225d6"
+  integrity sha512-QWnbC9JV+CuieJ2PCHDiOhnR8uY/6cVbJuKm8sgddAm0ShdXQbtmJiGu/y5BvY10Rmeq28P+n+ujWVm8tJqKBQ==
+
 "@types/fs-extra@^9.0.11", "@types/fs-extra@^9.0.7":
   version "9.0.11"
   resolved "https://npm.code.hzmantu.com/@types%2ffs-extra/-/fs-extra-9.0.11.tgz#8cc99e103499eab9f347dbc6ca4e99fb8d2c2b87"
@@ -1634,6 +1639,11 @@
   version "2.0.3"
   resolved "https://npm.code.hzmantu.com/@types%2funist/-/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
   integrity sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
+
+"@types/uuid@^8.3.0":
+  version "8.3.0"
+  resolved "https://npm.code.hzmantu.com/@types%2fuuid/-/uuid-8.3.0.tgz#215c231dff736d5ba92410e6d602050cce7e273f"
+  integrity sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ==
 
 "@types/verror@^1.10.3":
   version "1.10.4"
@@ -13681,6 +13691,11 @@ uuid@^3.3.2, uuid@^3.4.0:
   version "3.4.0"
   resolved "https://npm.code.hzmantu.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
+
+uuid@^8.3.2:
+  version "8.3.2"
+  resolved "https://npm.code.hzmantu.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
 v8-compile-cache@^2.0.3, v8-compile-cache@^2.2.0, v8-compile-cache@^2.3.0:
   version "2.3.0"

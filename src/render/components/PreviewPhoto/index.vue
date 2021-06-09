@@ -108,7 +108,7 @@ export default defineComponent({
       if (isOverIn && vm.refs['photoMap']) vm.refs['photoMap'].handOver()
     }
 
-    const { zoom, photoZoomStyle, scaleNum, inZoomIn } = usePhotoZoom()
+    const { zoom, photoZoomStyle, scaleNum, inZoomIn } = usePhotoZoom({})
     /** 快捷指令 */
     useKeydown({ prePhoto, nextPhoto, closePreview, scaleNum, judgeHasZoom })
 
