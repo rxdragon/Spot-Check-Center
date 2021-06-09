@@ -9,6 +9,7 @@
  - | 更新代码 | [877aff9](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/877aff9)
  - | 更新评价历史记录根组件 | [9384490](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9384490)
  - | 更新评价配置和历史相关组件 | [49697eb](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/49697eb)
+ - | 完成预览组件相关信息 | [1426bc7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1426bc7)
  - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
  - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)
  - | 增加评价信息洁面 | [f778aef](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f778aef)
