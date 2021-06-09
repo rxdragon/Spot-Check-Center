@@ -80,7 +80,7 @@ export default defineComponent({
         xs: 24
       },
       evaluateIndex: 0,
-      showEvaluate: true
+      showEvaluate: false
     }
   },
   setup () {
@@ -115,7 +115,8 @@ export default defineComponent({
         photoInfo: new StreamOrderModel({}),
         naturalWidth: 1000,
         naturalHeight: 1000,
-        markJson: ''
+        markJson: '',
+        markBase: ''
       },
       {
         src: 'https://cloud-dev.cdn-qn.hzmantu.com/upload_dev/2021/06/07/For1yk41pocbeTppJeqF95ijLvSz.jpg',
@@ -123,7 +124,8 @@ export default defineComponent({
         photoInfo: new StreamOrderModel({}),
         naturalWidth: 1051,
         naturalHeight: 1577,
-        markJson: ''
+        markJson: '',
+        markBase: ''
       }
     ])
 

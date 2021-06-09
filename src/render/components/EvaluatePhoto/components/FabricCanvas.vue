@@ -80,7 +80,7 @@ export default defineComponent({
       onMounted(() => {
         canvasFabric.value = new fabric.Canvas(markCanvas.value, {
           isDrawingMode: false,
-          selection: false,
+          selection: true,
           skipTargetFind: true,
           width: optionObj.value.width,
           height: optionObj.value.height
@@ -167,6 +167,13 @@ export default defineComponent({
       const canvasJson = canvasFabric.value.toJSON()
       return canvasJson
     }
+    // 提供base64数据
+    const exportBase64 = () => {
+      if (!canvasFabric.value) return ''
+      if (canvasFabric.value.isEmpty()) return ''
+      const base64Data = canvasFabric.value.toDataURL()
+      return base64Data
+    }
 
     // 清空数据
     const clearCanvas = () => {
@@ -191,7 +198,7 @@ export default defineComponent({
 
     return {
       markCanvas,
-      exportJsonInfo, clearCanvas, loadMarkJson
+      exportJsonInfo, exportBase64, clearCanvas, loadMarkJson
     }
   }
 })

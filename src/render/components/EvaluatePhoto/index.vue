@@ -48,13 +48,19 @@
           <PhotoListMap v-model:photo-index="photoIndex" :photo-list="photoArray" />
         </div>
       </div>
-      <div class="right-column flex-none">右侧栏目</div>
+      <div class="right-column flex-none">
+        <GradeLabel ref="gradeLabel" />
+        <div class="button-box">
+          <el-button type="info" class="out-btn" @click="closePreview">退出</el-button>
+          <el-button type="primary" @click="submitData">提交评分</el-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, ref, Ref, toRefs, reactive, watch } from 'vue'
+import { defineComponent, getCurrentInstance, ref, Ref, toRefs, reactive, watch, computed } from 'vue'
 
 import type { IOptionObj } from './composables/useCanvasTool'
 import { TOOL_TYPE } from './components/ToolEnumerate'
@@ -67,10 +73,14 @@ import PhotoInfo from '@/components/PreviewPhoto/components/PhotoInfo.vue'
 import MarkTool from './components/MarkTool.vue'
 import PhotoListMap from './components/PhotoListMap.vue'
 import FabricCanvas from './components/FabricCanvas.vue'
+import GradeLabel from './components/GradeLabel.vue'
+
+import * as CanvasTool from '@/utils/canvasTool'
+import * as CommonalityApi from '@/api/commonalityApi'
 
 export default defineComponent({
   name: 'EvaluatePhoto',
-  components: { PhotoMap, PhotoInfo, MarkTool, PhotoListMap, FabricCanvas },
+  components: { PhotoMap, PhotoInfo, MarkTool, PhotoListMap, FabricCanvas, GradeLabel },
   props: {
     imgarray: { type: Array, required: true },
     index: { type: Number, default: 0 },
@@ -80,14 +90,16 @@ export default defineComponent({
   setup (props, { emit }) {
     const vm: any = getCurrentInstance()
     const fabricCanvas = ref<any>(null)
-    const loading = ref(false)
-
+    const imgLoading = ref(false)
+    const canvasLoading = ref(false)
+    const loading = computed(() => imgLoading.value || canvasLoading.value)
+      
     const photoArray: Ref<any[]> = ref([])
 
     /** 上下图片 */
     const { photoIndex, prePhoto, nextPhoto, showPhoto } = usePhotoIndex({
       photoArray,
-      loading,
+      loading: imgLoading,
       emit,
       props
     })
@@ -117,20 +129,34 @@ export default defineComponent({
       }
       canvasOption.drawType = type
     }
+
+    // 监听屏幕重置重新设置宽高 TODO:cf
+    // onWindowResize (e, item) {
+    //   this.getImgInfo()
+    //   if (!this.showCanvas) return
+    //   this.$nextTick(() => {
+    //     if (!this.$refs['fabric-canvas']) return
+    //     this.$refs['fabric-canvas'].resetCanvas()
+    //   })
+    // }
     
     /** 切换照片时候储存json到照片模型下 */
     watch(
       photoIndex,
-      (newIndex, oldIndex) => {
+      async (newIndex, oldIndex) => {
         if (!fabricCanvas.value) return
+        canvasLoading.value = true
         // 将上一张的mark信息存储起来
         const jsonInfo = fabricCanvas.value.exportJsonInfo()
         if (jsonInfo) {
           photoArray.value[oldIndex].markJson = jsonInfo
+          const markBase64 = fabricCanvas.value.exportBase64()
+          photoArray.value[oldIndex].markBase = markBase64
           fabricCanvas.value.clearCanvas()
         }
         const nextMarkJson = showPhoto.value.markJson
-        fabricCanvas.value.loadMarkJson(nextMarkJson)
+        await fabricCanvas.value.loadMarkJson(nextMarkJson)
+        canvasLoading.value = false
       }
     )
 
@@ -142,7 +168,7 @@ export default defineComponent({
         canvasOption.width = OrginImg.value.clientWidth
         canvasOption.height = OrginImg.value.clientHeight
       }
-      loading.value = false
+      imgLoading.value = false
     }
 
     /** 放大功能 */
@@ -154,6 +180,31 @@ export default defineComponent({
     const { zoom, photoZoomStyle, scaleNum, inZoomIn } = usePhotoZoom({ canvasOption })
 
 
+    /** 上传批注图片 */
+    // 获取token
+    const qNConfig = ref<any>('')
+    const getQNSign = async () => {
+      qNConfig.value = await CommonalityApi.getSignature()
+    }
+    getQNSign()
+    const uploadPhotoMap = async () => {
+      for (const photoItem of photoArray.value) {
+        if (!photoItem.markBase) break
+        const blobData = CanvasTool.convertBase64ToBlob(photoItem.markBase)
+        const fileData = CanvasTool.structureFile(blobData)
+        const fileDataUploadUrl = await CanvasTool.uploadTagPhoto(fileData, qNConfig.value)
+        photoItem.markPath = fileDataUploadUrl
+      }
+    }
+
+    /** 提交分数 */
+    const gradeLabel = ref<any>(null)
+    const submitData = () => {
+      // TODO: cf 提交分数
+      const gradeLabelVm = gradeLabel.value
+      gradeLabelVm.getAllSelectLabel()
+    }
+
     return {
       loading,
       photoArray,
@@ -161,7 +212,9 @@ export default defineComponent({
       zoom, photoZoomStyle, scaleNum, inZoomIn,
       loadingPhoto, closePreview, judgeHasZoom, OrginImg,
       canvasOption, changeDrawType,
-      fabricCanvas
+      fabricCanvas, uploadPhotoMap,
+      submitData, gradeLabel
+
     }
   }
 })
@@ -212,8 +265,30 @@ export default defineComponent({
     }
 
     .right-column {
+      position: relative;
       width: @right-column;
-      background-color: yellow;
+      background-color: @baseBgColor;
+
+      .button-box {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 60px;
+        border-top: 1px solid #666;
+
+        .out-btn {
+          background-color: #666;
+          border-color: #666;
+
+          &:hover {
+            background-color: #535353;
+          }
+        }
+      }
     }
 
     .content-column {
@@ -376,6 +451,10 @@ export default defineComponent({
       }
     }
   }
+}
+
+/deep/ .el-loading-mask {
+  z-index: 3500 !important;
 }
 
 #_magnifier_layer {
