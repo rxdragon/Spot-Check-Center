@@ -86,7 +86,7 @@ export default defineComponent({
     index: { type: Number, default: 0 },
     showEvaluate: { type: Boolean, required: true },
   },
-  emits: ['update:showEvaluate'],
+  emits: ['update:showEvaluate', 'submitData'],
   setup (props, { emit }) {
     const vm: any = getCurrentInstance()
     const fabricCanvas = ref<any>(null)
@@ -202,7 +202,10 @@ export default defineComponent({
     const submitData = () => {
       // TODO: cf 提交分数
       const gradeLabelVm = gradeLabel.value
-      gradeLabelVm.getAllSelectLabel()
+      const data = {
+        gradeLabels: gradeLabelVm.getAllSelectLabel()
+      }
+      emit('submitData', data)
     }
 
     return {
