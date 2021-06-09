@@ -5,8 +5,8 @@
     {{ organizationType }} -
     {{ rangeType }}
     <el-row class="search-box" :gutter="20">
-      <!-- 抽查时间 -->
-      <el-col v-bind="{ ...colConfig }">
+      <!-- 评分时间 -->
+      <el-col v-if="activeName === 'GradeBox'" v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>评分时间</span>
           <DatePicker v-model="timeSpan" :disabled="Boolean(orderNum)" />
@@ -39,8 +39,8 @@
       <!-- 职能 -->
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
-          <span>职能</span>
-          <JobContentSelect v-model="jobContentIds" />
+          <span>评价标签</span>
+          <EvaluateSelect v-model="evaluateIds" />
         </div>
       </el-col>
       <!-- 分数 -->
@@ -50,24 +50,26 @@
           <ScopeSearch v-model="scopeData" />
         </div>
       </el-col>
-      <el-col v-bind="{...colConfig}">
+      <el-col v-if="activeName === 'ArraignmentRecordModule'" v-bind="{...colConfig}">
         <div class="search-item">
           <span>AI标签</span>
           <AiTagSelect v-model="aiTag" />
         </div>
       </el-col>
-      <el-col v-bind="{...colConfig, sm: 4, md: 4}">
-        <div class="search-item">
-          <el-button type="primary" @click="searchData(1)">查询</el-button>
-        </div>
-      </el-col>
+    </el-row>
+    <el-row class="text-right">
+      <div>
+        <el-checkbox v-model="onlyNew" @change="changeOnlyNew">只看新人</el-checkbox>
+        <el-checkbox v-model="onlyOld" @change="changeOnlyOld">只看正式伙伴</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button type="primary" @click="searchData(1)">查询</el-button>
+      </div>
     </el-row>
   </div>
 
   
   <div class="module-panel mt-6">
     <!-- 更换标签 -->
-    <el-tabs v-model="pageData.activeName">
+    <el-tabs v-model="activeName">
       <el-tab-pane :label="`评分明细`" name="GradeBox" />
       <el-tab-pane :label="`AI审核报告`" name="ArraignmentRecordModule" />
     </el-tabs>
@@ -75,7 +77,7 @@
     <div class="table-box">
       <transition name="fade-transform" mode="out-in">
         <keep-alive>
-          <component :is="pageData.activeName" />
+          <component :is="activeName" />
         </keep-alive>
       </transition>
     </div>
@@ -111,7 +113,7 @@
   <div class="page-box">
     <el-pagination
       v-model:current-page="pager.page"
-      :hide-on-single-page="true"
+      :hide-on-single-page="false"
       :page-size="pager.pageSize"
       layout="prev, pager, next"
       :total="pager.total"
@@ -144,10 +146,13 @@ import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import JobContentSelect from '@/components/SelectBox/JobContentSelect/index.vue'
 import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import GradeBox from './gradeBox.vue'
+// TODO lj
+// import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
+import * as QualityApi from '@/api/qualityApi'
 
-import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
+import { ORGANIZATION_TYPE, QUALITY_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
-import { ORGANIZATION_TYPE } from '@/model/Enumerate'
+import moment from 'moment'
 
 export default defineComponent({
   name: 'QualityReportComponents',
@@ -173,30 +178,46 @@ export default defineComponent({
     const rangeType = inject('rangeType')
 
     const timeSpan: Ref<string | never | any[]> = ref('')
+    const startAt = moment().subtract('day', 28).locale('zh-cn').format('YYYY-MM-DD')
+    const endAt = moment().locale('zh-cn').format('YYYY-MM-DD')
+    timeSpan.value = [startAt, endAt]
     const orderNum = ref('')
     const aiTag = ref('')
-    const scopeData = ref(null)
+    const scopeData = ref([])
     const pager = reactive({
       page: 1,
       pageSize: 10,
       total: 10
     })
-    const pageData = reactive({
-      activeName: 'GradeBox'
-    })
-    const gradeBoxData = ref([])
+    const activeName = ref('GradeBox')
+    const gradeBoxData:any = ref([])
     const productIds = ref([])
     const staffs = ref([])
     const jobContentIds = ref([])
+    const evaluateIds = ref([])
+    const onlyNew = ref(false)
+    const onlyOld = ref(false)
+    const axiosType = ref('')
+
+    const changeOnlyNew = () => {
+      if (onlyNew.value) onlyOld.value = false
+    }
+    const changeOnlyOld = () => {
+      if (onlyOld.value) onlyNew.value = false
+    }
 
     /** 是否显示海马体产品 */
     const showHimoProduct = ref(false)
     const showFamilyProduct = ref(false)
     if (organizationType === ORGANIZATION_TYPE.HIMO) {
       showHimoProduct.value = true
+      if (type === SPOT_TYPE.MAKEUP) axiosType.value = QUALITY_TYPE.HIMO_MAKEUP
+      if (type === SPOT_TYPE.PHOTOGRAPHY) axiosType.value = QUALITY_TYPE.HIMO_PHOTOGRAPHY
     }
     if (organizationType === ORGANIZATION_TYPE.FAMILY) {
       showFamilyProduct.value = true
+      if (type === SPOT_TYPE.MAKEUP) axiosType.value = QUALITY_TYPE.FAMILY_MAKEUP
+      if (type === SPOT_TYPE.PHOTOGRAPHY) axiosType.value = QUALITY_TYPE.FAMILY_PHOTOGRAPHY
     }
 
     provide('gradeBoxData', gradeBoxData)
@@ -208,50 +229,30 @@ export default defineComponent({
       photoQualityCount: 0,
       photoQualityProblemCount: 0
     })
-    
-    /**
-     * @description 获取统计信息
-     */
-    const getAuditRecordTotal = async () => {
-      const req: ArraignmentRecordApi.IgetAuditRecordTotalParams = {
-        type,
-      }
 
-      if (timeSpan.value) {
-        req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
-        req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
-      }
-
-      if (orderNum.value) {
-        req.cloudOrderNum = orderNum.value
-        delete req.startAt
-        delete req.endAt
-      }
-      const res = await ArraignmentRecordApi.getAuditRecordTotal(req)
-      auditRecordTotal.value = reactive(res)
-    }
-
-    /** 提审记录列表相关数据 */
-    const arraignmentRecordList = ref<any>([])
-    // 订单搜索
-    const getAuditRecords = async () => {
-      const req: ArraignmentRecordApi.IgetAuditRecordsParams = {
-        type,
+    /** 获取质检报告 */
+    const getSpotCheckResult = async () => {
+      const req: QualityApi.IgetQualityParams = {
         page: pager.page,
-        pageSize: pager.pageSize
+        pageSize: pager.pageSize,
+        productIds: productIds.value,
+        problemTagsIds: evaluateIds.value,
+        supervisorArr: jobContentIds.value,
+        staffIds: staffs.value,
+        score: scopeData.value,
+        orderNum: orderNum.value,
+        onlyNew: onlyNew.value,
+        onlyOld: onlyNew.value,
+        startTime: '',
+        endTime: ''
       }
       if (timeSpan.value) {
-        req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
-        req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
+        req.startTime = TimeUtil.searchStartTime(timeSpan.value[0])
+        req.endTime = TimeUtil.searchEndTime(timeSpan.value[1])
       }
-      if (orderNum.value) {
-        req.cloudOrderNum = orderNum.value
-        delete req.startAt
-        delete req.endAt
-      }
-      const res = await ArraignmentRecordApi.getAuditRecords(req)
+      const res = await QualityApi.getSpotCheckResult(req, axiosType.value)
+      gradeBoxData.value = res.list
       pager.total = res.total
-      arraignmentRecordList.value = res.list
     }
     
     /** 获取全部数据 */
@@ -261,13 +262,13 @@ export default defineComponent({
       try {
         store.dispatch('settingStore/showLoading', route.name)
         Promise.all([
-          getAuditRecordTotal(),
-          getAuditRecords()
+          getSpotCheckResult()
         ])
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
+    searchData(1)
 
     /** 监听预览图片 */
     const showPreview = ref(false)
@@ -291,15 +292,15 @@ export default defineComponent({
     * @param {*}
     */
     // console.log(RatingApi)
-    const getPhotoList = async () => {
-      const data:any = {}
-      gradeBoxData.value = data
+    // const getPhotoList = async () => {
+    //   const data:any = {}
+    //   gradeBoxData.value = data
       
-    }
-    getPhotoList()
+    // }
+    // getPhotoList()
 
     provide('auditRecordTotal', auditRecordTotal)
-    provide('arraignmentRecordList', arraignmentRecordList)
+    // provide('arraignmentRecordList', arraignmentRecordList)
 
     return {
       type,
@@ -308,7 +309,7 @@ export default defineComponent({
       timeSpan,
       orderNum,
       pager,
-      arraignmentRecordList,
+      // arraignmentRecordList,
       auditRecordTotal,
       searchData,
       handlePage,
@@ -316,12 +317,17 @@ export default defineComponent({
       photos,
       previewIndex,
       onPreviewPhotoList,
-      pageData,
+      activeName,
       aiTag,
       scopeData,
       productIds,
       staffs,
       jobContentIds,
+      evaluateIds,
+      onlyNew,
+      onlyOld,
+      changeOnlyNew,
+      changeOnlyOld,
       showHimoProduct,
       showFamilyProduct
     }

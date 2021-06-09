@@ -2,7 +2,7 @@
   <div class="divide-y divide-gray-200">
     <div
       v-for="(item, index) in gradeBoxData"
-      :key="item.id"
+      :key="item._id"
       class="grade-box mb-6"
       :class="{'pt-6': index !== 0}"
     >
@@ -14,7 +14,7 @@
           <span>照片评分</span>
         </div>
         <div class="panel-content">
-          <div class="photo-list grade-photo-list">
+          <div class="photo-list grade-photo-list overflow-x-auto overscroll-x-contain">
             <div v-for="(photoItem, photoIndex) in item.photoList" :key="photoItem.id" class="photo-box">
               <PhotoBox
                 :src="photoItem.path"
@@ -49,62 +49,53 @@
         <div class="panel-title">订单信息</div>
         <div class="panel-content">
           <div class="base-info panel-row">
-            <span class="order-info w-44"><span class="order-info-title">流水号：</span>{{ item.orderMsg.id }}</span>
-            <span class="order-info w-44"><span class="order-info-title">产品名称：</span>{{ item.orderMsg.productName }}</span>
-            <span class="order-info w-44"><span class="order-info-title">照片张数：</span>{{ item.orderMsg.photoNum }}</span>
+            <span class="order-info w-44"><span class="order-info-title">流水号：</span>{{ item.streamInfo.orderNumber }}</span>
+            <span class="order-info w-44"><span class="order-info-title">产品名称：</span>{{ item.streamInfo.productName }}</span>
+            <span class="order-info w-44"><span class="order-info-title">照片张数：</span>{{ item.streamInfo.photoCount }}</span>
             <span class="order-info w-44">
-              <span class="order-info-title">门店类型：</span>{{ item.storeType }}
+              <span class="order-info-title">门店类型：</span>{{ item.streamInfo.storeType }}
               <div class="standard-icon" />
             </span>
-            <span class="order-info w-40"><span class="order-info-title">门店：</span>{{ item.orderMsg.storeName }}</span>
+            <span class="order-info w-40"><span class="order-info-title">门店：</span>{{ item.streamInfo.storeName }}</span>
           </div>
           <div class="base-info panel-row">
-            <span class="order-info w-44"><span class="order-info-title">化妆师：</span>{{ item.orderMsg.dresserLow }}</span>
-            <span class="order-info w-44"><span class="order-info-title">化妆督导：</span>{{ item.orderMsg.dresserMiddel }}</span>
-            <span class="order-info w-44"><span class="order-info-title">化妆专家：</span>{{ item.orderMsg.dresserTop }}</span>
+            <span class="order-info w-44"><span class="order-info-title">化妆师：</span>{{ item.streamInfo.dresserName }}</span>
+            <span class="order-info w-44"><span class="order-info-title">化妆督导：</span>{{ 'q' }}</span>
+            <span class="order-info w-44"><span class="order-info-title">化妆专家：</span>{{ 'q' }}</span>
           </div>
           <div class="base-info panel-row">
-            <span class="order-info"><span class="order-info-title">订单备注：</span>{{ item.orderMsg.orderRemarks }}</span>
+            <span class="order-info"><span class="order-info-title">订单备注：</span>{{ item.streamInfo.note.orderNote }}</span>
           </div>
           <div class="base-info panel-row">
-            <span class="order-info"><span class="order-info-title">摄影备注：</span>{{ item.orderMsg.filmRemarks }}</span>
+            <span class="order-info"><span class="order-info-title">摄影备注：</span>{{ item.streamInfo.note.dresserNote }}</span>
           </div>
           <div class="base-info panel-row">
-            <span class="order-info"><span class="order-info-title">化妆备注：</span>{{ item.orderMsg.dressRemarks }}</span>
+            <span class="order-info"><span class="order-info-title">化妆备注：</span>{{ item.streamInfo.note.photographyNote }}</span>
           </div>
         </div>
       </div>
-    
-    
       <!-- 评价信息 -->
-      <div class="panel-info mb-6">
-        <div class="panel-title">
-          <span>评价信息</span>
-          <div class="score-box">
-            <el-button size="mini" type="primary">
-              修改评分
-            </el-button>
-
-            <el-button size="mini" type="primary">
-              我要申诉
-            </el-button>
+      <div class="panel-title grid grid-cols-12 mb-6">
+        <div class="col-start-1 col-end-4">评价信息</div>
+        <div class="evaluate-title-info grid grid-cols-3 col-end-13 col-span-4">
+          <div>总评分：{{ item.tagInfo.totalScore }}</div>
+          <div>评分人：{{ item.tagInfo.RaterName }}</div>
+          <div>
+            <el-button size="small" class="change-evaluate-btn" type="primary">我要申诉</el-button>
           </div>
         </div>
-        <div class="panel-content">
-          <div class="grade-score panel-row">
-            <span class="order-info"><span class="order-info-title">总分：</span>{{ item.evalute.totalScore }}</span>
-            <span class="order-info"><span class="order-info-title">评分人：</span>{{ item.evalute.scoringPerson }}</span>
-          </div>
-          <div class="issue-class-box panel-row">
-            <!-- <el-tag
-              v-for="(item, index) in 5"
-              :key="index"
-              :class="['type-tag', item.type]"
-              size="medium"
-            >
-              {{ '大联赛冠军' }}
-            </el-tag> -->
-          </div>
+      </div>
+      <div class="order-info grid grid-cols-4 mb-4">
+        <div class="info-item">
+          问题标签：<el-tag
+            v-for="tagItem in item.tagInfo.tags"
+            :key="tagItem.id"
+            class="text-center"
+            :class="['type-tag', tagItem.type]"
+            size="medium"
+          >
+            {{ tagItem.name }}
+          </el-tag>
         </div>
       </div>
     </div>
@@ -179,7 +170,6 @@ export default defineComponent({
 
   .photo-panel {
     flex-shrink: 0;
-    width: 542px;
 
     .panel-title {
       display: flex;

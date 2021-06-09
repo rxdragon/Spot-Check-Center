@@ -1,4 +1,5 @@
-import axios from '@/plugins/axios'
+// TODO lj
+// import axios from '@/plugins/axios'
 import * as SessionTool from '@/utils/sessionTool'
 
 interface IStaffSelect {
@@ -16,8 +17,9 @@ export type IFilterStaffData = {
 /**
  * @description 获取伙伴选择框数据
  */
-export function getStaffSelectList () {
-  const params = { needDelete: false }
+export async function getStaffSelectList () {
+  // TODO lj
+  // const params = { needDelete: false }
   function handleData (msg: any) {
     const createData: IFilterStaffData[] = [{
       label: '未分组',
@@ -55,13 +57,25 @@ export function getStaffSelectList () {
   if (data) {
     return handleData(data)
   } else {
-    return axios({
-      url: '/project-photo-quality/common/getStaffs',
-      method: 'get',
-      params
-    }).then(( msg: any ) => {
-      SessionTool.saveStaffList(msg)
-      return handleData(msg)
-    })
+    // TODO lj
+    const msg: any = {
+      "msg": [
+        {
+          "entry_at": "2015-08-07",
+          "id": 1,
+          "name": "杜秋冬",
+          "nickname": "纳威"
+        }
+      ],
+      "success": true
+    }
+
+    // const msg: any = await axios({
+    //   url: '/project-photo-quality/common/getStaffs',
+    //   method: 'get',
+    //   params
+    // })
+    SessionTool.saveStaffList(msg.msg)
+    return handleData(msg.msg)
   }
 }
