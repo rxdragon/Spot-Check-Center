@@ -6,7 +6,8 @@ import * as SessionTool from '@/utils/sessionTool'
 
 const state: ISettingStore = {
   imgDomain: process.env.VUE_APP_DOMAIN,
-  imgCompressDomain: process.env.VITE_APP_COMPRESS_DOMAIN,
+  imgCompressDomain: process.env.VUE_APP_COMPRESS_DOMAIN,
+  updateDomain: process.env.VUE_APP_UPDATE_DOMAIN,
   collapse: SessionTool.getCollapseStorage(),
   loadRoutes: []
 }

@@ -8,7 +8,7 @@
         </button>
       </div>
     </div>
-    <div class="evaluate-main h-full flex">
+    <div class="evaluate-main flex">
       <div class="left-column flex-none">
         <PhotoMap ref="photoMap" v-model:scaleNum="scaleNum" :show-photo="showPhoto" />
         <MarkTool :canvas-option="canvasOption" @changeTool="changeDrawType" />
@@ -16,23 +16,26 @@
       </div>
       <div class="content-column flex-grow">
         <div class="photo-main">
-          <div
-            ref="photo-show-main"
-            class="orginPhoto"
-            :style="photoZoomStyle + (inZoomIn ? 'cursor: zoom-out;' : 'cursor: zoom-in;')"
-            @click.capture.stop="zoom"
-          >
+          <div ref="photo-show-main" class="orginPhoto">
             <img
               id="orginImg"
               ref="OrginImg"
+              :style="photoZoomStyle + (inZoomIn && 'cursor: zoom-out;')"
               :src="showPhoto.src"
               :alt="showPhoto.title"
               @load="loadingPhoto"
+              @click.capture.stop="zoom"
             >
             <!-- 放大图片 -->
             <div id="_magnifier_layer" ref="magnifier_layer" />
+            <!-- 批注组件 -->
+            <FabricCanvas
+              ref="fabricCanvas"
+              :style="photoZoomStyle"
+              :option-obj="canvasOption"
+              @click="zoom"
+            />
           </div>
-
           <!-- 左右按钮 -->
           <button v-if="photoArray.length !== 1" class="button-left" @click.stop="prePhoto">
             <i class="el-icon-arrow-left" />
@@ -41,18 +44,25 @@
             <i class="el-icon-arrow-right" />
           </button>
         </div>
-        <div class="photo-list">
-          <PhotoListMap />
+        <div class="photo-list p-5">
+          <PhotoListMap v-model:photo-index="photoIndex" :photo-list="photoArray" />
         </div>
       </div>
-      <div class="right-column flex-none">右侧栏目</div>
+      <div class="right-column flex-none">
+        <GradeLabel ref="gradeLabel" />
+        <div class="button-box">
+          <el-button type="info" class="out-btn" @click="closePreview">退出</el-button>
+          <el-button type="primary" @click="submitData">提交评分</el-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, ref, Ref, reactive } from 'vue'
+import { defineComponent, getCurrentInstance, ref, Ref, toRefs, reactive, watch, computed } from 'vue'
 
+import type { IOptionObj } from './composables/useCanvasTool'
 import { TOOL_TYPE } from './components/ToolEnumerate'
 
 import usePhotoIndex from '@/components/PreviewPhoto/composables/usePhotoIndex'
@@ -62,11 +72,15 @@ import PhotoMap from '@/components/PreviewPhoto/components/PhotoMap.vue'
 import PhotoInfo from '@/components/PreviewPhoto/components/PhotoInfo.vue'
 import MarkTool from './components/MarkTool.vue'
 import PhotoListMap from './components/PhotoListMap.vue'
-import { toRefs } from '@vueuse/core'
+import FabricCanvas from './components/FabricCanvas.vue'
+import GradeLabel from './components/GradeLabel.vue'
+
+import * as CanvasTool from '@/utils/canvasTool'
+import * as CommonalityApi from '@/api/commonalityApi'
 
 export default defineComponent({
   name: 'EvaluatePhoto',
-  components: { PhotoMap, PhotoInfo, MarkTool, PhotoListMap },
+  components: { PhotoMap, PhotoInfo, MarkTool, PhotoListMap, FabricCanvas, GradeLabel },
   props: {
     imgarray: { type: Array, required: true },
     index: { type: Number, default: 0 },
@@ -75,24 +89,19 @@ export default defineComponent({
   emits: ['update:showEvaluate'],
   setup (props, { emit }) {
     const vm: any = getCurrentInstance()
-    const loading = ref(false)
-
+    const fabricCanvas = ref<any>(null)
+    const imgLoading = ref(false)
+    const canvasLoading = ref(false)
+    const loading = computed(() => imgLoading.value || canvasLoading.value)
+      
     const photoArray: Ref<any[]> = ref([])
 
     /** 上下图片 */
     const { photoIndex, prePhoto, nextPhoto, showPhoto } = usePhotoIndex({
       photoArray,
-      loading,
+      loading: imgLoading,
       emit,
       props
-    })
-
-    /** 获取主图加载完毕 */
-    const OrginImg = ref<Element | null>(null)
-    const imgBigObj = ref<Element | null>(null)
-    const showImageRect = reactive({
-      width: 0,
-      height: 0
     })
 
     /** 关闭窗口 */
@@ -100,33 +109,13 @@ export default defineComponent({
       emit('update:showEvaluate', false)
     }
 
-    /** 获取图片 */
-    const loadingPhoto = () => {
-      imgBigObj.value = OrginImg.value
-
-      if (imgBigObj.value) {
-        showImageRect.width = imgBigObj.value.clientWidth
-        showImageRect.height = imgBigObj.value.clientHeight
-      }
-      loading.value = false
-    }
-
-    /** 放大功能 */
-    // 放大
-    const judgeHasZoom = () => {
-      const isOverIn = _.get(vm.refs['magnifier_layer'], 'style.width')
-      if (isOverIn && vm.refs['photoMap']) vm.refs['photoMap'].handOver()
-    }
-
-    const { zoom, photoZoomStyle, scaleNum, inZoomIn } = usePhotoZoom()
-
     /** 绘图相关 */
-    const canvasOption = reactive({
+    const canvasOption: IOptionObj = reactive({
       width: 200,
       height: 200,
       penColor: '#E34F51',
       lineWidth: 2,
-      drawType: ''
+      drawType: TOOL_TYPE.MOVE
     })
 
     const { showEvaluate } = toRefs(props)
@@ -138,15 +127,82 @@ export default defineComponent({
         canvasOption.penColor = value
         return
       }
-
-      // if (type !== TOOL_TYPE.BLOWUP && !this.showCanvas) {
-      //   this.createCanvas(drawInfo)
-      //   return
-      // }
-      // if (type === TOOL_TYPE.BLOWUP && this.inZoomIn) {
-      //   this.$refs['fabric-canvas'].$el.style.cursor = 'zoom-out'
-      // }
       canvasOption.drawType = type
+    }
+
+    // 监听屏幕重置重新设置宽高 TODO:cf
+    // onWindowResize (e, item) {
+    //   this.getImgInfo()
+    //   if (!this.showCanvas) return
+    //   this.$nextTick(() => {
+    //     if (!this.$refs['fabric-canvas']) return
+    //     this.$refs['fabric-canvas'].resetCanvas()
+    //   })
+    // }
+    
+    /** 切换照片时候储存json到照片模型下 */
+    watch(
+      photoIndex,
+      async (newIndex, oldIndex) => {
+        if (!fabricCanvas.value) return
+        canvasLoading.value = true
+        // 将上一张的mark信息存储起来
+        const jsonInfo = fabricCanvas.value.exportJsonInfo()
+        if (jsonInfo) {
+          photoArray.value[oldIndex].markJson = jsonInfo
+          const markBase64 = fabricCanvas.value.exportBase64()
+          photoArray.value[oldIndex].markBase = markBase64
+          fabricCanvas.value.clearCanvas()
+        }
+        const nextMarkJson = showPhoto.value.markJson
+        await fabricCanvas.value.loadMarkJson(nextMarkJson)
+        canvasLoading.value = false
+      }
+    )
+
+    /** 获取图片 */
+    /** 获取主图加载完毕 */
+    const OrginImg = ref<Element | null>(null)
+    const loadingPhoto = () => {
+      if (OrginImg.value) {
+        canvasOption.width = OrginImg.value.clientWidth
+        canvasOption.height = OrginImg.value.clientHeight
+      }
+      imgLoading.value = false
+    }
+
+    /** 放大功能 */
+    // 放大
+    const judgeHasZoom = () => {
+      const isOverIn = _.get(vm.refs['magnifier_layer'], 'style.width')
+      if (isOverIn && vm.refs['photoMap']) vm.refs['photoMap'].handOver()
+    }
+    const { zoom, photoZoomStyle, scaleNum, inZoomIn } = usePhotoZoom({ canvasOption })
+
+
+    /** 上传批注图片 */
+    // 获取token
+    const qNConfig = ref<any>('')
+    const getQNSign = async () => {
+      qNConfig.value = await CommonalityApi.getSignature()
+    }
+    getQNSign()
+    const uploadPhotoMap = async () => {
+      for (const photoItem of photoArray.value) {
+        if (!photoItem.markBase) break
+        const blobData = CanvasTool.convertBase64ToBlob(photoItem.markBase)
+        const fileData = CanvasTool.structureFile(blobData)
+        const fileDataUploadUrl = await CanvasTool.uploadTagPhoto(fileData, qNConfig.value)
+        photoItem.markPath = fileDataUploadUrl
+      }
+    }
+
+    /** 提交分数 */
+    const gradeLabel = ref<any>(null)
+    const submitData = () => {
+      // TODO: cf 提交分数
+      const gradeLabelVm = gradeLabel.value
+      gradeLabelVm.getAllSelectLabel()
     }
 
     return {
@@ -154,8 +210,11 @@ export default defineComponent({
       photoArray,
       photoIndex, prePhoto, nextPhoto, showPhoto,
       zoom, photoZoomStyle, scaleNum, inZoomIn,
-      loadingPhoto, closePreview, judgeHasZoom,
-      canvasOption, changeDrawType
+      loadingPhoto, closePreview, judgeHasZoom, OrginImg,
+      canvasOption, changeDrawType,
+      fabricCanvas, uploadPhotoMap,
+      submitData, gradeLabel
+
     }
   }
 })
@@ -166,6 +225,8 @@ export default defineComponent({
 @baseBgColor: #535353;
 
 .evaluate-photo {
+  @titleHeight: 40px;
+
   position: fixed;
   top: @navtop;
   left: 0;
@@ -173,7 +234,7 @@ export default defineComponent({
   width: 100vw;
   height: calc(100vh - @navtop);
   overflow: hidden;
-  background-color: red;
+  background-color: #282828;
 
   .evaluate-title {
     position: relative;
@@ -196,18 +257,42 @@ export default defineComponent({
     @left-column: 280px;
     @right-column: 280px;
 
+    height: calc(~'100% - @{titleHeight}');
+
     .left-column {
       width: @left-column;
       background-color: @baseBgColor;
     }
 
     .right-column {
+      position: relative;
       width: @right-column;
-      background-color: yellow;
+      background-color: @baseBgColor;
+
+      .button-box {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 60px;
+        border-top: 1px solid #666;
+
+        .out-btn {
+          background-color: #666;
+          border-color: #666;
+
+          &:hover {
+            background-color: #535353;
+          }
+        }
+      }
     }
 
     .content-column {
-      @photoListHeight: 150px;
+      @photoListHeight: 160px;
 
       .photo-main {
         position: relative;
@@ -324,7 +409,7 @@ export default defineComponent({
         .button-module {
           position: absolute;
           top: calc(50% - 25px);
-          z-index: 2000;
+          z-index: 3001;
           width: 50px;
           height: 50px;
           cursor: pointer;
@@ -368,9 +453,13 @@ export default defineComponent({
   }
 }
 
+/deep/ .el-loading-mask {
+  z-index: 3500 !important;
+}
+
 #_magnifier_layer {
   position: absolute;
-  z-index: 1999;
+  z-index: 3100;
   background: #000;
 }
 </style>

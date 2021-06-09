@@ -1,12 +1,19 @@
 import { ref } from 'vue'
 
-export default function () {
+interface IUsePhotoZoom {
+  canvasOption?: any
+}
+
+export default function ({
+  canvasOption
+}: IUsePhotoZoom) {
   const inZoomIn = ref(false)
   const photoZoomStyle = ref('')
   const scaleNum = ref(25)
   
   /** 放大图片 */
   const zoom = (e: any) => {
+    if (canvasOption && canvasOption.drawType !== 'blowup') return
     if (inZoomIn.value) {
       photoZoomStyle.value = ''
       inZoomIn.value = false
