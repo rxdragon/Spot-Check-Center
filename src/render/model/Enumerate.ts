@@ -10,14 +10,26 @@ export enum STORE_TYPE {
   MAINTO = 'mainto'
 }
 
-/**
- * @description 身份中文
- */
+// 门店中文
 export const storeTypeToCN = {
   [STORE_TYPE.BLUE]: '蓝标',
   [STORE_TYPE.MASTER]: '大师',
   [STORE_TYPE.KIDS]: 'kids',
   [STORE_TYPE.MAINTO]: '缦图'
+}
+
+/**
+ * @description 抽查类型
+ */
+export enum SPOT_TYPE {
+  MAKEUP = 'makeup',
+  PHOTOGRAPHY = 'photography'
+}
+
+// 抽查类型中文
+export const spotTypeCN = {
+  [SPOT_TYPE.MAKEUP]: '化妆',
+  [SPOT_TYPE.PHOTOGRAPHY]: '摄影',
 }
 
 

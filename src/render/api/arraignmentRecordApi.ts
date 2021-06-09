@@ -1,5 +1,6 @@
 import axios from '@/plugins/axios'
-import SpotCheckRecordModel, { SPOT_TYPE } from '@/model/SpotCheckRecordModel'
+import { SPOT_TYPE } from '@/model/Enumerate'
+import SpotCheckRecordModel from '@/model/SpotCheckRecordModel'
 import AuditSpotPhotoModel from '@/model/AuditSpotPhotoModel'
 
 export interface IgetAuditRecordTotalParams {
