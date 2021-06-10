@@ -178,6 +178,5 @@ export async function getHistoryRecords (params: IgetHistoryRecordsParams): Prom
     list: listData,
     total: res.msg.data[0].total
   }
-  // console.log("🚀 ~ file: evaluateHistoryApi.ts ~ line 181 ~ getHistoryRecords ~ createData", createData)
   return createData
 }

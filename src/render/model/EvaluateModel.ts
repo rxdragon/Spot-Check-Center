@@ -1,21 +1,20 @@
 import StreamOrderModel from '@/model/StreamOrderModel'
 import PoolPhotoModel from '@/model/PoolPhotoModel'
-import PoolAppealsModel from '@/model/PoolAppealsModel'
+import EvaluateTagsModel from '@/model/EvaluateTagsModel'
+// interface ITagParent {
+//   id: number
+//   name: string
+//   scoreType: string
+//   scoreTypeId: number
+// }
 
-interface ITagParent {
-  id: number
-  name: string
-  scoreType: string
-  scoreTypeId: number
-}
-
-interface ITag {
-  id: number
-  name: string
-  parent: ITagParent
-  score: number | string
-  type: string
-}
+// interface ITag {
+//   id: number
+//   name: string
+//   parent: ITagParent
+//   score: number | string
+//   type: string
+// }
 
 interface IScoreConfigs {
   id: number
@@ -40,17 +39,15 @@ export default class EvaluateModel {
   base: any
   id: number
   businessId: number | string
-  tag: ITag[]
+  tagInfo?: EvaluateTagsModel
   commitInfo?: ICommitInfo
   streamInfo?: StreamOrderModel
   photoList?: PoolPhotoModel[]
-  appealInfo?: PoolAppealsModel
 
   constructor (data: any) {
     this.base = data
     this.id = _.get(data, 'id') || 112
     this.businessId = 'C202012345678'
-    this.tag = _.get(data, 'tags')
     this.commitInfo = {
       status: 'xxx',
       totalScore: 90,
@@ -65,6 +62,7 @@ export default class EvaluateModel {
     }
     this.getStreamInfo()
     this.getPoolPhotoList()
+    this.getTags()
   }
 
   // 获取流水信息
@@ -79,9 +77,8 @@ export default class EvaluateModel {
     this.photoList = photoList.map((photoItem: any) => new PoolPhotoModel(photoItem))
   }
 
-  // 获取申述相关信息
-  getPoolAppealsModel (externalAppealInfo: any) {
-    const appealInfo = externalAppealInfo || _.get(this.base, 'appeal') || {}
-    this.appealInfo = new PoolAppealsModel(appealInfo)
+  // 获取评价信息
+  getTags () {
+    this.tagInfo = new EvaluateTagsModel(this.base)
   }
 }

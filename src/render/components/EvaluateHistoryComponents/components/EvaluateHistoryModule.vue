@@ -34,19 +34,24 @@
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">订单号：{{ streamInfo.orderNum }}</div>
       <div class="info-item">产品名称：{{ streamInfo.productName }}</div>
-      <div class="info-item">照片张数：{{ streamInfo.productName }}</div>
-      <div class="info-item">门店类型：{{ streamInfo.storeName }}</div>
+      <div class="info-item">照片张数：{{ streamInfo.photoCount }}</div>
+      <div class="info-item">
+        门店类型：{{ streamInfo.storeTypeCN }}
+        <div class="standard-icon">
+          <div :class="`iconmap-standard-${streamInfo.storeType}`" />
+        </div>
+      </div>
       <div class="info-item">门店：{{ streamInfo.storeName }}</div>
     </div>
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">
-        化妆师：{{ type === SPOT_TYPE.MAKEUP ? recordInfo.dresserName : recordInfo.photographer }}
+        化妆师：{{ dresserInfo.name }}
       </div>
       <div class="info-item">
-        化妆督导：{{ type === SPOT_TYPE.MAKEUP ? recordInfo.streamInfo.dresser : recordInfo.streamInfo.photographer }}
+        化妆督导：{{ dresserInfo.supervisorName }}
       </div>
       <div class="info-item">
-        化妆专家：{{ type === SPOT_TYPE.MAKEUP ? recordInfo.streamInfo.dresser : recordInfo.streamInfo.photographer }}
+        化妆专家：{{ dresserInfo.expertsName }}
       </div>
     </div>
     <div class="order-info grid grid-cols-1 mb-4">
@@ -62,15 +67,26 @@
     <div class="panel-title grid grid-cols-12 mb-6">
       <div class="col-start-1 col-end-4">评价信息</div>
       <div class="evaluate-title-info grid grid-cols-3 col-end-13 col-span-4">
-        <div>总评分：</div>
-        <div>评分人：</div>
+        <div>总评分：{{ tagInfo.totalScore }}</div>
+        <div>评分人：{{ tagInfo.raterName }}</div>
         <div>
           <el-button size="small" class="change-evaluate-btn" type="primary">修改评分</el-button>
         </div>
       </div>
     </div>
     <div class="order-info grid grid-cols-4 mb-4">
-      <div class="info-item">评价标签：{{ recordInfo.streamInfo.orderNum }}</div>
+      <div class="info-item">
+        评价标签：
+        <el-tag
+          v-for="tagItem in tagInfo.tags"
+          :key="tagItem.id"
+          class="text-center"
+          :class="['type-tag', tagItem.type]"
+          size="medium"
+        >
+          {{ tagItem.name }}
+        </el-tag>
+      </div>
     </div>
   </div>
 </template>
@@ -98,7 +114,7 @@ export default defineComponent({
     const onSelectPhoto = (photoIndex: string | number | symbol) => {
       const photoData = props.recordInfo.photoList.map((photoItem: any, index: number) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { baseData, photoList, ...orderInfo } = props.recordInfo
+        const { baseData, photoList, ...orderInfo } = props.recordInfo.streamInfo
         return {
           title: `第${index + 1}张图`,
           ...photoItem,
@@ -124,12 +140,22 @@ export default defineComponent({
       return props.recordInfo.streamInfo.note
     })
 
+    const dresserInfo = computed (() => {
+      return props.recordInfo.streamInfo.dresserInfo
+    })
+
+    const tagInfo = computed (() => {
+      return props.recordInfo.tagInfo
+    })
+    
     return {
       onSelectPhoto,
       type,
       photoList,
       streamInfo,
-      note
+      note,
+      dresserInfo,
+      tagInfo
     }
   }
 })

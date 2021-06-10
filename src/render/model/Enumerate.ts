@@ -82,3 +82,10 @@ export const QualityReportRangeToCN = {
   [QUALITY_REPORT_RANGE.REGION]: '区域',
   [QUALITY_REPORT_RANGE.ALL]: '全员',
 }
+
+export const CNLevelToType = {
+  '小': 'small',
+  '中': 'middle',
+  '拔草': 'pull',
+  '种草': 'plant'
+}
