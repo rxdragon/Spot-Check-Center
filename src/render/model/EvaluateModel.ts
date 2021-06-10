@@ -60,7 +60,7 @@ export default class EvaluateModel {
   // 获取照片相关数据
   getPoolPhotoList () {
     const photoList = _.get(this.base, 'photo') || _.get(this.base, 'photos') || []
-    this.photoList = photoList.map((photoItem: any) => new AuditSpotPhotoModel(photoItem))
+    this.photoList = photoList.map((photoItem: any) => new AuditSpotPhotoModel(photoItem.photo_quality))
   }
 
   // 评价信息

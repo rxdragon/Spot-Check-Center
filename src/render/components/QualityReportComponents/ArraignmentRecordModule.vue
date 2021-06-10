@@ -16,7 +16,7 @@
         :src="photoItem.path"
         version=""
         class="mr-4"
-        @click="onSelectPhoto(recordInfo,photoIndex)"
+        @click="onSelectPhoto(recordInfo, photoIndex)"
       >
         <template #otherInfo>
           <div class="audio-ino">

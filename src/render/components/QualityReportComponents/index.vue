@@ -56,7 +56,7 @@
           <ScopeSearch v-model="scopeData" />
         </div>
       </el-col>
-      <el-col v-if="activeName === 'ArraignmentRecordModule'" v-bind="{...colConfig}">
+      <el-col v-bind="{...colConfig}">
         <div class="search-item">
           <span>AI标签</span>
           <AiTagSelect v-model="aiTag" />
@@ -87,26 +87,6 @@
     </keep-alive>
   </div>
 
-
-
-  <!-- <div class="module-panel mt-6">
-    <div class="spot-info grid grid-cols-4">
-      <div class="info-item">审核总单量<span class="num">{{ auditRecordTotal.auditRecordCount }}单</span></div>
-      <div class="info-item">审核总张数<span class="num">{{ auditRecordTotal.photoQualityCount }}张</span></div>
-      <div class="info-item">问题单量<span class="num text-red-400">{{ auditRecordTotal.auditRecordProblemCount }}单</span></div>
-      <div class="info-item">问题张数<span class="num text-red-400">{{ auditRecordTotal.photoQualityProblemCount }}张</span></div>
-    </div>
-    <div class="arraignment-record-list">
-      <ArraignmentRecordModule
-        v-for="item in arraignmentRecordList"
-        :key="item.id"
-        class="mt-6"
-        :record-info="item"
-        @previewPhoto="onPreviewPhotoList"
-      />
-    </div>
-
-  </div> -->
   <!-- 分页 -->
   <div class="page-box">
     <el-pagination
@@ -229,7 +209,7 @@ export default defineComponent({
       photoQualityProblemCount: 0
     })
 
-    /** 获取质检报告 */
+    /** 获取质检报告评分明细 */
     const getSpotCheckResult = async () => {
       const req: QualityApi.IgetQualityParams = {
         page: pager.page,
@@ -293,7 +273,8 @@ export default defineComponent({
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
-    searchData(1)
+    getSpotCheckResult()
+    getAuditRecords()
 
     /** 监听预览图片 */
     const showPreview = ref(false)

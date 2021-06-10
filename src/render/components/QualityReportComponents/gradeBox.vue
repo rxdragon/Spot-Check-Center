@@ -17,10 +17,10 @@
           <div class="photo-list grade-photo-list overflow-x-auto overscroll-x-contain">
             <div v-for="(photoItem, photoIndex) in item.photoList" :key="photoItem.id" class="photo-box">
               <PhotoBox
-                :src="photoItem.src"
+                :src="photoItem.path"
                 version=""
                 class="mr-4"
-                @click="onSelectPhoto(photoIndex)"
+                @click="onSelectPhoto(item, photoIndex)"
               >
                 <template #otherInfo>
                   <div class="audio-ino">
@@ -63,8 +63,8 @@
           </div>
           <div class="base-info panel-row">
             <span class="order-info w-44"><span class="order-info-title">化妆师：</span>{{ item.streamInfo.dresserName }}</span>
-            <span class="order-info w-44"><span class="order-info-title">化妆督导：</span>{{ 'q' }}</span>
-            <span class="order-info w-44"><span class="order-info-title">化妆专家：</span>{{ 'q' }}</span>
+            <span class="order-info w-44"><span class="order-info-title">化妆督导：</span>{{ item.streamInfo.dresserInfo.supervisorName }}</span>
+            <span class="order-info w-44"><span class="order-info-title">化妆专家：</span>{{ item.streamInfo.dresserInfo.expertsName }}</span>
           </div>
           <div class="base-info panel-row">
             <span class="order-info"><span class="order-info-title">订单备注：</span>{{ item.streamInfo.note.orderNote }}</span>
@@ -131,7 +131,7 @@ export default defineComponent({
   props: {
     photoInfo: { type: Object, default: () => ({}) } // 照片数据
   },
-  setup () {
+  setup (props, { emit }) {
     const routeName = ref('') /* 路由名字 */
     const gradeInfo = ref('')
     const showGradePreview = ref('') /* 是否显示大概概览 */
@@ -140,8 +140,21 @@ export default defineComponent({
     const gradeBoxData: any = inject('gradeBoxData')
     // const SPOT_TYPE = ref(SPOT_TYPE)
 
-    const onSelectPhoto = (photoIndex: string | number | symbol) => {
-      return photoIndex
+    const onSelectPhoto = (recordInfo: any, photoIndex: string | number | symbol) => {
+      const photoData = recordInfo.photoList.map((photoItem: any, index: number) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { baseData, photoList, ...orderInfo } = recordInfo.streamInfo
+        return {
+          title: `第${index + 1}张图`,
+          ...photoItem,
+          orderInfo
+        }
+      })
+      const data = {
+        photoData,
+        photoIndex
+      }
+      emit('previewPhoto', data)
     }
 
     /**
@@ -173,18 +186,6 @@ export default defineComponent({
       onSelectPhoto,
       switchAppealPop,
       goAppeal
-    }
-  },
-  computed: {
-    photoInfoData () {
-      return this.photoInfo
-    },
-    photoVersionList () {
-      const photoVersionInfo = this.photoInfo.photoInfo.photoSpotCheckVersion
-      photoVersionInfo.forEach((versionItem: any) => {
-        versionItem.phototag = this.photoInfo.photoData.tags
-      })
-      return photoVersionInfo
     }
   },
   methods: {
@@ -468,6 +469,12 @@ export default defineComponent({
   .button-box {
     margin-top: 20px;
     text-align: left;
+  }
+
+  .audio-ino {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
   }
 }
 </style>

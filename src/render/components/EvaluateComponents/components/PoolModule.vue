@@ -1,52 +1,73 @@
 <template>
   <div class="pool-module module-panel mb-6">
-    <div class="module-title">
-      <div class="title-chunk spot-num">编号：100-1</div>
-      <div class="title-chunk product-name">产品名称：精致证件照</div>
+    <div v-if="poolItemData.streamInfo" class="module-title">
+      <div class="title-chunk spot-num">编号：{{ poolItemData.streamInfo.spotNum }}</div>
+      <div class="title-chunk product-name">产品名称：{{ poolItemData.streamInfo.productName }}</div>
       <div class="title-chunk store-type">
-        门店类型：蓝标
+        门店类型：{{ poolItemData.streamInfo.storeTypeCN }}
         <div class="standard-icon">
-          <div :class="`iconmap-standard-blue`" />
+          <div :class="`iconmap-standard-${poolItemData.streamInfo.storeType}`" />
         </div>
       </div>
     </div>
     <div class="photo-list overflow-x-auto overscroll-x-contain">
       <PhotoBox
+        v-for="(photoItem, photoIndex) in poolItemData.photoList"
+        :key="photoItem.id"
         version=""
         class="mr-4"
-        src="https://cloud-dev.cdn-qn.hzmantu.com/compress/2020/06/17/ljj3UXg3uaY_C0DJ4kBsitaVV8UJ.jpg"
-      />
-      <PhotoBox
-        version=""
-        class="mr-4"
-        src="https://cloud-dev.cdn-qn.hzmantu.com/compress/2020/06/17/ljj3UXg3uaY_C0DJ4kBsitaVV8UJ.jpg"
-      />
-      <PhotoBox
-        version=""
-        class="mr-4"
-        src="https://cloud-dev.cdn-qn.hzmantu.com/compress/2020/06/17/ljj3UXg3uaY_C0DJ4kBsitaVV8UJ.jpg"
-      />
-      <PhotoBox
-        version=""
-        class="mr-4"
-        src="https://cloud-dev.cdn-qn.hzmantu.com/compress/2020/06/17/ljj3UXg3uaY_C0DJ4kBsitaVV8UJ.jpg"
-      />
-      <PhotoBox
-        version=""
-        class="mr-4"
-        src="https://cloud-dev.cdn-qn.hzmantu.com/compress/2020/06/17/ljj3UXg3uaY_C0DJ4kBsitaVV8UJ.jpg"
+        :src="photoItem.path"
+        @click="onSelectPhoto(photoIndex)"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import type PoolRecordModel from '@/model/PoolRecordModel'
+import { SPOT_TYPE } from '@/model/Enumerate'
+
+import { defineComponent, PropType, inject } from 'vue'
 import PhotoBox from '@/components/PhotoBox/index.vue'
 
 export default defineComponent({
   name: 'PoolModule',
-  components: { PhotoBox }
+  components: { PhotoBox },
+  props: {
+    poolItemData: { type: Object as PropType<PoolRecordModel>, required: true }
+  },
+  emits: ['evaluatePhoto'],
+  setup (props, { emit }) {
+    const type = inject('type') as SPOT_TYPE
+
+    const onSelectPhoto = (photoIndex: number) => {
+      const photoData = props.poolItemData.photoList?.map((photoItem, index: number) => {
+        const { streamInfo } = props.poolItemData
+        const photoInfo = {
+          ...streamInfo,
+          aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
+        }
+        return {
+          // todo photoModel 增加完成src
+          title: `原片（${index + 1}/${props.poolItemData.photoList?.length}）`,
+          src: photoItem.path,
+          photoInfo,
+          markPath: '',
+          markJson: '',
+          markBase: ''
+        }
+      })
+
+      const data = {
+        photoData,
+        photoIndex
+      }
+      emit('evaluatePhoto', data)
+    }
+    return {
+      onSelectPhoto
+    }
+  }
 })
 </script>
 
