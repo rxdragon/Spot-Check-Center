@@ -99,40 +99,11 @@ export default defineComponent({
       total: 10
     })
 
-    /** 获取提审统计数据 */
-    const auditRecordTotal = ref({
-      auditRecordCount: 0,
-      auditRecordProblemCount: 0,
-      photoQualityCount: 0,
-      photoQualityProblemCount: 0
-    })
-    /**
-     * @description 获取统计信息
-     */
-    const getAuditRecordTotal = async () => {
-      const req: EvaluateHistoryApi.IgetAuditRecordTotalParams = {
-        type,
-      }
-
-      if (timeSpan.value) {
-        req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
-        req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
-      }
-
-      if (orderNum.value) {
-        req.cloudOrderNum = orderNum.value
-        delete req.startAt
-        delete req.endAt
-      }
-      const res = await EvaluateHistoryApi.getAuditRecordTotal(req)
-      auditRecordTotal.value = reactive(res)
-    }
-
     /** 提审记录列表相关数据 */
     const arraignmentRecordList = ref<any>([])
     // 订单搜索
-    const getAuditRecords = async () => {
-      const req: EvaluateHistoryApi.IgetAuditRecordsParams = {
+    const getHistoryRecords = async () => {
+      const req: EvaluateHistoryApi.IgetHistoryRecordsParams = {
         type,
         page: pager.page,
         pageSize: pager.pageSize
@@ -146,7 +117,7 @@ export default defineComponent({
         delete req.startAt
         delete req.endAt
       }
-      const res = await EvaluateHistoryApi.getAuditRecords(req)
+      const res = await EvaluateHistoryApi.getHistoryRecords(req)
       pager.total = res.total
       arraignmentRecordList.value = res.list
     }
@@ -157,10 +128,7 @@ export default defineComponent({
       if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
       try {
         store.dispatch('settingStore/showLoading', route.name)
-        Promise.all([
-          getAuditRecordTotal(),
-          getAuditRecords()
-        ])
+        Promise.all([getHistoryRecords()])
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
@@ -189,7 +157,6 @@ export default defineComponent({
       orderNum,
       pager,
       arraignmentRecordList,
-      auditRecordTotal,
       searchData,
       handlePage,
       showPreview,

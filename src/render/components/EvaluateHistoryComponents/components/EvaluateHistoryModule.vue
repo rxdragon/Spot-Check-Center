@@ -3,7 +3,7 @@
     <div class="panel-title mb-6">照片信息</div>
     <div class="photo-list overflow-x-auto overscroll-x-contain">
       <PhotoBox
-        v-for="(photoItem, photoIndex) in recordInfo.photoList"
+        v-for="(photoItem, photoIndex) in photoList"
         :key="photoItem.id"
         :src="photoItem.path"
         version=""
@@ -32,31 +32,31 @@
     <el-divider />
     <div class="panel-title mb-6">订单信息</div>
     <div class="order-info grid grid-cols-5 mb-4">
-      <div class="info-item">订单号：{{ recordInfo.orderNum }}</div>
-      <div class="info-item">产品名称：{{ recordInfo.productName }}</div>
-      <div class="info-item">照片张数：{{ recordInfo.productName }}</div>
-      <div class="info-item">门店类型：{{ recordInfo.storeName }}</div>
-      <div class="info-item">门店：{{ recordInfo.storeName }}</div>
+      <div class="info-item">订单号：{{ streamInfo.orderNum }}</div>
+      <div class="info-item">产品名称：{{ streamInfo.productName }}</div>
+      <div class="info-item">照片张数：{{ streamInfo.productName }}</div>
+      <div class="info-item">门店类型：{{ streamInfo.storeName }}</div>
+      <div class="info-item">门店：{{ streamInfo.storeName }}</div>
     </div>
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">
-        {{ type === SPOT_TYPE.MAKEUP ? '化妆师' : '摄影师' }}：{{ type === SPOT_TYPE.MAKEUP ? recordInfo.dresser : recordInfo.photographer }}
+        化妆师：{{ type === SPOT_TYPE.MAKEUP ? recordInfo.dresserName : recordInfo.photographer }}
       </div>
       <div class="info-item">
-        {{ type === SPOT_TYPE.MAKEUP ? '化妆师' : '摄影师' }}：{{ type === SPOT_TYPE.MAKEUP ? recordInfo.dresser : recordInfo.photographer }}
+        化妆督导：{{ type === SPOT_TYPE.MAKEUP ? recordInfo.streamInfo.dresser : recordInfo.streamInfo.photographer }}
       </div>
       <div class="info-item">
-        {{ type === SPOT_TYPE.MAKEUP ? '化妆师' : '摄影师' }}：{{ type === SPOT_TYPE.MAKEUP ? recordInfo.dresser : recordInfo.photographer }}
+        化妆专家：{{ type === SPOT_TYPE.MAKEUP ? recordInfo.streamInfo.dresser : recordInfo.streamInfo.photographer }}
       </div>
     </div>
     <div class="order-info grid grid-cols-1 mb-4">
-      <div class="info-item">订单备注：{{ recordInfo.orderNum }}</div>
+      <div class="info-item">订单备注：{{ note.orderNote }}</div>
     </div>
     <div class="order-info grid grid-cols-1 mb-4">
-      <div class="info-item">摄影备注：{{ recordInfo.orderNum }}</div>
+      <div class="info-item">摄影备注：{{ note.photographyNote }}</div>
     </div>
     <div class="order-info grid grid-cols-1 mb-4">
-      <div class="info-item">化妆备注：{{ recordInfo.orderNum }}</div>
+      <div class="info-item">化妆备注：{{ note.dresserNote }}</div>
     </div>
     <el-divider />
     <div class="panel-title grid grid-cols-12 mb-6">
@@ -70,13 +70,13 @@
       </div>
     </div>
     <div class="order-info grid grid-cols-4 mb-4">
-      <div class="info-item">评价标签：{{ recordInfo.orderNum }}</div>
+      <div class="info-item">评价标签：{{ recordInfo.streamInfo.orderNum }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from 'vue'
+import { computed, defineComponent, inject } from 'vue'
 import { SPOT_TYPE } from '@/model/Enumerate'
 
 import PhotoBox from '@/components/PhotoBox/index.vue'
@@ -112,9 +112,24 @@ export default defineComponent({
       emit('previewPhoto', data)
     }
 
+    const photoList = computed (() => {
+      return props.recordInfo.photoList
+    })
+
+    const streamInfo = computed (() => {
+      return props.recordInfo.streamInfo
+    })
+
+    const note = computed (() => {
+      return props.recordInfo.streamInfo.note
+    })
+
     return {
       onSelectPhoto,
-      type
+      type,
+      photoList,
+      streamInfo,
+      note
     }
   }
 })
