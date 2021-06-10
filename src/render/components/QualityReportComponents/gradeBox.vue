@@ -2,12 +2,11 @@
   <div class="divide-y-4 divide-gray-200">
     <div
       v-for="(item, index) in gradeBoxData"
-      :key="item._id"
+      :key="item.id"
       class="grade-box mb-6"
       :class="{'pt-6': index !== 0}"
     >
       <!-- 列表 -->
-      
       <!-- 照片信息 -->
       <div class="photo-panel mb-6">
         <div class="panel-title">
@@ -88,7 +87,7 @@
               size="small"
               class="change-evaluate-btn"
               type="primary"
-              @click="goAppeal(item.tagInfo)"
+              @click="goAppeal(item.tagInfo, item.id)"
             >
               我要申诉
             </el-button>
@@ -111,7 +110,7 @@
     </div>
     <AppealPop
       ref="appealPopRef"
-      :appeal-tag-info="appealTagInfo"
+      :appeal-info="appealInfo"
       :dialog-visible="dialogVisible"
       @switchAppealPop="switchAppealPop"
     />
@@ -127,7 +126,6 @@ import { SPOT_TYPE, storeTypeToCN } from '@/model/Enumerate'
 export default defineComponent({
   name: 'GradeBox',
   components: { PhotoBox, AppealPop },
-  inject: ['cloudType'],
   props: {
     photoInfo: { type: Object, default: () => ({}) } // 照片数据
   },
@@ -161,14 +159,13 @@ export default defineComponent({
      * 申诉弹窗相关
     */
     const dialogVisible = ref(false)
-    const appealTagInfo = ref('')
+    const appealInfo = ref('')
     const switchAppealPop = () => {
       dialogVisible.value = !dialogVisible.value
-      // console.log(appealPopRef.value.dialogVisible)
     }
-    const goAppeal = (info: any) => {
-      appealTagInfo.value = JSON.stringify(info)
-
+    const goAppeal = (info: any, id: string) => {
+      info.id = id
+      appealInfo.value = JSON.stringify(info)
       switchAppealPop()
     }
 
@@ -182,7 +179,7 @@ export default defineComponent({
       SPOT_TYPE,
       storeTypeToCN,
       dialogVisible,
-      appealTagInfo,
+      appealInfo,
       onSelectPhoto,
       switchAppealPop,
       goAppeal

@@ -1,5 +1,5 @@
 import { userBaseInfo, authorityInfo } from '@/api/userApi'
-import { IFilterStaffData } from '@/api/staff'
+import { IFilterSelectData } from '@/api/staff'
 
 const isMicroSPA = Boolean(window.__POWERED_BY_QIANKUN__)
 
@@ -117,7 +117,7 @@ export function getUserPermission (): authorityInfo[] | null {
 /**
  * @description 保存伙伴数据
  */
-export function saveStaffList (staffInfo: IFilterStaffData[]) {
+export function saveStaffList (staffInfo: IFilterSelectData[]) {
   const saveKey = `staff-info`
   const data = JSON.stringify(staffInfo)
   localStorage.setItem(saveKey, data)

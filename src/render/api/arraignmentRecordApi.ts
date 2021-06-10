@@ -53,8 +53,14 @@ export interface IgetAuditRecordsParams {
   startAt?: string
   endAt?: string
   cloudOrderNum?: string
+  auditState?: string
   page: number
   pageSize: number
+  supervisorArr?: string[]
+  staffIds?: string[]
+  orderNum?: string
+  onlyNew?: boolean,
+  onlyOld?: boolean
 }
 
 interface ISpotCheckRecordList extends SpotCheckRecordModel {

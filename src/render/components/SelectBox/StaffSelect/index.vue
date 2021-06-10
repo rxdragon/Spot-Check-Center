@@ -1,14 +1,12 @@
 <template>
   <div class="staff-select">
     <el-cascader
-      ref="staffCascader"
       :options="options"
       :props="propsValue"
       collapse-tags
       v-bind="$attrs"
       placeholder="请选择伙伴"
       :show-all-levels="false"
-      :popper-append-to-body="false"
       :disabled="loadingDown"
       filterable
       clearable
@@ -56,15 +54,6 @@ export default defineComponent({
     
     return {
       options, loadingDown, type, propsValue
-    }
-  },
-  methods: {
-    // TODO: lj
-    /**
-    * @description 获取选中节点
-    */
-    getCheckedStaff () {
-      return this.$refs["staffCascader"].getCheckedNodes(true)
     }
   }
 })

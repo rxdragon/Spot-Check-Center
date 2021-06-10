@@ -91,7 +91,7 @@
   <div class="page-box">
     <el-pagination
       v-model:current-page="pager.page"
-      :hide-on-single-page="false"
+      :hide-on-single-page="true"
       :page-size="pager.pageSize"
       layout="prev, pager, next"
       :total="pager.total"
@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive, Ref, ref, provide } from 'vue'
+import { defineComponent, inject, reactive, Ref, ref, provide, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
@@ -210,6 +210,7 @@ export default defineComponent({
     })
 
     /** 获取质检报告评分明细 */
+    let spotPageTotal = 0
     const getSpotCheckResult = async () => {
       const req: QualityApi.IgetQualityParams = {
         page: pager.page,
@@ -221,7 +222,7 @@ export default defineComponent({
         score: scopeData.value,
         orderNum: orderNum.value,
         onlyNew: onlyNew.value,
-        onlyOld: onlyNew.value,
+        onlyOld: onlyOld.value,
         startTime: '',
         endTime: ''
       }
@@ -230,31 +231,35 @@ export default defineComponent({
         req.endTime = TimeUtil.searchEndTime(timeSpan.value[1])
       }
       const res = await QualityApi.getSpotCheckResult(req, axiosType.value)
-      gradeBoxData.value = res.list
-      pager.total = res.total
-    }
+      spotPageTotal = res.total
+      gradeBoxData.value = res.list }
 
     /**
      * @description 获取AI报告
      */
     const arraignmentRecordList = ref<any>([])
+    let aiPageTotal = 0
     const getAuditRecords = async () => {
       const req: ArraignmentRecordApi.IgetAuditRecordsParams = {
         type,
         page: pager.page,
-        pageSize: pager.pageSize
+        pageSize: pager.pageSize,
+        startAt: '',
+        endAt: '',
+        cloudOrderNum: orderNum.value,
+        auditState: aiTag.value,
+        supervisorArr: jobContentIds.value,
+        staffIds: staffs.value,
+        orderNum: orderNum.value,
+        onlyNew: onlyNew.value,
+        onlyOld: onlyOld.value,
       }
-      if (timeSpan.value) {
-        req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
-        req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
-      }
-      if (orderNum.value) {
-        req.cloudOrderNum = orderNum.value
-        delete req.startAt
-        delete req.endAt
+      if (aiTimeSpan.value) {
+        req.startAt = TimeUtil.searchStartTime(aiTimeSpan.value[0])
+        req.endAt = TimeUtil.searchEndTime(aiTimeSpan.value[1])
       }
       const res = await ArraignmentRecordApi.getAuditRecords(req)
-      pager.total = res.total
+      aiPageTotal = res.total
       arraignmentRecordList.value = res.list
     }
     
@@ -275,6 +280,11 @@ export default defineComponent({
     }
     getSpotCheckResult()
     getAuditRecords()
+
+    watch(activeName, (val) => {
+      if (val === 'ArraignmentRecordModule') pager.total = aiPageTotal
+      if (val === 'GradeBox') pager.total = spotPageTotal
+    })
 
     /** 监听预览图片 */
     const showPreview = ref(false)
