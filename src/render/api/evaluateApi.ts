@@ -7,11 +7,17 @@ import { v4 as uuid } from 'uuid'
 import { IgetScoreConfigListRes, ILabelClass, ILabelChildren } from '@/model/GradeLabelModel'
 import PoolRecordModel from '@/model/PoolRecordModel'
 
+// 请求api接口
+export interface IEvaluateAPi {
+  type: any
+  organizationType: ORGANIZATION_TYPE
+}
+
 /**
  * @description 更具机构和抽片类型获取不同地址
  * @returns 
  */
-function getApiUrl (type: SPOT_TYPE, organizationType: ORGANIZATION_TYPE) {
+export function getApiUrl (type: SPOT_TYPE, organizationType: ORGANIZATION_TYPE) {
   switch (`${organizationType}${type}`) {
     case `${ORGANIZATION_TYPE.HIMO}${SPOT_TYPE.MAKEUP}`:
       return '/project_photo_quality/himoMakeupPool'
@@ -26,8 +32,6 @@ function getApiUrl (type: SPOT_TYPE, organizationType: ORGANIZATION_TYPE) {
   }
 }
 
-
-
 /**
  * @description 获取评分配置标签
  * @method GET
@@ -36,6 +40,7 @@ function getApiUrl (type: SPOT_TYPE, organizationType: ORGANIZATION_TYPE) {
  * @version @version 1.0.0
  */
 export async function getScoreConfigList (): Promise<IgetScoreConfigListRes> {
+  // TODO:cf 增加类型请求接口
   const url = '/project_cloud/checkPool' + '/getScoreConfig'
   const res: any = await axios({
     url,
@@ -85,12 +90,10 @@ export async function getScoreConfigList (): Promise<IgetScoreConfigListRes> {
 /**
  * @description 抽片逻辑
  */
-interface ITakePhotoParams {
+interface ITakePhotoParams extends IEvaluateAPi {
   productIds: Array<string | number>
   formalStaffCount: string | number
   newStaffCount: string | number
-  type: SPOT_TYPE
-  organizationType: ORGANIZATION_TYPE
 }
 
 export async function takePhoto (params: ITakePhotoParams): Promise<string> {
@@ -106,10 +109,8 @@ export async function takePhoto (params: ITakePhotoParams): Promise<string> {
 /**
  * @description 获取抽片结果
  */
-interface IGetSpotCheckResultParams {
+interface IGetSpotCheckResultParams extends IEvaluateAPi {
   uuid: string
-  type: SPOT_TYPE
-  organizationType: ORGANIZATION_TYPE
 }
 interface IGetSpotCheckResultRes {
   formalStaffNum: number
@@ -143,14 +144,12 @@ export async function getSpotCheckResult (params: IGetSpotCheckResultParams): Pr
 /**
  * @description 获取抽片结果列表
  */
-interface IGetSpotCheckResultListParams {
+interface IGetSpotCheckResultListParams extends IEvaluateAPi {
   uuid: string
   page: number
   pageSize: number
   skip: number
   limit: number
-  type: SPOT_TYPE
-  organizationType: ORGANIZATION_TYPE
 }
 interface IGetSpotCheckResultListRes {
   total: number
@@ -423,16 +422,12 @@ export async function getSpotCheckResultList (params: IGetSpotCheckResultListPar
 /**
  * @description 获取今日抽片指标
  */
-interface IGetTodayEvaluateCountParams {
-  type: SPOT_TYPE
-  organizationType: ORGANIZATION_TYPE
-}
 interface IGetTodayEvaluateCountRes {
   evaluationPhotoNum: number
   evaluationStreamNum: number
 }
 
-export async function getTodayEvaluateCount (params: IGetTodayEvaluateCountParams): Promise<IGetTodayEvaluateCountRes> {
+export async function getTodayEvaluateCount (params: IEvaluateAPi): Promise<IGetTodayEvaluateCountRes> {
   // const url = `${getApiUrl(params.type, params.organizationType)}/getTodayEvaluateCount`
   // const res: any = axios({
   //   url,
@@ -450,12 +445,7 @@ export async function getTodayEvaluateCount (params: IGetTodayEvaluateCountParam
 /**
  * @description 获取今日是否有抽片数据
  */
-interface IGetHaveSpotCheckResult {
-  type: SPOT_TYPE
-  organizationType: ORGANIZATION_TYPE
-}
-
-export async function getHaveSpotCheckResult (params: IGetHaveSpotCheckResult): Promise<string> {
+export async function getHaveSpotCheckResult (params: IEvaluateAPi): Promise<string> {
   // const url = `${getApiUrl(params.type, params.organizationType)}/getHaveSpotCheckResult`
   // const res: any = axios({
   //   url,
@@ -464,5 +454,67 @@ export async function getHaveSpotCheckResult (params: IGetHaveSpotCheckResult): 
 
   // TODo:cf mock
   const res = 'uuid'
+  return res
+}
+
+/**
+ * @description 跳过伙伴
+ * @param params 
+ */
+interface ISkipStaffParams extends IEvaluateAPi {
+  staffIds: number[]
+  poolItemId: string
+}
+
+export async function skipStaff (params: ISkipStaffParams): Promise<boolean> {
+  const url = `${getApiUrl(params.type, params.organizationType)}/skipStaff`
+  const res: any = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
+  return res
+}
+
+/**
+ * @description 换一单
+ * @param params 
+ */
+interface IChangePoolParams extends IEvaluateAPi {
+  poolItemId: string
+}
+export async function changePool (params: IChangePoolParams): Promise<boolean> {
+  const url = `${getApiUrl(params.type, params.organizationType)}/changeItem`
+  const res: any = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
+  return res
+}
+
+/**
+ * @description 提交评分配置
+ * @param params 
+ */
+interface IEmptyPoolByStaffIdParams extends IEvaluateAPi {
+  photos: {
+    markPath: string
+    photoId: number
+  }[]
+  poolItemId: string
+  tags: {
+    id: number
+    score: number
+  }[]
+}
+export async function emptyPoolByStaffId (params: IEmptyPoolByStaffIdParams): Promise<boolean> {
+  const url = `${getApiUrl(params.type, params.organizationType)}/emptyPoolByStaffId`
+  const res: any = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
+
   return res
 }

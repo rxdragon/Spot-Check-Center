@@ -1,24 +1,221 @@
 <template>
   <div class="evaluate-configuration-components">
-    评价配置 -
-    {{ type }} -
-    {{ organizationType }}
+    <div class="headle-plugins">
+      <el-popover
+        v-model:visible="showAddCategoryDialog"
+        placement="bottom-start"
+        width="420"
+        :offset="20"
+        trigger="click"
+      >
+        <div class="grade-configuration-add-item-main">
+          <span>类别名称:</span>
+          <el-input
+            v-model="newGradeClassName"
+            v-noSpecialChar
+            class="ml-10 w150"
+            placeholder="请输入类别"
+            maxlength="5"
+          />
+          <el-button type="info" class="ml-10" @click="showAddCategoryDialog = false">取 消</el-button>
+          <el-button type="primary" @click="addGradeClass">确 定</el-button>
+        </div>
+        <template #reference>
+          <el-button type="primary">添加类别</el-button>
+        </template>
+      </el-popover>
+    </div>
+    <el-tabs v-model="activeName">
+      <el-tab-pane v-for="gradeClass in tabList" :key="gradeClass.id" :name="gradeClass.stringId">
+        <template #label>
+          <span v-if="!gradeClass.isEdit">
+            {{ gradeClass.name }}
+            <span @click.stop="openEditGradeClassName(gradeClass)"><i class="el-icon-edit-outline" /></span>
+          </span>
+          <span v-else>
+            <el-input
+              ref="editCategoryInput"
+              v-model="gradeClass.editName"
+              v-noSpecialChar
+              class="w150"
+              placeholder="请输入类别"
+              size="mini"
+              maxlength="5"
+              clearable
+              @blur="editGradeClassName(gradeClass)"
+              @keyup.enter="editGradeClassName(gradeClass)"
+            />
+          </span>
+        </template>
+        <GradeClassItem :grade-class-info="gradeClass" />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject } from 'vue'
+import { defineComponent, getCurrentInstance, inject, ref, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from '@/store/index'
+
+import GradeClassItem from './components/GradeClassItem.vue'
+import * as GradeConfigurationApi from '@/api/gradeConfigurationApi'
+import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
+import { newMessage } from '@/utils/message'
 
 export default defineComponent({
   name: 'EvaluateConfigurationComponents',
+  components: { GradeClassItem },
   setup () {
-    const type = inject('type')
-    const organizationType = inject('organizationType')
+    const vm = getCurrentInstance()
+    const store = useStore()
+    const route = useRoute()
+    const type = inject('type') as SPOT_TYPE
+    const organizationType = inject('organizationType') as ORGANIZATION_TYPE
+
+    /** 获取全部标签数据 */
+    const tabList = ref<GradeConfigurationApi.interactionGradeLabelModel[]>([])
+    const activeName = ref('')
+    const getScoreConfigByEdit = async () => {
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        const req = {
+          type,
+          organizationType
+        }
+        const res = await GradeConfigurationApi.getScoreConfigByEdit(req)
+        tabList.value = res
+        activeName.value = res[0].stringId
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
+      }
+    }
+    getScoreConfigByEdit()
+
+    /** 编辑评分类别名字 */
+    // 展示编辑窗口
+    const openEditGradeClassName = async (gradeClass: GradeConfigurationApi.interactionGradeLabelModel) => {
+      gradeClass.isEdit = true
+      await nextTick()
+      if (vm?.refs['editCategoryInput']) {
+        (vm?.refs['editCategoryInput'] as any).focus()
+      }
+    }
+    // 切换窗口全部编辑为空
+    const cancelEditSwitchTab = () => {
+      tabList.value.forEach(gradeClassItem => gradeClassItem.isEdit = false)
+    }
+    // 编辑名称
+    const editGradeClassName = async (gradeClass: GradeConfigurationApi.interactionGradeLabelModel) => {
+      if (!gradeClass.editName) {
+        newMessage.warning('请填写正确的评分类型。')
+        gradeClass.isEdit = false
+        return
+      }
+      // 名字没有改变，算作取消
+      if (gradeClass.editName === gradeClass.name) {
+        gradeClass.isEdit = false
+        return
+      }
+      if (tabList.value.some(gradeClassItem => gradeClassItem.name === gradeClass.editName)) {
+        newMessage.warning('存在相同的评分类别。')
+        return
+      }
+
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        const req = {
+          name: gradeClass.editName,
+          id: gradeClass.id,
+          type,
+          organizationType
+        }
+        await GradeConfigurationApi.editScoreTypeName(req)
+        gradeClass.name = gradeClass.editName
+        cancelEditSwitchTab()
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
+      }
+    }
+
+    /** 新增评分类别 */
+    const showAddCategoryDialog = ref(false)
+    const newGradeClassName = ref('')
+    // 添加类别
+    const addGradeClass = async () => {
+      const hasSameGradeName = tabList.value.some(gradeClassItem => gradeClassItem.name === newGradeClassName.value)
+      if (hasSameGradeName) return newMessage.warning('存在相同的评分类别')
+      if (!newGradeClassName.value) return newMessage.warning('请填写正确的类别名称')
+      const req = { name: newGradeClassName.value, type, organizationType }
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        await GradeConfigurationApi.addScoreType(req)
+        newMessage.success('评分类别创建成功')
+        await getScoreConfigByEdit()
+        showAddCategoryDialog.value = false
+        newGradeClassName.value = ''
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
+      }
+    }
 
     return {
-      type,
-      organizationType
+      tabList, activeName, editGradeClassName, openEditGradeClassName,
+      showAddCategoryDialog, newGradeClassName, addGradeClass
     }
   }
 })
 </script>
+
+<style lang="less" scoped>
+.el-tabs {
+  :deep(.el-tabs__content) {
+    overflow: inherit;
+  }
+}
+
+.tab-pane-module {
+  padding: 20px 16px 20px 16px;
+  background-color: #fff;
+}
+
+.el-tab-pane {
+  &:nth-child(1) {
+    .module-panel {
+      border-top-left-radius: 0;
+      transform: all 0.3s;
+    }
+  }
+}
+</style>
+
+<style lang="less">
+.grade-configuration-add-item-main {
+  display: flex;
+  align-items: center;
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ml-10 {
+    margin-left: 10px;
+  }
+
+  .w150 {
+    width: 150px;
+  }
+}
+
+.empty-dialog {
+  .empty-title {
+    margin-right: 12px;
+  }
+
+  .all-empty-warning {
+    margin-left: 12px;
+  }
+}
+</style>
