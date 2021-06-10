@@ -49,9 +49,6 @@ import PhotoBox from '@/components/PhotoBox/index.vue'
 export default defineComponent({
   name: 'ArraignmentRecordModule',
   components: { PhotoBox },
-  props: {
-    recordInfo: { type: Object, required: true },
-  },
   emits: ['previewPhoto'],
   data () {
     return {

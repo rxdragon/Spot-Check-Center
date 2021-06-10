@@ -23,6 +23,12 @@
  更新 代码 | 更改带啊么 | [68e16b1](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/68e16b1)
 
 
+### 🎨 代码样式
+范围|描述|commitId
+--|--|--
+ - | waning去除 | [bd88ce7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bd88ce7)
+
+
 范围|描述|commitId
 --|--|--
  - | 初始化代码 | [3408e42](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/3408e42)
