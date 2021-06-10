@@ -11,6 +11,7 @@ interface IUserStore {
 interface ISettingStore {
   imgDomain: string | undefined
   imgCompressDomain: string | undefined
+  updateDomain: string | undefined
   collapse: boolean
   loadRoutes: string[]
 }

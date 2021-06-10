@@ -1,6 +1,7 @@
-import StreamOrderModel from '@/model/StreamOrderModel'
+import StreamOrderModel, { IPagerInfo } from '@/model/StreamOrderModel'
 import PoolPhotoModel from '@/model/PoolPhotoModel'
 import PoolAppealsModel from '@/model/PoolAppealsModel'
+import { v4 as uuid } from 'uuid'
 
 interface IScoreConfigs {
   id: number
@@ -23,7 +24,7 @@ interface ICommitInfo {
 export default class PoolRecordModel {
   // TODO: cf
   base: any
-  id: number
+  id: number // 抽片记录id
   businessId: number | string
   commitInfo?: ICommitInfo
   streamInfo?: StreamOrderModel
@@ -32,36 +33,27 @@ export default class PoolRecordModel {
 
   constructor (data: any) {
     this.base = data
-    this.id = _.get(data, 'id') || 112
-    this.businessId = 'C202012345678'
-    this.commitInfo = {
-      status: 'xxx',
-      totalScore: 90,
-      scoreConfigs: {
-        id: 12312312,
-        name: 'xxxx',
-        score: '90',
-        type: '类型',
-        from: '来源',
-        isExtra: '新款应用'
-      }
-    }
+    this.id = _.get(data, '_id') || uuid()
+    this.businessId = _.get(data, 'businessId') || '-'
+    
+    // todo: cf 添加commitInfo
+    // const commitInfo = _.get(data, 'commitInfo')
   }
 
   // 获取流水信息
-  getStreamInfo (externalStreamData: any) {
-    const streamData = externalStreamData || _.get(this.base, 'streamData') || {}
-    this.streamInfo = new StreamOrderModel(streamData)
+  getStreamInfo (externalStreamData?: any, pagerInfo?: IPagerInfo) {
+    const streamData = externalStreamData || _.get(this.base, 'streamOrder') || {}
+    this.streamInfo = new StreamOrderModel(streamData, pagerInfo)
   }
 
   // 获取照片相关数据
-  getPoolPhotoList (externalPhotoData: any) {
-    const photoList = externalPhotoData || _.get(this.base, 'photo') || []
+  getPoolPhotoList (externalPhotoData?: any) {
+    const photoList = externalPhotoData || _.get(this.base, 'photos') || []
     this.photoList = photoList.map((photoItem: any) => new PoolPhotoModel(photoItem))
   }
 
   // 获取申述相关信息
-  getPoolAppealsModel (externalAppealInfo: any) {
+  getPoolAppealsModel (externalAppealInfo?: any) {
     const appealInfo = externalAppealInfo || _.get(this.base, 'appeal') || {}
     this.appealInfo = new PoolAppealsModel(appealInfo)
   }
