@@ -62,10 +62,10 @@ export default defineComponent({
     const type = inject('type')
     const auditRecordTotal = inject('auditRecordTotal')
     const arraignmentRecordList: any = inject('arraignmentRecordList')
-    const onSelectPhoto = (recordInfo: any, photoIndex: string | number | symbol) => {
-      const photoData = recordInfo.photoList.map((photoItem: any, index: number) => {
+    const onSelectPhoto = (info: any, photoIndex: string | number | symbol) => {
+      const photoData = info.photoList.map((photoItem: any, index: number) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { baseData, photoList, ...orderInfo } = recordInfo
+        const { baseData, photoList, ...orderInfo } = info
         return {
           title: `第${index + 1}张图`,
           ...photoItem,
