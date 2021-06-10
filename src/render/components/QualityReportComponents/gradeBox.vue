@@ -129,6 +129,7 @@ export default defineComponent({
   props: {
     photoInfo: { type: Object, default: () => ({}) } // 照片数据
   },
+  emits: ['previewPhoto'],
   setup (props, { emit }) {
     const routeName = ref('') /* 路由名字 */
     const gradeInfo = ref('')
@@ -138,10 +139,10 @@ export default defineComponent({
     const gradeBoxData: any = inject('gradeBoxData')
     // const SPOT_TYPE = ref(SPOT_TYPE)
 
-    const onSelectPhoto = (recordInfo: any, photoIndex: string | number | symbol) => {
-      const photoData = recordInfo.photoList.map((photoItem: any, index: number) => {
+    const onSelectPhoto = (info: any, photoIndex: string | number | symbol) => {
+      const photoData = info.photoList.map((photoItem: any, index: number) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { baseData, photoList, ...orderInfo } = recordInfo.streamInfo
+        const { baseData, photoList, ...orderInfo } = info.streamInfo
         return {
           title: `第${index + 1}张图`,
           ...photoItem,

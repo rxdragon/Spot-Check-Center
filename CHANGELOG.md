@@ -19,6 +19,7 @@
  - | 质检报告模块 | [00b196f](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/00b196f)
  - | 组件提交 | [bac422c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bac422c)
  - | ai报告 | [9bce6c3](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9bce6c3)
+ - | warning处理 | [efb82e7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/efb82e7)
  更新 代码 | 更改带啊么 | [68e16b1](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/68e16b1)
 
 
