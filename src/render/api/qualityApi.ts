@@ -18,7 +18,7 @@ export interface IgetQualityParams {
 }
 
 /**
- * @description 获取抽片结果
+ * @description 质检报告评分明细
  * @param {*} params
  */
 export async function getSpotCheckResult (params:IgetQualityParams, axiosType: string) {
@@ -361,7 +361,7 @@ export async function getSpotCheckResult (params:IgetQualityParams, axiosType: s
   //     pageTotal: data.total || null
   //   }
   // }
-  const list = data.map((item: any) => {
+  const list:EvaluateModel[] = data.map((item: any) => {
     return new EvaluateModel(item)
   })
   const createData = {
@@ -370,3 +370,4 @@ export async function getSpotCheckResult (params:IgetQualityParams, axiosType: s
   }
   return createData
 }
+

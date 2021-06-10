@@ -20,6 +20,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from 'vue'
+import * as Staff from '@/api/staff'
 
 export default defineComponent({
   name: 'JobContentSelect',
@@ -34,15 +35,15 @@ export default defineComponent({
 
 
     /** 获取全部职能 */
-    const options = ref([])
+    const options: any = ref([])
     const loading = ref(true)
     async function getAllJob () {
       // TODO lj
       // const req = {
 
       // }
-      // const list = await ProductClassificationApi.getClassificationProductTree(req)
-      options.value = []
+      const list = await Staff.getJobContentSelectList()
+      options.value = list
       loading.value = false
     }
     getAllJob()

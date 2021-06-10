@@ -1,5 +1,5 @@
 import StreamOrderModel from '@/model/StreamOrderModel'
-import PoolPhotoModel from '@/model/PoolPhotoModel'
+import AuditSpotPhotoModel from '@/model/AuditSpotPhotoModel'
 import EvaluateTagsModel from '@/model/EvaluateTagsModel'
 
 interface IScoreConfigs {
@@ -27,7 +27,7 @@ export default class EvaluateModel {
   businessId: number | string
   commitInfo?: ICommitInfo
   streamInfo?: StreamOrderModel
-  photoList?: PoolPhotoModel[]
+  photoList?: AuditSpotPhotoModel[]
   tagInfo?: EvaluateTagsModel
 
   constructor (data: any) {
@@ -60,7 +60,7 @@ export default class EvaluateModel {
   // 获取照片相关数据
   getPoolPhotoList () {
     const photoList = _.get(this.base, 'photo') || _.get(this.base, 'photos') || []
-    this.photoList = photoList.map((photoItem: any) => new PoolPhotoModel(photoItem))
+    this.photoList = photoList.map((photoItem: any) => new AuditSpotPhotoModel(photoItem))
   }
 
   // 评价信息

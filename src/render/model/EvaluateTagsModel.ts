@@ -1,4 +1,4 @@
-import * as PhotoTools from '@/utils/photoTools'
+import * as PhotoTools from '@/utils/photoTool'
 
 /**
  * @description 评价信息

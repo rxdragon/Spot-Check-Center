@@ -1,5 +1,5 @@
 <template>
-  <div class="divide-y divide-gray-200">
+  <div class="divide-y-4 divide-gray-200">
     <div
       v-for="(item, index) in gradeBoxData"
       :key="item._id"
@@ -17,7 +17,7 @@
           <div class="photo-list grade-photo-list overflow-x-auto overscroll-x-contain">
             <div v-for="(photoItem, photoIndex) in item.photoList" :key="photoItem.id" class="photo-box">
               <PhotoBox
-                :src="photoItem.path"
+                :src="photoItem.src"
                 version=""
                 class="mr-4"
                 @click="onSelectPhoto(photoIndex)"
@@ -27,6 +27,7 @@
                     AI审核结果：
                     <span
                       v-if="type === SPOT_TYPE.MAKEUP"
+
                       :class="photoItem.makeupDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
                     >
                       {{ photoItem.makeupDegree }}
@@ -53,8 +54,10 @@
             <span class="order-info w-44"><span class="order-info-title">产品名称：</span>{{ item.streamInfo.productName }}</span>
             <span class="order-info w-44"><span class="order-info-title">照片张数：</span>{{ item.streamInfo.photoCount }}</span>
             <span class="order-info w-44">
-              <span class="order-info-title">门店类型：</span>{{ item.streamInfo.storeType }}
-              <div class="standard-icon" />
+              <span class="order-info-title">门店类型：</span>{{ item.streamInfo.storeTypeCN }}
+              <div class="standard-icon">
+                <div :class="`iconmap-standard-${item.streamInfo.storeType}`" />
+              </div>
             </span>
             <span class="order-info w-40"><span class="order-info-title">门店：</span>{{ item.streamInfo.storeName }}</span>
           </div>
@@ -81,7 +84,14 @@
           <div>总评分：{{ item.tagInfo.totalScore }}</div>
           <div>评分人：{{ item.tagInfo.RaterName }}</div>
           <div>
-            <el-button size="small" class="change-evaluate-btn" type="primary">我要申诉</el-button>
+            <el-button
+              size="small"
+              class="change-evaluate-btn"
+              type="primary"
+              @click="goAppeal(item.tagInfo)"
+            >
+              我要申诉
+            </el-button>
           </div>
         </div>
       </div>
@@ -99,37 +109,54 @@
         </div>
       </div>
     </div>
-    <AppealPop />
+    <AppealPop
+      ref="appealPopRef"
+      :appeal-tag-info="appealTagInfo"
+      :dialog-visible="dialogVisible"
+      @switchAppealPop="switchAppealPop"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue'
 import PhotoBox from '@/components/PhotoBox/index.vue'
-import { SPOT_TYPE } from '@/model/Enumerate'
+import AppealPop from './AppealPop.vue'
+import { SPOT_TYPE, storeTypeToCN } from '@/model/Enumerate'
 
 export default defineComponent({
   name: 'GradeBox',
-  components: { PhotoBox },
+  components: { PhotoBox, AppealPop },
   inject: ['cloudType'],
   props: {
     photoInfo: { type: Object, default: () => ({}) } // 照片数据
-  },
-  data () {
-    return {
-      SPOT_TYPE
-    }
   },
   setup () {
     const routeName = ref('') /* 路由名字 */
     const gradeInfo = ref('')
     const showGradePreview = ref('') /* 是否显示大概概览 */
     const showPhotoVersion = ref('') /* 展示图片版本 */
-    const type = ref('')
+    const type = inject('type')
     const gradeBoxData: any = inject('gradeBoxData')
+    // const SPOT_TYPE = ref(SPOT_TYPE)
 
     const onSelectPhoto = (photoIndex: string | number | symbol) => {
       return photoIndex
+    }
+
+    /**
+     * 申诉弹窗相关
+    */
+    const dialogVisible = ref(false)
+    const appealTagInfo = ref('')
+    const switchAppealPop = () => {
+      dialogVisible.value = !dialogVisible.value
+      // console.log(appealPopRef.value.dialogVisible)
+    }
+    const goAppeal = (info: any) => {
+      appealTagInfo.value = JSON.stringify(info)
+
+      switchAppealPop()
     }
 
     return {
@@ -139,7 +166,13 @@ export default defineComponent({
       showPhotoVersion,
       type,
       gradeBoxData,
-      onSelectPhoto
+      SPOT_TYPE,
+      storeTypeToCN,
+      dialogVisible,
+      appealTagInfo,
+      onSelectPhoto,
+      switchAppealPop,
+      goAppeal
     }
   },
   computed: {

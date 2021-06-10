@@ -12,6 +12,12 @@
           <DatePicker v-model="timeSpan" :disabled="Boolean(orderNum)" />
         </div>
       </el-col>
+      <el-col v-if="activeName === 'ArraignmentRecordModule'" v-bind="{ ...colConfig }">
+        <div class="search-item">
+          <span>AI评分时间</span>
+          <DatePicker v-model="aiTimeSpan" :disabled="Boolean(orderNum)" />
+        </div>
+      </el-col>
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>订单号</span>
@@ -58,11 +64,13 @@
       </el-col>
     </el-row>
     <el-row class="text-right">
-      <div>
-        <el-checkbox v-model="onlyNew" @change="changeOnlyNew">只看新人</el-checkbox>
-        <el-checkbox v-model="onlyOld" @change="changeOnlyOld">只看正式伙伴</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button type="primary" @click="searchData(1)">查询</el-button>
-      </div>
+      <el-col :span="24" class="text-right">
+        <div class="text-right">
+          <el-checkbox v-model="onlyNew" @change="changeOnlyNew">只看新人</el-checkbox>
+          <el-checkbox v-model="onlyOld" @change="changeOnlyOld">只看正式伙伴</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <el-button type="primary" @click="searchData(1)">查询</el-button>
+        </div>
+      </el-col>
     </el-row>
   </div>
 
@@ -74,19 +82,9 @@
       <el-tab-pane :label="`AI审核报告`" name="ArraignmentRecordModule" />
     </el-tabs>
 
-    <div class="table-box">
-      <transition name="fade-transform" mode="out-in">
-        <keep-alive>
-          <component :is="activeName" />
-        </keep-alive>
-      </transition>
-    </div>
-
-    <!-- 模块 -->
-    <!-- <div v-for="photoItem in photoList" :key="photoItem.businessId" class="photo-data ">
-      <GradeBox :photo-info="photoItem" @updateList="getSearchHistory" />
-    </div>
-    <div v-if="!photoList.length" class="no-data">暂无数据</div> -->
+    <keep-alive>
+      <component :is="activeName" @previewPhoto="onPreviewPhotoList" />
+    </keep-alive>
   </div>
 
 
@@ -146,8 +144,7 @@ import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import JobContentSelect from '@/components/SelectBox/JobContentSelect/index.vue'
 import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import GradeBox from './gradeBox.vue'
-// TODO lj
-// import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
+import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
 import * as QualityApi from '@/api/qualityApi'
 
 import { ORGANIZATION_TYPE, QUALITY_TYPE, SPOT_TYPE } from '@/model/Enumerate'
@@ -178,9 +175,11 @@ export default defineComponent({
     const rangeType = inject('rangeType')
 
     const timeSpan: Ref<string | never | any[]> = ref('')
+    const aiTimeSpan: Ref<string | never | any[]> = ref('')
     const startAt = moment().subtract('day', 28).locale('zh-cn').format('YYYY-MM-DD')
     const endAt = moment().locale('zh-cn').format('YYYY-MM-DD')
     timeSpan.value = [startAt, endAt]
+    aiTimeSpan.value = [startAt, endAt]
     const orderNum = ref('')
     const aiTag = ref('')
     const scopeData = ref([])
@@ -254,6 +253,30 @@ export default defineComponent({
       gradeBoxData.value = res.list
       pager.total = res.total
     }
+
+    /**
+     * @description 获取AI报告
+     */
+    const arraignmentRecordList = ref<any>([])
+    const getAuditRecords = async () => {
+      const req: ArraignmentRecordApi.IgetAuditRecordsParams = {
+        type,
+        page: pager.page,
+        pageSize: pager.pageSize
+      }
+      if (timeSpan.value) {
+        req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
+        req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
+      }
+      if (orderNum.value) {
+        req.cloudOrderNum = orderNum.value
+        delete req.startAt
+        delete req.endAt
+      }
+      const res = await ArraignmentRecordApi.getAuditRecords(req)
+      pager.total = res.total
+      arraignmentRecordList.value = res.list
+    }
     
     /** 获取全部数据 */
     const searchData = async (page?: number) => {
@@ -261,9 +284,11 @@ export default defineComponent({
       if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
       try {
         store.dispatch('settingStore/showLoading', route.name)
-        Promise.all([
+        if (activeName.value === 'GradeBox' ) {
           getSpotCheckResult()
-        ])
+        } else {
+          getAuditRecords()
+        }
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
@@ -286,27 +311,15 @@ export default defineComponent({
       searchData()
     }
 
-    
-    /**
-    * @description 获取mock数据
-    * @param {*}
-    */
-    // console.log(RatingApi)
-    // const getPhotoList = async () => {
-    //   const data:any = {}
-    //   gradeBoxData.value = data
-      
-    // }
-    // getPhotoList()
-
     provide('auditRecordTotal', auditRecordTotal)
-    // provide('arraignmentRecordList', arraignmentRecordList)
+    provide('arraignmentRecordList', arraignmentRecordList)
 
     return {
       type,
       organizationType,
       rangeType,
       timeSpan,
+      aiTimeSpan,
       orderNum,
       pager,
       // arraignmentRecordList,

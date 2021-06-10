@@ -16,7 +16,7 @@
         :src="photoItem.path"
         version=""
         class="mr-4"
-        @click="onSelectPhoto(photoIndex)"
+        @click="onSelectPhoto(recordInfo,photoIndex)"
       >
         <template #otherInfo>
           <div class="audio-ino">
@@ -62,10 +62,10 @@ export default defineComponent({
     const type = inject('type')
     const auditRecordTotal = inject('auditRecordTotal')
     const arraignmentRecordList: any = inject('arraignmentRecordList')
-    const onSelectPhoto = (photoIndex: string | number | symbol) => {
-      const photoData = props.recordInfo.photoList.map((photoItem: any, index: number) => {
+    const onSelectPhoto = (recordInfo: any, photoIndex: string | number | symbol) => {
+      const photoData = recordInfo.photoList.map((photoItem: any, index: number) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { baseData, photoList, ...orderInfo } = props.recordInfo
+        const { baseData, photoList, ...orderInfo } = recordInfo
         return {
           title: `第${index + 1}张图`,
           ...photoItem,
