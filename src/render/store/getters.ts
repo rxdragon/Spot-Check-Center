@@ -11,6 +11,7 @@ const userGetters = {
 const settingGetters: GetterTree<State, State> = {
   imgDomain: (state: State) => state.settingStore.imgDomain,
   imgCompressDomain: (state: State) => state.settingStore.imgCompressDomain,
+  imgUpdateFinishDomain: (state: State) => state.settingStore.imgUpdateFinishDomain,
   updateDomain: (state: State) => state.settingStore.updateDomain,
   collapse: (state: State) => state.settingStore.collapse,
   loadRoutes: (state: State) => state.settingStore.loadRoutes

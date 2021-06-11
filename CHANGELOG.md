@@ -1,4 +1,4 @@
-# 0.1.0 (2021-06-10)
+# 0.1.0 (2021-06-11)
 
 ### 🌟 新功能
 范围|描述|commitId
@@ -27,6 +27,7 @@
 范围|描述|commitId
 --|--|--
  - | waning去除 | [bd88ce7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bd88ce7)
+ - | warning去除 | [33406f5](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/33406f5)
 
 
 范围|描述|commitId

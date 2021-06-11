@@ -69,6 +69,9 @@
     v-model:showEvaluate="showEvaluate"
     :imgarray="imgarray"
     :index="evaluateIndex"
+    @change="onShowEvaluteChange"
+    @changePool="onChangePool"
+    @skipStaff="onSkipStaff"
     @submitData="onSubmitData"
   />
 </template>
@@ -82,6 +85,7 @@ import PeopleNumber from './components/PeopleNumber.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
 import PoolModule from './components/PoolModule.vue'
 import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
+import { newMessage } from '@/utils/message'
 import { ElMessageBox } from 'element-plus'
 import * as EvaluateApi from '@/api/evaluateApi'
 
@@ -105,6 +109,7 @@ export default defineComponent({
     const organizationType = inject('organizationType') as ORGANIZATION_TYPE
 
     const uuid = ref('')
+
     /** 是否显示海马体产品 */
     const showHimoProduct = ref(false)
     const showFamilyProduct = ref(false)
@@ -113,46 +118,6 @@ export default defineComponent({
     }
     if (organizationType === ORGANIZATION_TYPE.FAMILY) {
       showFamilyProduct.value = true
-    }
-
-    /** 评分 */
-    const imgarray = ref<any>([])
-    const evaluateIndex = ref(0)
-    const showEvaluate = ref(false)
-    const onEvaluatePhoto = ({ photoIndex, photoData }: { photoIndex: number, photoData: any }) => {
-      imgarray.value = photoData
-      evaluateIndex.value = photoIndex
-      showEvaluate.value = true
-    }
-
-    /** 提交评分 */
-    const onSubmitData = (data: any) => {
-      // 记入提交的uuid，获取下一个数据的uuid
-      // 更新数据列表
-      // 获取记录id的数据
-      console.warn(data)
-      // eslint-disable-next-line no-use-before-define
-      const photoData = poolList.value[1].photoList?.map((photoItem, index: number) => {
-        // eslint-disable-next-line no-use-before-define
-        const { streamInfo } = poolList.value[1]
-        const photoInfo = {
-          ...streamInfo,
-          aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
-        }
-        return {
-          // todo photoModel 增加完成src
-          // eslint-disable-next-line no-use-before-define
-          title: `原片（${index + 1}/${poolList.value[1].photoList?.length}）`,
-          src: photoItem.path,
-          photoInfo,
-          markPath: '',
-          markJson: '',
-          markBase: ''
-        }
-      })
-
-      imgarray.value = photoData
-      evaluateIndex.value = 0
     }
 
     /** 获取抽片结果 */
@@ -259,7 +224,123 @@ export default defineComponent({
       // 获取抽片数据
       await getSpotCheckResultList()
     }
-    
+
+    /** 评分 */
+    const imgarray = ref<any>([])
+    const evaluateIndex = ref(0)
+    const showEvaluate = ref(false)
+    const evaluatePoolRecordId = ref('') // 正在打分id
+    // 显示打分数据
+    const evaluatePhoto = (poolItemId: string, photoIndex: number) => {
+      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === poolItemId)
+      if (!findPoolItemData) return newMessage.warning('未找到对应照片')
+      evaluatePoolRecordId.value = poolItemId
+      const photoData = findPoolItemData.photoList?.map((photoItem, index: number) => {
+        const { streamInfo } = findPoolItemData
+        const photoInfo = {
+          ...streamInfo,
+          aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
+        }
+        return {
+          // todo photoModel 增加完成src
+          id: photoItem.id,
+          title: `原片（${index + 1}/${findPoolItemData.photoList?.length}）`,
+          src: photoItem.path,
+          photoInfo,
+          markPath: '',
+          markJson: '',
+          markBase: ''
+        }
+      })
+      evaluateIndex.value = photoIndex
+      imgarray.value = photoData
+      showEvaluate.value = true
+    }
+    // 当预览窗口关闭哦时，更改今日指标数据
+    const onShowEvaluteChange = () => {
+      getTodayEvaluateCount()
+    }
+
+    // 跳转下一个评分内容
+    const goNextEvaluatePhoto = async () => {
+      // 获取下一个数据的uuid
+      const findPoolItemIndex = poolList.value.findIndex(poolItem => poolItem.id === evaluatePoolRecordId.value)
+      if (findPoolItemIndex < 0) return newMessage.warning('获取当前uuid失败，goNextEvaluatePhoto')
+      const nextIndex = findPoolItemIndex + 1
+      let nextPoolItemId = poolList.value[nextIndex].id
+      const isPageLastPhoto = (findPoolItemIndex + 1) === poolList.value.length
+      const isAllLast = pager.total === 1
+      if (isAllLast) {
+        newMessage.success('你已经打完全部照片')
+      } else if (isPageLastPhoto && pager.page > 1 && findPoolItemIndex === 0 ) {
+        // 向前翻页
+        pager.page--
+        await getSpotCheckResultList()
+        nextPoolItemId = poolList.value[0].id
+      } else if (isPageLastPhoto) {
+        // 取上一个值
+        nextPoolItemId = poolList.value[findPoolItemIndex - 1].id
+        await getSpotCheckResultList()
+      } else {
+        // 更新数据列表
+        await getSpotCheckResultList()
+      }
+      // 显示打分数据
+      evaluatePhoto(nextPoolItemId, 0)
+    }
+
+    const onEvaluatePhoto = ({ photoIndex, poolItemId }: { photoIndex: number, poolItemId: string }) => {
+      evaluatePhoto(poolItemId, photoIndex)
+    }
+
+    /** 提交评分 */
+    const onSubmitData = async (data: any) => {
+      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
+      if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSubmitData')
+      const req = {
+        poolItemId: findPoolItemData.id,
+        photos: data.photos,
+        tags: data.tags,
+        type,
+        organizationType
+      }
+      await EvaluateApi.emptyPoolByStaffId(req)
+      await goNextEvaluatePhoto()
+    }
+
+    /** 跳过伙伴 */
+    const onSkipStaff = async () => {
+      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
+      if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSkipStaff')
+      const staffIds = type === SPOT_TYPE.MAKEUP ? findPoolItemData.streamInfo?.dresserInfo.staffIds : findPoolItemData.streamInfo?.photographyerInfo.staffIds
+      if (!staffIds) return newMessage.warning('未找到对应的伙伴id')
+      const poolItemId = findPoolItemData.id
+      const req = {
+        staffIds,
+        poolItemId,
+        type,
+        organizationType
+      }
+      await EvaluateApi.skipStaff(req)
+      newMessage.success('跳过伙伴成功，今日将不会再抽取')
+      await goNextEvaluatePhoto()
+    }
+
+    /** 换一单 */
+    const onChangePool = async () => {
+      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
+      if (!findPoolItemData) return newMessage.warning('onChangePool')
+      const poolItemId = findPoolItemData.id
+      const req = {
+        poolItemId,
+        type,
+        organizationType
+      }
+      await EvaluateApi.changePool(req)
+      // TODO: 待定
+      newMessage.success('换取照片成功')
+      await goNextEvaluatePhoto()
+    }
 
     return {
       type,
@@ -270,8 +351,9 @@ export default defineComponent({
       poolList,
       pager,
       handlePage,
-      onEvaluatePhoto, imgarray, evaluateIndex, showEvaluate,
-      onSubmitData
+      onEvaluatePhoto, imgarray, evaluateIndex, showEvaluate, onShowEvaluteChange,
+      onSubmitData,
+      onSkipStaff, onChangePool
     }
   }
 })

@@ -121,11 +121,15 @@ export default defineComponent({
       const levelName = findLevel.name
       const chainCircuitName = `${className}/${lableName}/${levelName}`
 
+      const scoreType: number = findLevel.type === 'deduct' ? -1 : 1
+      const score = scoreType * findLevel.score
+
       const lableInfo: ISelectId = {
         name: chainCircuitName,
         id: chainCircuitId,
         levelId,
-        type: level
+        type: level,
+        score
       }
       emit('addLabel', lableInfo)
       return true
