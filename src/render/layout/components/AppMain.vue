@@ -19,13 +19,17 @@
         }"
       >
         <Breadcrumb v-if="$showHeader" />
-        <div v-if="$showTitle" class="page-title">{{ $route.meta.title }}</div>
-        <div class="header-content" />
+        <div v-if="$showTitle" class="page-title">
+          {{ $route.meta.title }}
+          <div id="fakeTitle" />
+        </div>
+        <div id="headerContent" />
       </div>
     </transition>
 
+
     <!-- 路由 -->
-    <div class="page-view overflow-x-auto py-6 px-6">
+    <div v-if="isMounted" class="page-view overflow-x-auto py-6 px-6">
       <div class="content">
         <router-view v-slot="{ Component }" :key="key">
           <keep-alive :include="cachedViews" exclude="" :max="4">
@@ -38,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
@@ -57,6 +61,11 @@ export default defineComponent({
     const route = useRoute()
     const store = useStore()
 
+    const isMounted = ref(false)
+    onMounted (() => {
+      isMounted.value = true
+    })
+
     // 是否处于加载中
     const isLoading = computed(() => {
       const loadRoutes = store.getters.loadRoutes
@@ -74,7 +83,8 @@ export default defineComponent({
       isLoading,
       cachedViews,
       key,
-      isHome
+      isHome,
+      isMounted
     }
   }
 })
@@ -102,16 +112,26 @@ export default defineComponent({
       background-color: #f0f2f5;
 
       .page-title {
-        font-size: 20px;
+        position: relative;
+        font-size: 28px;
         font-weight: 500;
         line-height: 28px;
         color: #000;
+
+        #fakeTitle {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 200%;
+          height: 33px;
+        }
       }
 
-      .header-content {
+      #headerContent {
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
+        margin-left: auto;
       }
 
       &.micro-header-title {
