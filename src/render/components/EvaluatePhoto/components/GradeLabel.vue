@@ -25,7 +25,8 @@
 <script lang="ts">
 import type { ILabelClass, ISelectId } from '@/model/GradeLabelModel'
 
-import { defineComponent, ref } from 'vue'
+import { defineComponent, inject, ref } from 'vue'
+import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import LoadingTea from '@/components/LoadingTea/index.vue'
 import LabelModule from './LabelModule.vue'
 import * as EvaluateApi from '@/api/evaluateApi'
@@ -34,6 +35,11 @@ export default defineComponent({
   name: 'GradeLabel',
   components: { LoadingTea, LabelModule },
   setup () {
+    // eslint-disable-next-line no-unused-vars
+    const type = inject('type') as SPOT_TYPE
+    // eslint-disable-next-line no-unused-vars
+    const organizationType = inject('organizationType') as ORGANIZATION_TYPE
+
     const loading = ref(false)
 
     const activeLabelId = ref('')
@@ -71,8 +77,14 @@ export default defineComponent({
     }
     // 获取全部标签
     const getAllSelectLabel = () => {
-      const selectIds = Object.keys(selectAllData.value)
-      return selectIds
+      const selectTags = Object.values(selectAllData.value)
+      const tags = selectTags.map(item => {
+        return {
+          id: item.id,
+          score: item.score
+        }
+      })
+      return tags
     }
 
     return {

@@ -1,7 +1,7 @@
 <template>
   <div v-loading="loading" class="evaluate-photo">
     <div class="evaluate-title">
-      原片（1/6）
+      {{ showPhoto.title }}
       <div class="close-btn">
         <button type="button" class="button-close" @click="closePreview">
           <i class="el-icon-close" />
@@ -13,6 +13,10 @@
         <PhotoMap ref="photoMap" v-model:scaleNum="scaleNum" :show-photo="showPhoto" />
         <MarkTool :canvas-option="canvasOption" @changeTool="changeDrawType" />
         <PhotoInfo :order-info="showPhoto.photoInfo" />
+        <div class="button-box">
+          <el-button type="primary" @click="skipStaff">跳过伙伴</el-button>
+          <el-button class="change-btn" @click="closePreview">换一单</el-button>
+        </div>
       </div>
       <div class="content-column flex-grow">
         <div class="photo-main">
@@ -86,7 +90,7 @@ export default defineComponent({
     index: { type: Number, default: 0 },
     showEvaluate: { type: Boolean, required: true },
   },
-  emits: ['update:showEvaluate', 'submitData'],
+  emits: ['update:showEvaluate', 'submitData', 'change', 'skipStaff', 'changePool'],
   setup (props, { emit }) {
     const vm: any = getCurrentInstance()
     const fabricCanvas = ref<any>(null)
@@ -107,6 +111,17 @@ export default defineComponent({
     /** 关闭窗口 */
     const closePreview = () => {
       emit('update:showEvaluate', false)
+      emit('change', false)
+    }
+
+    /** 跳过伙伴 */
+    const skipStaff = () => {
+      emit('skipStaff')
+    }
+
+    /** 换一单 */
+    const changePool = () => {
+      emit('changePool')
     }
 
     /** 绘图相关 */
@@ -189,7 +204,7 @@ export default defineComponent({
     getQNSign()
     const uploadPhotoMap = async () => {
       for (const photoItem of photoArray.value) {
-        if (!photoItem.markBase) break
+        if (!photoItem.markBase) continue
         const blobData = CanvasTool.convertBase64ToBlob(photoItem.markBase)
         const fileData = CanvasTool.structureFile(blobData)
         const fileDataUploadUrl = await CanvasTool.uploadTagPhoto(fileData, qNConfig.value)
@@ -199,11 +214,22 @@ export default defineComponent({
 
     /** 提交分数 */
     const gradeLabel = ref<any>(null)
-    const submitData = () => {
+    const submitData = async () => {
       // TODO: cf 提交分数
+      // 储存当前批注照片
+      const markBase64 = fabricCanvas.value.exportBase64()
+      photoArray.value[photoIndex.value].markBase = markBase64
+      await uploadPhotoMap()
+      const photos = photoArray.value.map(photoItem => {
+        return {
+          markPath: photoItem.markPath,
+          photoId: photoItem.id
+        }
+      })
       const gradeLabelVm = gradeLabel.value
       const data = {
-        gradeLabels: gradeLabelVm.getAllSelectLabel()
+        tags: gradeLabelVm.getAllSelectLabel(),
+        photos
       }
       emit('submitData', data)
     }
@@ -215,8 +241,9 @@ export default defineComponent({
       zoom, photoZoomStyle, scaleNum, inZoomIn,
       loadingPhoto, closePreview, judgeHasZoom, OrginImg,
       canvasOption, changeDrawType,
-      fabricCanvas, uploadPhotoMap,
-      submitData, gradeLabel
+      fabricCanvas,
+      submitData, gradeLabel,
+      skipStaff, changePool
 
     }
   }
@@ -268,9 +295,13 @@ export default defineComponent({
     }
 
     .right-column {
-      position: relative;
       width: @right-column;
       background-color: @baseBgColor;
+    }
+
+    .left-column,
+    .right-column {
+      position: relative;
 
       .button-box {
         position: absolute;
@@ -282,6 +313,10 @@ export default defineComponent({
         width: 100%;
         height: 60px;
         border-top: 1px solid #666;
+
+        .change-btn {
+          color: @primaryColor;
+        }
 
         .out-btn {
           background-color: #666;
