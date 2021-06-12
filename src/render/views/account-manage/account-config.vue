@@ -25,7 +25,7 @@
             <el-col v-bind="{ ...colConfig }">
               <div class="search-item">
                 <span>角色组</span>
-                <RoleSelect v-model="roleId" />
+                <RoleSelect v-model="roleId" clearable />
               </div>
             </el-col>
             <el-col v-bind="{ ...colConfig }">
@@ -44,7 +44,7 @@
                 {{ row.name }}（{{ row.nickName }}）
               </template>
             </el-table-column>
-            <el-table-column prop="positionName" label="岗位" />
+            <el-table-column prop="positionText" label="岗位" />
             <el-table-column prop="rolesName" label="角色组" />
             <el-table-column prop="availableCN" label="状态" />
             <el-table-column label="操作">

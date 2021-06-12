@@ -244,15 +244,6 @@ export default defineComponent({
   padding: 20px 16px 20px 16px;
   background-color: #fff;
 }
-
-.el-tab-pane {
-  &:nth-child(1) {
-    .module-panel {
-      border-top-left-radius: 0;
-      transform: all 0.3s;
-    }
-  }
-}
 </style>
 
 <style lang="less">

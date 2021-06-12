@@ -1,6 +1,6 @@
 <template>
   <div class="role-select">
-    <el-select v-bind="$attrs" clearable placeholder="请选择角色组">
+    <el-select v-bind="$attrs" placeholder="请选择角色组">
       <el-option
         v-for="item in options"
         :key="item.value"
