@@ -14,6 +14,7 @@
  - | 完成预览组件相关信息 | [1426bc7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1426bc7)
  - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
  - | 新增编辑窗口 | [c45813d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c45813d)
+ - | 新增添加评分项目动效 | [08d1da6](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/08d1da6)
  - | 新增添加账号功能 | [4b15860](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/4b15860)
  - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)
  - | 增加评价信息洁面 | [f778aef](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f778aef)
