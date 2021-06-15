@@ -100,7 +100,7 @@ export default defineComponent({
       if (editType === EDIT_TYPE.ADD) {
         getRoleListByPage(1)
       } else {
-        handlePage()
+        getRoleListByPage()
       }
     }
 

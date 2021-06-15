@@ -143,7 +143,7 @@ export default defineComponent({
       }
     }
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'updateInfo'],
   setup (props, { emit }) {
     const store = useStore()
     const route = useRoute()
@@ -249,6 +249,9 @@ export default defineComponent({
         } else {
           await StaffApi.addStaff(req)
         }
+        closeEditPage()
+        const updateInfoData = editType.value === EDIT_TYPE.ADD ? EDIT_TYPE.ADD : EDIT_TYPE.EDIT
+        emit('updateInfo', updateInfoData)
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }

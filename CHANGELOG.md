@@ -5,6 +5,7 @@
 --|--|--
  - | 初始化角色组编辑和列表页面 | [4cd065e](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/4cd065e)
  - | 代码格式修改 | [5716de4](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/5716de4)
+ - | 更新保存用户信息接口信息 | [f12bed9](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f12bed9)
  - | 更新标记组件 | [dc84166](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dc84166)
  - | 更新打分组件 | [ce28726](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/ce28726)
  - | 更新代码 | [397fa4c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/397fa4c)

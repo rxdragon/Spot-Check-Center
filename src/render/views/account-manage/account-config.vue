@@ -91,6 +91,7 @@
         v-model="editPageShow"
         :edit-type="editType"
         :edit-staff-id="editStaffId"
+        @updateInfo="onStaffInfoUpdate"
       />
     </transition>
   </div>
@@ -164,6 +165,16 @@ export default defineComponent({
       seachData()
     }
 
+    /** 监听编辑完成 */
+    const onStaffInfoUpdate = (editType: EDIT_TYPE) => {
+      if (editType === EDIT_TYPE.ADD) {
+        seachData(1)
+      } else {
+        seachData()
+      }
+    }
+
+
     /** 禁用账号 */
     const onSureDisableStaff = async (staffInfo: StaffModel) => {
       try {
@@ -207,7 +218,7 @@ export default defineComponent({
 
     return {
       staffName, staffNum, roleId, tableData,
-      pager, seachData, handlePage,
+      pager, seachData, handlePage, onStaffInfoUpdate,
       onSureDisableStaff, onActiveStaff,
       showEditPage, editPageShow,
       editType, EDIT_TYPE, editStaffId
