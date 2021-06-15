@@ -67,7 +67,7 @@
             </div>
             <div class="base-row mb-5">
               <span class="base-title">管辖伙伴</span>
-              <RankSelect v-model="rankId" />
+              <StaffSelect v-model="configStaffIds" />
             </div>
             <div class="base-row mb-5 items-start">
               <span class="base-title">管辖门店</span>
@@ -107,6 +107,7 @@ import RankSelect from '@SelectBox/RankSelect/index.vue'
 import StorePanel from '@/components/StorePanel/index.vue'
 import Jurisdiction from '@/components/Jurisdiction/index.vue'
 import RoleSelect from '@SelectBox/RoleSelect/index.vue'
+import StaffSelect from '@SelectBox/StaffSelect/index.vue'
 
 import * as StaffApi from '@/api/staffApi'
 import StaffModel from '@/model/StaffModel'
@@ -124,7 +125,7 @@ enum ACTIVE_TYPE {
 
 export default defineComponent({
   name: 'EditAccount',
-  components: { RankSelect, StorePanel, Jurisdiction, RoleSelect },
+  components: { RankSelect, StorePanel, Jurisdiction, RoleSelect, StaffSelect },
   props: {
     modelValue: { type: Boolean, required: true },
     editType: { type: String as PropType<EDIT_TYPE>, required: true },
@@ -164,7 +165,6 @@ export default defineComponent({
       const data = await StaffApi.getRoleInfo(req)
       rolePermissionArr.value = data.permissions.map((item: any) => item.permission_id)
     }
-
 
     /** 权限相关 */
     const staffPermission = ref<number[]>([])
@@ -225,12 +225,33 @@ export default defineComponent({
     /** 用户权限相关 */
     const activeName = ref(ACTIVE_TYPE.BASE)
     const selectStore = ref([])
+    const configStaffIds = ref<idType[]>([])
     const defaultCheckedKeys = ref([]) // 默认选中门店
 
     /** 提交用户信息 */
-    const submitData = () => {
-      // TODO: cf
-      console.warn('提交账号')
+    const submitData = async () => {
+      if (!staffNum.value) return newMessage.warning('缺少用户id')
+      if (!rankId.value) return newMessage.warning('请选择身份')
+
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        const req: StaffApi.IEditStaffParams = {
+          staffId: staffNum.value,
+          roleId: activeRoleId.value,
+          positionId: rankId.value
+        }
+        if (selectStore.value.length) req.configStoreIds = selectStore.value
+        if (configStaffIds.value.length) req.configStaffIds = selectStore.value
+        if (permissionGather.value.length) req.permissionIds = permissionGather.value
+
+        if (editType.value === EDIT_TYPE.EDIT) {
+          await StaffApi.editStaff(req)
+        } else {
+          await StaffApi.addStaff(req)
+        }
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
+      }
     }
 
     /** 下一步 */
@@ -259,7 +280,7 @@ export default defineComponent({
       EDIT_TYPE, ACTIVE_TYPE,
       staffNum, staffName, seachStaffData, staffInfo,
       activeName,
-      rankId, selectStore, defaultCheckedKeys, administerStaffIds,
+      rankId, selectStore, defaultCheckedKeys, administerStaffIds, configStaffIds,
       nextStep,
       permissionGather, rolePermissionArr, activeRoleId, onRoleChange,
       submitData

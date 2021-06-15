@@ -41,9 +41,7 @@ interface IGetStaffListRes {
 }
 export async function getStaffList (params: IGetStaffListParams): Promise<IGetStaffListRes> {
   const res: any = await axios({
-    // TODO:cf
-    // url: '/project_photo_quality/staff/getStaffList'
-    url: '/project_cloud/staff/getStaffListByPage',
+    url: '/project_photo_quality/staff/getStaffList',
     method: 'GET',
     params
   })
@@ -64,9 +62,7 @@ interface IDisableStaffParams {
 }
 export async function disableStaff (params: IDisableStaffParams): Promise<boolean> {
   const res: any = await axios({
-    // TODO:cf
-    // url: '/project_photo_quality/staff/disableStaff'
-    url: '/project_cloud/staff/disableStaff',
+    url: '/project_photo_quality/staff/disableStaff',
     method: 'PUT',
     data: params
   })
@@ -82,8 +78,7 @@ export async function disableStaff (params: IDisableStaffParams): Promise<boolea
 export async function enableStaff (params: IEnableStaffParams): Promise<boolean> {
   const res: any = await axios({
     // TODO:cf
-    // url: '/project_photo_quality/staff/enableStaff'
-    url: '/project_cloud/staff/enableStaff',
+    url: '/project_photo_quality/staff/enableStaff',
     method: 'PUT',
     data: params
   })
@@ -101,9 +96,7 @@ export interface IGetStaffInfoParams {
 }
 export async function getStaffInfo (params: IGetStaffInfoParams) {
   const res: any = await axios({
-    // TODO:cf
-    // url: '/project_photo_quality/staff/getStaffInfo'
-    url: '/project_cloud/staff/getStaffInfo',
+    url: '/project_photo_quality/staff/getStaffInfo',
     method: 'GET',
     params
   })
@@ -142,7 +135,7 @@ interface IProductInfo {
 export async function getAllStore (disabledId: any[] = []) {
   const res: any = await axios({
     // TODO:cf
-    // url: '/project_photo_quality/staff/getStaffInfo'
+    // url: '/project_photo_quality/staff/getStaffInfo',
     url: '/project_cloud/common/getAllProduct',
     method: 'GET',
   })
@@ -227,7 +220,7 @@ export interface IModuleItem {
 }
 export async function getJurisdictionList () {
   const res: any = await axios({
-    url: '/project_cloud/staff/getPermissionList',
+    url: '/project_photo_quality/role/getPermissionList',
     method: 'GET'
   })
 
@@ -334,8 +327,7 @@ interface IGetRoleInfoRes {
 }
 export async function getRoleInfo (params: IGetRoleInfoParams): Promise<IGetRoleInfoRes> {
   const res: any = await axios({
-    // TODO:cf
-    url: '/project_cloud/staff/getRoleInfo',
+    url: '/project_photo_quality/role/getRoleInfo',
     method: 'GET',
     params
   })
@@ -356,8 +348,7 @@ export interface roleItem {
 }
 export async function getRoleListByPage (params: IGetRoleListByPageParams) {
   const res: any = await axios({
-    // url: '/project_photo_quality/role/getRoleList',
-    url: '/project_cloud/staff/getRoleList',
+    url: '/project_photo_quality/role/getRoleList',
     method: 'GET',
     params
   })
@@ -383,8 +374,7 @@ interface IAddRoleParams {
 }
 export async function addRole (params: IAddRoleParams) {
   const res = await axios({
-    // url: '/project_photo_quality/role/addRole',
-    url: '/project_cloud/staff/addRole',
+    url: '/project_photo_quality/role/addRole',
     method: 'POST',
     data: params
   })
@@ -399,8 +389,7 @@ interface IDelRoleParams {
 }
 export async function delRole (params: IDelRoleParams) {
   const res: any = await axios({
-    url: '/project_cloud/staff/delRole',
-    // url: '/project_photo_quality/staff/delRole',
+    url: '/project_photo_quality/staff/delRole',
     method: 'DELETE',
     params
   })
@@ -415,10 +404,43 @@ interface IEditRoleParams extends IAddRoleParams {
 }
 export async function editRole (params: IEditRoleParams) {
   const res = await axios({
-    // url: '/project_photo_quality/role/editRole',
-    url: '/project_cloud/staff/editRole',
+    url: '/project_photo_quality/role/editRole',
     method: 'PUT',
     data: params
   })
+  return res
+}
+
+/**
+ * @description 添加账号
+ */
+export interface IEditStaffParams {
+  staffId: idType
+  roleId: idType
+  positionId: idType
+  permissionIds?: idType[]
+  configStaffIds?: idType[]
+  configStoreIds?: idType[]
+}
+export async function addStaff (params: IEditStaffParams) {
+  const res = await axios({
+    url: '/project_photo_quality/staff/addStaff',
+    method: 'POST',
+    data: params
+  })
+
+  return res
+}
+
+/**
+ * @description 编辑伙伴
+ */
+export async function editStaff (params: IEditStaffParams) {
+  const res = await axios({
+    url: '/project_photo_quality/staff/editStaff',
+    method: 'POST',
+    data: params
+  })
+
   return res
 }
