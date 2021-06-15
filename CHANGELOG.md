@@ -1,8 +1,9 @@
-# 0.1.0 (2021-06-12)
+# 0.1.0 (2021-06-15)
 
 ### 🌟 新功能
 范围|描述|commitId
 --|--|--
+ - | 初始化角色组编辑和列表页面 | [4cd065e](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/4cd065e)
  - | 代码格式修改 | [5716de4](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/5716de4)
  - | 更新标记组件 | [dc84166](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dc84166)
  - | 更新打分组件 | [ce28726](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/ce28726)

@@ -86,7 +86,7 @@
             </div>
             <div class="role-row mb-5 items-start">
               <span class="role-row-title">权限模块</span>
-              <JurisdictionList v-model:hasPermission="permissionGather" :role-permission="rolePermissionArr" />
+              <Jurisdiction v-model:hasPermission="permissionGather" :role-permission="rolePermissionArr" />
             </div>
             <div class="role-row mb-5">
               <el-button type="primary" @click="submitData">提 交</el-button>
@@ -105,7 +105,7 @@ import { useStore } from '@/store/index'
 
 import RankSelect from '@SelectBox/RankSelect/index.vue'
 import StorePanel from '@/components/StorePanel/index.vue'
-import JurisdictionList from '@/components/Jurisdiction/index.vue'
+import Jurisdiction from '@/components/Jurisdiction/index.vue'
 import RoleSelect from '@SelectBox/RoleSelect/index.vue'
 
 import * as StaffApi from '@/api/staffApi'
@@ -124,7 +124,7 @@ enum ACTIVE_TYPE {
 
 export default defineComponent({
   name: 'EditAccount',
-  components: { RankSelect, StorePanel, JurisdictionList, RoleSelect },
+  components: { RankSelect, StorePanel, Jurisdiction, RoleSelect },
   props: {
     modelValue: { type: Boolean, required: true },
     editType: { type: String as PropType<EDIT_TYPE>, required: true },

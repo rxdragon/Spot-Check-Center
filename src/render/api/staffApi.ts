@@ -325,11 +325,12 @@ export async function getJurisdictionList () {
  * @param params 
  */
 interface IGetRoleInfoParams {
-  roleId: number
+  roleId: number | string
   additionInfo: boolean
 }
 interface IGetRoleInfoRes {
   permissions: any[]
+  title: string
 }
 export async function getRoleInfo (params: IGetRoleInfoParams): Promise<IGetRoleInfoRes> {
   const res: any = await axios({
@@ -337,6 +338,87 @@ export async function getRoleInfo (params: IGetRoleInfoParams): Promise<IGetRole
     url: '/project_cloud/staff/getRoleInfo',
     method: 'GET',
     params
+  })
+  return res
+}
+
+/**
+ * @description 获取角色组列表接口
+ */
+interface IGetRoleListByPageParams {
+  page: number
+  pageSize: number
+}
+export interface roleItem {
+  roleId: number
+  roleTitle: string
+  founderName: string
+}
+export async function getRoleListByPage (params: IGetRoleListByPageParams) {
+  const res: any = await axios({
+    // url: '/project_photo_quality/role/getRoleList',
+    url: '/project_cloud/staff/getRoleList',
+    method: 'GET',
+    params
+  })
+  const createList: roleItem[] = res.list.map((item: any) => {
+    return {
+      roleId: item.role_id,
+      roleTitle: item.title,
+      founderName: item.founder_name
+    }
+  })
+  return {
+    list: createList,
+    totle: res.total
+  }
+}
+
+/**
+ * @description 添加角色
+ */
+interface IAddRoleParams {
+  title: string
+  permissionIds: number[]
+}
+export async function addRole (params: IAddRoleParams) {
+  const res = await axios({
+    // url: '/project_photo_quality/role/addRole',
+    url: '/project_cloud/staff/addRole',
+    method: 'POST',
+    data: params
+  })
+  return res
+}
+
+/**
+ * @description 删除角色组
+ */
+interface IDelRoleParams {
+  roleId: number
+}
+export async function delRole (params: IDelRoleParams) {
+  const res: any = await axios({
+    url: '/project_cloud/staff/delRole',
+    // url: '/project_photo_quality/staff/delRole',
+    method: 'DELETE',
+    params
+  })
+  return res
+}
+
+/**
+ * @description 修改角色
+ */
+interface IEditRoleParams extends IAddRoleParams {
+  roleId: number | string
+}
+export async function editRole (params: IEditRoleParams) {
+  const res = await axios({
+    // url: '/project_photo_quality/role/editRole',
+    url: '/project_cloud/staff/editRole',
+    method: 'PUT',
+    data: params
   })
   return res
 }

@@ -76,7 +76,7 @@ export default defineComponent({
               menuItem.isRole = true
               moduleItem.isRole = true
             }
-            if (rolePermission.value.includes(+permissionItem.id)) {
+            if (hasPermission.value.includes(+permissionItem.id)) {
               menuItem.checkPermission.push(permissionItem.id)
             }
           })
@@ -201,7 +201,6 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .jurisdiction {
-  width: calc(100% - 100px);
   min-height: 100px;
 
   .module-box {
