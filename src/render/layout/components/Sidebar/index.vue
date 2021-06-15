@@ -9,6 +9,7 @@
         :text-color="$isDev ? variables.devmenutext : variables.menutext"
         :unique-opened="false"
         :active-text-color="variables.menuactivetext"
+        :collapse-transition="false"
         mode="vertical"
       >
         <SidebarItem
