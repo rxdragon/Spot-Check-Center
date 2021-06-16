@@ -1,4 +1,4 @@
-# 0.1.0 (2021-06-11)
+# 0.1.0 (2021-06-16)
 
 ### 🌟 新功能
 范围|描述|commitId
@@ -10,6 +10,7 @@
  - | 更新代码 | [877aff9](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/877aff9)
  - | 更新评价历史记录根组件 | [9384490](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9384490)
  - | 更新评价配置和历史相关组件 | [49697eb](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/49697eb)
+ - | 完成评分配置组件 | [c4bc9cf](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4bc9cf)
  - | 完成预览组件相关信息 | [1426bc7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1426bc7)
  - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
  - | 新功能开发 | [729606c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/729606c)

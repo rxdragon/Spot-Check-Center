@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref } from 'vue'
-import * as Staff from '@/api/staff'
+import * as SelectDataApi from '@/api/selectDataApi'
 
 export default defineComponent({
   name: 'JobContentSelect',
@@ -39,10 +39,10 @@ export default defineComponent({
     const loading = ref(true)
     async function getAllJob () {
       // TODO lj
-      // const req = {
-
-      // }
-      const list = await Staff.getJobContentSelectList()
+      const req = {
+        type: type
+      }
+      const list = await SelectDataApi.getJobContentSelectList(req)
       options.value = list
       loading.value = false
     }

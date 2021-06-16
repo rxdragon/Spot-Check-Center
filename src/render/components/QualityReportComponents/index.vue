@@ -6,13 +6,16 @@
     {{ rangeType }}
     <el-row class="search-box" :gutter="20">
       <!-- 评分时间 -->
-      <el-col v-if="activeName === 'GradeBox'" v-bind="{ ...colConfig }">
+      <el-col v-if="activeName === QUALITY_COMPONENT.GRADE_BOX" v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>评分时间</span>
           <DatePicker v-model="timeSpan" :disabled="Boolean(orderNum)" />
         </div>
       </el-col>
-      <el-col v-if="activeName === 'ArraignmentRecordModule'" v-bind="{ ...colConfig }">
+      <el-col
+        v-if="activeName === QUALITY_COMPONENT.ARRAIGNMENT_RECORD_MODULE"
+        v-bind="{ ...colConfig }"
+      >
         <div class="search-item">
           <span>AI评分时间</span>
           <DatePicker v-model="aiTimeSpan" :disabled="Boolean(orderNum)" />
@@ -75,16 +78,20 @@
   </div>
 
   
-  <div class="module-panel mt-6">
+  <div class="quality-tabs mt-6">
     <!-- 更换标签 -->
     <el-tabs v-model="activeName">
       <el-tab-pane :label="`评分明细`" name="GradeBox" />
       <el-tab-pane :label="`AI审核报告`" name="ArraignmentRecordModule" />
     </el-tabs>
-
-    <keep-alive>
-      <component :is="activeName" @previewPhoto="onPreviewPhotoList" />
-    </keep-alive>
+    <div
+      class="module-panel"
+      :class="{'rounded-tl-none': activeName === 'GradeBox'}"
+    >
+      <keep-alive>
+        <component :is="activeName" @previewPhoto="onPreviewPhotoList" />
+      </keep-alive>
+    </div>
   </div>
 
   <!-- 分页 -->
@@ -129,7 +136,15 @@ import * as QualityApi from '@/api/qualityApi'
 
 import { ORGANIZATION_TYPE, QUALITY_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
-import moment from 'moment'
+import dayjs from 'dayjs'
+
+/**
+ * @description 页面组件
+ */
+const QUALITY_COMPONENT = {
+  GRADE_BOX: 'gradeBox', // 评价明细
+  ARRAIGNMENT_RECORD_MODULE: 'ArraignmentRecordModule' // AI报告
+}
 
 export default defineComponent({
   name: 'QualityReportComponents',
@@ -150,14 +165,14 @@ export default defineComponent({
     const route = useRoute()
     const store = useStore()
 
-    const type: string = inject('type' ,'')
-    const organizationType = inject('organizationType')
-    const rangeType = inject('rangeType')
+    const type: string = inject('type') as SPOT_TYPE
+    const organizationType = inject('organizationType') as ORGANIZATION_TYPE
+    const rangeType = inject('rangeType', 'all')
 
     const timeSpan: Ref<string | never | any[]> = ref('')
     const aiTimeSpan: Ref<string | never | any[]> = ref('')
-    const startAt = moment().subtract('day', 28).locale('zh-cn').format('YYYY-MM-DD')
-    const endAt = moment().locale('zh-cn').format('YYYY-MM-DD')
+    const startAt = dayjs().subtract(36, 'hour').format('YYYY-MM-DD 00:00:00')
+    const endAt = dayjs().format('YYYY-MM-DD 00:00:00')
     timeSpan.value = [startAt, endAt]
     aiTimeSpan.value = [startAt, endAt]
     const orderNum = ref('')
@@ -208,37 +223,76 @@ export default defineComponent({
       photoQualityCount: 0,
       photoQualityProblemCount: 0
     })
-
-    /** 获取质检报告评分明细 */
-    let spotPageTotal = 0
-    const getSpotCheckResult = async () => {
-      const req: QualityApi.IgetQualityParams = {
-        page: pager.page,
-        pageSize: pager.pageSize,
-        productIds: productIds.value,
-        problemTagsIds: evaluateIds.value,
-        supervisorArr: jobContentIds.value,
-        staffIds: staffs.value,
-        score: scopeData.value,
-        orderNum: orderNum.value,
-        onlyNew: onlyNew.value,
-        onlyOld: onlyOld.value,
-        startTime: '',
-        endTime: ''
+    /**
+     * @description 获取质检报告评分明细模块
+    */
+    /** 质检报告 */
+    const spotPageData = {
+      pageTotal: 0,
+      pageNum: 1
+    }
+    const getSpotCheckResult = async (req: QualityApi.IgetQualityParams) => {
+      if (rangeType === 'all') {
+        const res = await QualityApi.getAllQualityReport(req)
+        spotPageData.pageTotal = res.total
+        spotPageData.pageNum = pager.page
+        gradeBoxData.value = res.list
+      } else if (rangeType === 'region') {
+        const res = await QualityApi.getAreaQualityReport(req)
+        spotPageData.pageTotal = res.total
+        spotPageData.pageNum = pager.page
+        gradeBoxData.value = res.list
       }
+    }
+
+    /** 质检报告绩效 */
+    const getAllQuota = async (req: QualityApi.IgetQualityParams) => {
+      if (rangeType === 'all') {
+        const res = await QualityApi.getAllQuota(req)
+        spotPageData.pageTotal = res.total
+        spotPageData.pageNum = pager.page
+        gradeBoxData.value = res.list
+      } else if (rangeType === 'region') {
+        const res = await QualityApi.getAreaQuota(req)
+        spotPageData.pageTotal = res.total
+        spotPageData.pageNum = pager.page
+        gradeBoxData.value = res.list
+      }
+    }
+
+    /** 统一调用质检报告模块 */
+    const getResultAndQuota = () => {
+      const req = {} as QualityApi.IgetQualityParams
+      req.page = pager.page
+      req.pageSize = pager.pageSize
+      req.type = type
+      req.organizationType = organizationType
       if (timeSpan.value) {
         req.startTime = TimeUtil.searchStartTime(timeSpan.value[0])
         req.endTime = TimeUtil.searchEndTime(timeSpan.value[1])
       }
-      const res = await QualityApi.getSpotCheckResult(req, axiosType.value)
-      spotPageTotal = res.total
-      gradeBoxData.value = res.list }
+      if (orderNum.value) req.orderNum = orderNum.value
+      if (scopeData.value.length > 0) req.score = scopeData.value
+      if (productIds.value.length > 0) req.productIds = scopeData.value
+      if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
+      if (jobContentIds.value) req.supervisorArr = jobContentIds.value
+      if (staffs.value) req.staffIds = staffs.value
+      if (onlyNew.value) req.onlyNew = onlyNew.value
+      if (onlyOld.value) req.onlyOld = onlyOld.value
+
+      getSpotCheckResult(req)
+      getAllQuota(req)
+    }
+
 
     /**
      * @description 获取AI报告
      */
     const arraignmentRecordList = ref<any>([])
-    let aiPageTotal = 0
+    const aiPageData = {
+      pageTotal: 0,
+      pageNum: 2
+    }
     const getAuditRecords = async () => {
       const req: ArraignmentRecordApi.IgetAuditRecordsParams = {
         type,
@@ -250,7 +304,6 @@ export default defineComponent({
         auditState: aiTag.value,
         supervisorArr: jobContentIds.value,
         staffIds: staffs.value,
-        orderNum: orderNum.value,
         onlyNew: onlyNew.value,
         onlyOld: onlyOld.value,
       }
@@ -258,9 +311,24 @@ export default defineComponent({
         req.startAt = TimeUtil.searchStartTime(aiTimeSpan.value[0])
         req.endAt = TimeUtil.searchEndTime(aiTimeSpan.value[1])
       }
-      const res = await ArraignmentRecordApi.getAuditRecords(req)
-      aiPageTotal = res.total
-      arraignmentRecordList.value = res.list
+      if (orderNum.value) req.cloudOrderNum = orderNum.value
+      if (aiTag.value) req.auditState = aiTag.value
+      if (jobContentIds.value) req.supervisorArr = jobContentIds.value
+      if (staffs.value) req.staffIds = staffs.value
+      if (onlyNew.value) req.onlyNew = onlyNew.value
+      if (onlyOld.value) req.onlyOld = onlyOld.value
+
+      if (rangeType === 'all') {
+        const res = await ArraignmentRecordApi.getAuditRecords(req)
+        aiPageData.pageTotal = res.total
+        aiPageData.pageNum = pager.page
+        arraignmentRecordList.value = res.list
+      } else if (rangeType === 'region') {
+        const res = await ArraignmentRecordApi.getAuditRecords(req)
+        aiPageData.pageTotal = res.total
+        aiPageData.pageNum = pager.page
+        arraignmentRecordList.value = res.list
+      }
     }
     
     /** 获取全部数据 */
@@ -270,7 +338,7 @@ export default defineComponent({
       try {
         store.dispatch('settingStore/showLoading', route.name)
         if (activeName.value === 'GradeBox' ) {
-          getSpotCheckResult()
+          getResultAndQuota()
         } else {
           getAuditRecords()
         }
@@ -278,12 +346,18 @@ export default defineComponent({
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
-    getSpotCheckResult()
+    getResultAndQuota()
     getAuditRecords()
 
     watch(activeName, (val) => {
-      if (val === 'ArraignmentRecordModule') pager.total = aiPageTotal
-      if (val === 'GradeBox') pager.total = spotPageTotal
+      if (val === 'ArraignmentRecordModule') {
+        pager.total = aiPageData.pageTotal
+        pager.page = aiPageData.pageNum
+      }
+      if (val === 'GradeBox') {
+        pager.total = spotPageData.pageTotal
+        pager.page = spotPageData.pageNum
+      }
     })
 
     /** 监听预览图片 */
@@ -333,24 +407,9 @@ export default defineComponent({
       changeOnlyNew,
       changeOnlyOld,
       showHimoProduct,
-      showFamilyProduct
+      showFamilyProduct,
+      QUALITY_COMPONENT
     }
   }
 })
 </script>
-
-<style lang="less" scoped>
-// .ml-reportMain {
-//   .info-item {
-//     font-weight: 500;
-
-//     .num {
-//       margin-left: 12px;
-//       font-size: 16px;
-//       font-weight: 400;
-//       color: #333;
-//     }
-//   }
-// }
-</style>
-

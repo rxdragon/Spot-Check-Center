@@ -92,27 +92,3 @@ export const QUALITY_TYPE = {
   FAMILY_MAKEUP: 'familyMakeupPool', // family化妆
   FAMILY_PHOTOGRAPHY: 'familyPhotographyPool' // family摄影
 }
-
-/**
- * 评分配置
- */
-export const GRADE_CONFIGURATION_TYPE = {
-  SMALL: 'small',
-  MIDDLE: 'middle',
-  PLANT: 'plant',
-  PULL: 'pull',
-}
-
-export const gradeConfigurationToCN = {
-  [GRADE_CONFIGURATION_TYPE.SMALL]: '小',
-  [GRADE_CONFIGURATION_TYPE.MIDDLE]: '中',
-  [GRADE_CONFIGURATION_TYPE.PULL]: '拔草',
-  [GRADE_CONFIGURATION_TYPE.PLANT]: '种草'
-}
-
-export const CNLevelToType = {
-  '小': 'small',
-  '中': 'middle',
-  '拔草': 'pull',
-  '种草': 'plant'
-}

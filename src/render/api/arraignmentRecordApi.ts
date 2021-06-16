@@ -92,7 +92,7 @@ export async function getAuditRecords (params: IgetAuditRecordsParams): Promise<
     method: 'POST',
     data: params
   })
-
+  
   const listData: ISpotCheckRecordList[] = res.list.map((item: any) => {
     const photoQuality = _.get(item, 'photo_quality') || []
     const arraignmentData: ISpotCheckRecordList = {

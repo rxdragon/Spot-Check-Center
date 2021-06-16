@@ -20,6 +20,20 @@ const himoAppealCenter = {
       // eslint-disable-next-line max-len
       component: () => import(/* webpackChunkName: "HimoPhotographyAppeal" */ '@/views/himo-appeal-center/himo-photography-appeal.vue'),
       meta: { title: '摄影申述', icon: '', breadcrumb: true }
+    },
+    {
+      path: 'himo-appeal-history',
+      name: 'HimoAppealHistory',
+      // eslint-disable-next-line max-len
+      component: () => import(/* webpackChunkName: "HimoAppealHistory" */ '@/views/himo-appeal-center/himo-appeal-history.vue'),
+      meta: { title: '申诉历史记录', icon: '', breadcrumb: true }
+    },
+    {
+      path: 'himo-appeal-detail',
+      name: 'HimoAppealDetail',
+      // eslint-disable-next-line max-len
+      component: () => import(/* webpackChunkName: "HimoAppealDetail" */ '@/views/himo-appeal-center/himo-appeal-detail.vue'),
+      meta: { title: '申诉详情', icon: '', breadcrumb: true, hidden: true }
     }
   ]
 }

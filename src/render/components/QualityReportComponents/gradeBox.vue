@@ -9,9 +9,15 @@
       <!-- 列表 -->
       <!-- 照片信息 -->
       <div class="photo-panel mb-6">
-        <div class="panel-title">
-          <span>照片评分</span>
+        <div class="top-msg flex mb-6">
+          <span class="flex-1">被评价单量</span>
+          <span class="flex-1">被评价化妆师</span>
+          <span class="flex-1">伙伴平均分</span>
+          <span class="flex-1">门店平均分</span>
+          <span class="flex-1">职能-专家平均分</span>
+          <span class="flex-1">职能-督导平均分</span>
         </div>
+        <div class="panel-title">照片信息</div>
         <div class="panel-content">
           <div class="photo-list grade-photo-list overflow-x-auto overscroll-x-contain">
             <div v-for="(photoItem, photoIndex) in item.photoList" :key="photoItem.id" class="photo-box">
@@ -49,9 +55,9 @@
         <div class="panel-title">订单信息</div>
         <div class="panel-content">
           <div class="base-info panel-row">
-            <span class="order-info w-44"><span class="order-info-title">流水号：</span>{{ item.streamInfo.orderNumber }}</span>
-            <span class="order-info w-44"><span class="order-info-title">产品名称：</span>{{ item.streamInfo.productName }}</span>
-            <span class="order-info w-44"><span class="order-info-title">照片张数：</span>{{ item.streamInfo.photoCount }}</span>
+            <span class="order-info w-52"><span class="order-info-title">流水号：</span>{{ item.streamInfo.orderNum }}</span>
+            <span class="order-info w-56"><span class="order-info-title">产品名称：</span>{{ item.streamInfo.productName }}</span>
+            <span class="order-info w-28"><span class="order-info-title">照片张数：</span>{{ item.streamInfo.photoCount }}</span>
             <span class="order-info w-44">
               <span class="order-info-title">门店类型：</span>{{ item.streamInfo.storeTypeCN }}
               <div class="standard-icon">
@@ -61,8 +67,8 @@
             <span class="order-info w-40"><span class="order-info-title">门店：</span>{{ item.streamInfo.storeName }}</span>
           </div>
           <div class="base-info panel-row">
-            <span class="order-info w-44"><span class="order-info-title">化妆师：</span>{{ item.streamInfo.dresserName }}</span>
-            <span class="order-info w-44"><span class="order-info-title">化妆督导：</span>{{ item.streamInfo.dresserInfo.supervisorName }}</span>
+            <span class="order-info w-52"><span class="order-info-title">化妆师：</span>{{ item.streamInfo.dresserName }}</span>
+            <span class="order-info w-56"><span class="order-info-title">化妆督导：</span>{{ item.streamInfo.dresserInfo.supervisorName }}</span>
             <span class="order-info w-44"><span class="order-info-title">化妆专家：</span>{{ item.streamInfo.dresserInfo.expertsName }}</span>
           </div>
           <div class="base-info panel-row">
@@ -108,12 +114,7 @@
         </div>
       </div>
     </div>
-    <AppealPop
-      ref="appealPopRef"
-      :appeal-info="appealInfo"
-      :dialog-visible="dialogVisible"
-      @switchAppealPop="switchAppealPop"
-    />
+    <AppealPop v-model:modelValue="dialogVisible" :appeal-info="appealInfo" />
   </div>
 </template>
 
@@ -121,7 +122,7 @@
 import { defineComponent, inject, ref } from 'vue'
 import PhotoBox from '@/components/PhotoBox/index.vue'
 import AppealPop from './AppealPop.vue'
-import { SPOT_TYPE, storeTypeToCN } from '@/model/Enumerate'
+import { SPOT_TYPE, ORGANIZATION_TYPE, storeTypeToCN } from '@/model/Enumerate'
 
 export default defineComponent({
   name: 'GradeBox',
@@ -131,13 +132,8 @@ export default defineComponent({
   },
   emits: ['previewPhoto'],
   setup (props, { emit }) {
-    const routeName = ref('') /* 路由名字 */
-    const gradeInfo = ref('')
-    const showGradePreview = ref('') /* 是否显示大概概览 */
-    const showPhotoVersion = ref('') /* 展示图片版本 */
-    const type = inject('type')
-    const gradeBoxData: any = inject('gradeBoxData')
-    // const SPOT_TYPE = ref(SPOT_TYPE)
+    const type = inject('type') as SPOT_TYPE
+    const gradeBoxData: any = inject('gradeBoxData') as ORGANIZATION_TYPE
 
     const onSelectPhoto = (info: any, photoIndex: string | number | symbol) => {
       const photoData = info.photoList.map((photoItem: any, index: number) => {
@@ -161,20 +157,16 @@ export default defineComponent({
     */
     const dialogVisible = ref(false)
     const appealInfo = ref('')
-    const switchAppealPop = () => {
-      dialogVisible.value = !dialogVisible.value
+    const switchAppealPop = (visible: boolean) => {
+      dialogVisible.value = visible
     }
     const goAppeal = (info: any, id: string) => {
       info.id = id
       appealInfo.value = JSON.stringify(info)
-      switchAppealPop()
+      switchAppealPop(true)
     }
 
     return {
-      routeName,
-      gradeInfo,
-      showGradePreview,
-      showPhotoVersion,
       type,
       gradeBoxData,
       SPOT_TYPE,
@@ -202,6 +194,11 @@ export default defineComponent({
 
   .photo-panel {
     flex-shrink: 0;
+
+    .top-msg {
+      font-size: 14px;
+      color: #303133;
+    }
 
     .panel-title {
       display: flex;

@@ -11,7 +11,7 @@
       clearable
     >
       <template #default="{ node, data }">
-        <span>{{ data.label }}</span>
+        <span>{{ data.name }}</span>
         <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
       </template>
     </el-cascader>
@@ -19,38 +19,43 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive, ref } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
+import * as SelectDataApi from '@/api/selectDataApi'
 
 export default defineComponent({
   name: 'EvaluateSelect',
+  props: {
+    type: { type: String, default: '' }
+  },
   setup () {
-    const type = inject('type', '')
-
     /** 组件基本属性 */
     const deafultProps = reactive({
       multiple: true,
-      emitPath: false
+      emitPath: false,
+      value: 'id',
+      label: 'name'
     })
 
 
     /** 获取评价标签 */
-    const options = ref([])
+    const options: any = ref([])
     const loading = ref(true)
-    async function getAllEvaluate () {
-      // TODO lj
-      // const req = {
-
-      // }
-      options.value = []
-      loading.value = false
+    const getAllLabel = async () => {
+      try {
+        loading.value = true
+        const res: any[] = await SelectDataApi.getEvaluateSelectList()
+        options.value = res
+      } finally {
+        loading.value = false
+      }
     }
-    getAllEvaluate()
+    getAllLabel()
 
 
     return {
       deafultProps,
-      type,
-      loading, options
+      loading,
+      options
     }
   },
 })

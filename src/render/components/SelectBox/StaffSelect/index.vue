@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, reactive, ref, computed } from 'vue'
-import * as Staff from '@/api/staff'
+import * as SelectDataApi from '@/api/selectDataApi'
 
 export default defineComponent({
   name: 'StaffSelect',
@@ -46,7 +46,7 @@ export default defineComponent({
     const options: any = ref([])
     const loadingDown = ref(true)
     const getStaffList = async () => {
-      const list = await Staff.getStaffSelectList()
+      const list = await SelectDataApi.getStaffSelectList()
       options.value = list
       loadingDown.value = false
     }

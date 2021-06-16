@@ -2,7 +2,7 @@
 <template>
   <!-- TODO lj -->
   <el-dialog
-    v-model="visible"
+    v-bind="$attrs"
     title="我要申诉"
     width="500px"
     :show-close="false"
@@ -48,7 +48,7 @@
     </el-row>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="switchPop">
+        <el-button @click="closeDialog">
           <p class="w-20">取消</p>
         </el-button>
         <el-button type="primary" @click="submitAppeal">
@@ -65,27 +65,25 @@ import * as AppealApi from '@/api/appealApi'
 import { newMessage } from '@/utils/message'
 import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
+import { ORGANIZATION_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
+  name: 'AppealPop',
   props: {
-    dialogVisible: { type: Boolean, default: false },
     appealInfo: { type: String, default: '' }
   },
-  emits: ['switchAppealPop'],
+  emits: ['update:modelValue'],
   setup (props, { emit }) {
     const store = useStore()
     const route = useRoute()
-    const organizationType = inject('organizationType', '')
-    const visible = computed(() => {
-      return props.dialogVisible
-    })
+    const organizationType = inject('organizationType') as ORGANIZATION_TYPE
 
     const tagInfo = computed(() => {
       return JSON.parse(props.appealInfo)
     })
 
-    const switchPop = () => {
-      emit('switchAppealPop')
+    const closeDialog = () => {
+      emit('update:modelValue', false)
     }
 
     /**
@@ -99,7 +97,7 @@ export default defineComponent({
     */
     const submitAppeal = async () => {
       if (appealContent.value.length === 0 || appealNote.value === '') return newMessage.warning('请完善申诉信息')
-      const req: AppealApi.IcreateAppealParams = {
+      const req = {
         serviceType: '',
         serviceId: tagInfo.value.id,
         appealContent: appealContent.value,
@@ -109,18 +107,17 @@ export default defineComponent({
         store.dispatch('settingStore/showLoading', route.name)
         await AppealApi.createAppeal(req, organizationType)
         newMessage.success('申诉成功')
-        switchPop()
+        closeDialog()
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
 
     return {
-      visible,
       tagInfo,
       appealNote,
       appealContent,
-      switchPop,
+      closeDialog,
       submitAppeal
     }
   }
