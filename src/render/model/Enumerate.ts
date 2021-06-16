@@ -6,7 +6,9 @@
 export enum STORE_TYPE {
   BLUE = 'blue',
   MASTER = 'master',
+  GOLD = 'gold',
   KIDS = 'kids',
+  FAMILY = 'family',
   MAINTO = 'mainto',
   UNUSUAL = 'unusual'
 }
@@ -15,7 +17,9 @@ export enum STORE_TYPE {
 export const storeTypeToCN = {
   [STORE_TYPE.BLUE]: '蓝标',
   [STORE_TYPE.MASTER]: '大师',
-  [STORE_TYPE.KIDS]: 'kids',
+  [STORE_TYPE.GOLD]: '大师',
+  [STORE_TYPE.KIDS]: 'Kids',
+  [STORE_TYPE.FAMILY]: 'Family',
   [STORE_TYPE.MAINTO]: '缦图',
   [STORE_TYPE.UNUSUAL]: '异常'
 }

@@ -10,8 +10,8 @@
     <div class="module-panel">
       <div class="role-row">
         <div class="row-title">角色组名称</div>
-        <div class="row-content">
-          <el-input v-model="roleTitle" placeholder="请输入角色组名称" />
+        <div class="row-content w-48">
+          <el-input v-model="roleTitle" clearable placeholder="请输入角色组名称" />
         </div>
       </div>
       <div class="role-row items-start">
@@ -138,6 +138,10 @@ export default defineComponent({
     width: 90px;
     font-size: 14px;
     color: #303133;
+  }
+
+  .row-content {
+    width: 100%;
   }
 }
 </style>

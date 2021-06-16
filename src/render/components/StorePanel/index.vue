@@ -1,7 +1,7 @@
 <template>
   <div class="store-panel">
     <TransferExtend
-      v-if="!productLoading"
+      v-if="!storeLoading"
       :default-checked-keys="defaultChecks"
       :from-data="fromData"
       :title="title"
@@ -30,25 +30,24 @@ export default defineComponent({
   },
   emits: ['update:toData'],
   setup (props, { emit }) {
-    StaffApi.getAllStore()
     const { defaultCheckedKeys, disabledChecked } = toRefs(props)
 
-    const productLoading = ref(false)
+    const storeLoading = ref(true)
     const title = ['可选门店', '已选门店']
     const fromData = ref<any>([])
     const defaultChecks = ref<any>([])
 
-    const getAllProductPanel = async (disabledId?: any[]) => {
-      productLoading.value = true
+    const getAllStorePanel = async (disabledId?: any[]) => {
+      storeLoading.value = true
       const list = await StaffApi.getAllStore(disabledId)
       fromData.value = JSON.parse(JSON.stringify(list))
-      productLoading.value = false
+      storeLoading.value = false
     }
 
     onMounted(() => {
       if (!disabledChecked.value || !disabledChecked.value.length) {
         defaultChecks.value = defaultCheckedKeys.value
-        getAllProductPanel()
+        getAllStorePanel()
       }
     })
 
@@ -67,7 +66,7 @@ export default defineComponent({
       (value) => {
         const data = new Set([...defaultCheckedKeys.value, ...value])
         defaultChecks.value = [...data]
-        getAllProductPanel(value)
+        getAllStorePanel(value)
       },
       { immediate: true }
     )
@@ -83,7 +82,7 @@ export default defineComponent({
     }
 
     return {
-      productLoading,
+      storeLoading,
       fromData, title,
       defaultChecks,
       addToData, remove

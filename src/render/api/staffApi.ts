@@ -1,19 +1,36 @@
 import axios from '@/plugins/axios'
 import StaffModel from '@/model/StaffModel'
-import { STORE_TYPE } from '@/model/Enumerate'
+import { STORE_TYPE, storeTypeToCN } from '@/model/Enumerate'
 
 export interface ISelectType {
   label: string
   value: number
 }
+
+/**
+ * @description 获取身份列表
+ */
+export async function getPositions () {
+  const res: any = await axios({
+    url: '/project_photo_quality/common/getPositions',
+    method: 'GET'
+  })
+  const createData: ISelectType[] = res.map((item: any) => {
+    return {
+      label: item.name,
+      value: item.id
+    }
+  })
+  return createData
+}
+
 /**
  * @description 获取全部角色信息
  * @returns 
  */
 export async function getAllRole () {
   const res: any = await axios({
-    // mock 假数据
-    url: '/project_cloud/common/getAllRole',
+    url: '/project_photo_quality/common/getAllRole',
     method: 'GET'
   })
   const createData: ISelectType[] = res.map((roleItem: any) => {
@@ -89,8 +106,6 @@ export async function enableStaff (params: IEnableStaffParams): Promise<boolean>
  * @description 搜索用户信息
  */
 export interface IGetStaffInfoParams {
-  // mock数据 后面不需要staffNum 入参
-  staffNum?: number | string
   staffId?: number | string
   staffName?: string
 }
@@ -114,17 +129,19 @@ function findTypeId (value: STORE_TYPE): number {
   switch (value) {
     case STORE_TYPE.BLUE:
       return -1
-    case STORE_TYPE.MASTER:
+    case STORE_TYPE.GOLD:
       return -2
     case STORE_TYPE.KIDS:
       return -3
-    case STORE_TYPE.MAINTO:
+    case STORE_TYPE.FAMILY:
       return -4
+    case STORE_TYPE.MAINTO:
+      return -5
     default:
       return -1
   }
 }
-interface IProductInfo {
+interface IStoreInfo {
   id: number
   pid: number
   label: string
@@ -134,42 +151,46 @@ interface IProductInfo {
 }
 export async function getAllStore (disabledId: any[] = []) {
   const res: any = await axios({
-    // TODO:cf
-    // url: '/project_photo_quality/staff/getStaffInfo',
-    url: '/project_cloud/common/getAllProduct',
+    url: '/project_photo_quality/common/getAllStore',
     method: 'GET',
   })
-  let createData: IProductInfo[] = [
+  let createData: IStoreInfo[] = [
     {
-      id: -1,
+      id: findTypeId(STORE_TYPE.BLUE),
       pid: 0,
       name: STORE_TYPE.BLUE,
-      label: '蓝标',
+      label: storeTypeToCN[STORE_TYPE.BLUE],
       children: []
     }, {
-      id: -2,
+      id: findTypeId(STORE_TYPE.GOLD),
       pid: 0,
-      name: STORE_TYPE.MASTER,
-      label: '大师',
+      name: STORE_TYPE.GOLD,
+      label: storeTypeToCN[STORE_TYPE.GOLD],
       children: []
     }, {
-      id: -3,
+      id: findTypeId(STORE_TYPE.KIDS),
       pid: 0,
       name: STORE_TYPE.KIDS,
-      label: 'kids',
+      label: storeTypeToCN[STORE_TYPE.KIDS],
       children: []
     }, {
-      id: -4,
+      id: findTypeId(STORE_TYPE.FAMILY),
+      pid: 0,
+      name: STORE_TYPE.FAMILY,
+      label: storeTypeToCN[STORE_TYPE.FAMILY],
+      children: []
+    }, {
+      id: findTypeId(STORE_TYPE.MAINTO),
       pid: 0,
       name: STORE_TYPE.MAINTO,
-      label: '缦图',
+      label: storeTypeToCN[STORE_TYPE.MAINTO],
       children: []
     }
   ]
   res.forEach((productItem: any) => {
-    const findType = createData.find(typeItem => typeItem.name === productItem.retouch_standard)
+    const findType = createData.find(typeItem => typeItem.name === productItem.store_type)
     if (findType) {
-      const productInfo: IProductInfo = {
+      const productInfo: IStoreInfo = {
         children: [],
         id: productItem.id,
         pid: findTypeId(findType.name as STORE_TYPE),
@@ -389,9 +410,9 @@ interface IDelRoleParams {
 }
 export async function delRole (params: IDelRoleParams) {
   const res: any = await axios({
-    url: '/project_photo_quality/staff/delRole',
-    method: 'DELETE',
-    params
+    url: '/project_photo_quality/role/delRole',
+    method: 'PUT',
+    data: params
   })
   return res
 }

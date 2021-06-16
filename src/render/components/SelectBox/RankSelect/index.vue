@@ -3,9 +3,9 @@
     <el-select v-bind="$attrs" clearable placeholder="请选择角色组">
       <el-option
         v-for="item in options"
-        :key="item.id"
+        :key="item.value"
         :label="item.label"
-        :value="item.id"
+        :value="item.value"
         :disabled="isLoading"
       />
     </el-select>
@@ -14,38 +14,23 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import * as StaffApi from '@/api/staffApi'
 
 export default defineComponent({
   name: 'RankSelect',
   setup () {
-    // TODO: cf
-    const isLoading = ref(false)
-    const options = ref([
-      {
-        label: '化妆专家',
-        id: 1
-      },
-      {
-        label: '化妆督导',
-        id: 2
-      },
-      {
-        label: '化妆组长',
-        id: 3
-      },
-      {
-        label: '摄影专家',
-        id: 5
-      },
-      {
-        label: '摄影督导',
-        id: 6
-      },
-      {
-        label: '摄影组长',
-        id: 7
-      },
-    ])
+    const isLoading = ref(true)
+    const options = ref<StaffApi.ISelectType[]>([])
+
+    const getPositions = async () => {
+      try {
+        options.value = await StaffApi.getPositions()
+        isLoading.value = false
+      } catch (error) {
+        console.warn(error)
+      }
+    }
+    getPositions()
 
     return {
       options,

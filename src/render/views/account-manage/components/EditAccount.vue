@@ -63,17 +63,18 @@
           <div class="module-panel base-module">
             <div class="base-row mb-5">
               <span class="base-title">身份</span>
-              <RankSelect v-model="rankId" />
+              <RankSelect v-model="positionId" />
             </div>
             <div class="base-row mb-5">
               <span class="base-title">管辖伙伴</span>
-              <StaffSelect v-model="configStaffIds" />
+              <StoreStaffSelect v-model="configStaffIds" />
             </div>
             <div class="base-row mb-5 items-start">
               <span class="base-title">管辖门店</span>
               <StorePanel v-model:to-data="selectStore" :default-checked-keys="defaultCheckedKeys" />
             </div>
             <div class="base-row mb-5">
+              <span class="base-title" />
               <el-button type="primary" @click="nextStep">下一步</el-button>
             </div>
           </div>
@@ -107,7 +108,7 @@ import RankSelect from '@SelectBox/RankSelect/index.vue'
 import StorePanel from '@/components/StorePanel/index.vue'
 import Jurisdiction from '@/components/Jurisdiction/index.vue'
 import RoleSelect from '@SelectBox/RoleSelect/index.vue'
-import StaffSelect from '@SelectBox/StaffSelect/index.vue'
+import StoreStaffSelect from '@SelectBox/StoreStaffSelect/index.vue'
 
 import * as StaffApi from '@/api/staffApi'
 import StaffModel from '@/model/StaffModel'
@@ -125,7 +126,7 @@ enum ACTIVE_TYPE {
 
 export default defineComponent({
   name: 'EditAccount',
-  components: { RankSelect, StorePanel, Jurisdiction, RoleSelect, StaffSelect },
+  components: { RankSelect, StorePanel, Jurisdiction, RoleSelect, StoreStaffSelect },
   props: {
     modelValue: { type: Boolean, required: true },
     editType: { type: String as PropType<EDIT_TYPE>, required: true },
@@ -191,7 +192,7 @@ export default defineComponent({
     const staffNum = ref<string | number>()
     const staffName = ref('')
     const staffInfo = ref<StaffModel>()
-    const rankId = ref<number>()
+    const positionId = ref<idType>()
     const administerStaffIds = ref<number[]>([])
 
     const seachStaffData = async () => {
@@ -199,15 +200,16 @@ export default defineComponent({
         store.dispatch('settingStore/showLoading', route.name)
         if (!staffNum.value && !staffNum.value) return newMessage.warning('请输入搜索信息')
         const req: StaffApi.IGetStaffInfoParams = {}
-        // if (staffNum.value) req.staffId = staffNum.value
-        if (staffNum.value) req.staffNum = staffNum.value
-        if (staffName.value) req.staffId = staffName.value
+        if (staffNum.value) req.staffId = staffNum.value
+        if (staffName.value) req.staffName = staffName.value
         staffInfo.value = await StaffApi.getStaffInfo(req)
         
         // 权限相关信息
-        rankId.value = staffInfo.value.rankId
+        positionId.value = staffInfo.value.positionId
         activeRoleId.value = staffInfo.value.rolesId
         staffPermission.value = staffInfo.value.permissions.map(item => item.id)
+        // todo:cf 添加门店相关信息
+
         await getRoleInfo(activeRoleId.value)
         resetPermission()
       } finally {
@@ -231,14 +233,14 @@ export default defineComponent({
     /** 提交用户信息 */
     const submitData = async () => {
       if (!staffNum.value) return newMessage.warning('缺少用户id')
-      if (!rankId.value) return newMessage.warning('请选择身份')
+      if (!positionId.value) return newMessage.warning('请选择身份')
 
       try {
         store.dispatch('settingStore/showLoading', route.name)
         const req: StaffApi.IEditStaffParams = {
           staffId: staffNum.value,
           roleId: activeRoleId.value,
-          positionId: rankId.value
+          positionId: positionId.value
         }
         if (selectStore.value.length) req.configStoreIds = selectStore.value
         if (configStaffIds.value.length) req.configStaffIds = selectStore.value
@@ -259,19 +261,14 @@ export default defineComponent({
 
     /** 下一步 */
     const validateParams = () => {
-      if (!staffNum.value) {
-        newMessage.warning('请填写工号')
+      try {
+        if (!staffNum.value) throw new Error('请填写工号')
+        if (!positionId.value) throw new Error('请选择身份')
+        return true
+      } catch (error) {
+        newMessage.warning(error.message)
         return false
       }
-      if (rankId.value) {
-        newMessage.warning('请选择身份')
-        return false
-      }
-      if (administerStaffIds.value.length) {
-        newMessage.warning('请选择管辖伙伴')
-        return false
-      }
-      return true
     }
     const nextStep = () => {
       if (!validateParams()) return
@@ -283,7 +280,7 @@ export default defineComponent({
       EDIT_TYPE, ACTIVE_TYPE,
       staffNum, staffName, seachStaffData, staffInfo,
       activeName,
-      rankId, selectStore, defaultCheckedKeys, administerStaffIds, configStaffIds,
+      positionId, selectStore, defaultCheckedKeys, administerStaffIds, configStaffIds,
       nextStep,
       permissionGather, rolePermissionArr, activeRoleId, onRoleChange,
       submitData
