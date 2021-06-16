@@ -156,6 +156,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .photo-box {
   background-color: @photoBack;
+  border-radius: 8px;
 
   .image-box {
     position: relative;

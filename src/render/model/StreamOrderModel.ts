@@ -8,6 +8,7 @@ export interface IPagerInfo {
 }
 
 export interface IStaffInfo {
+  staffIds: number[]
   name: string
   expertsName: string
   groupLeaderName: string
@@ -15,8 +16,14 @@ export interface IStaffInfo {
 }
 
 /** 获取用户信息 */
-function getStaffInfo (staffInfo: { staff: any, experts: any[], group_leader: any[], supervisor: any[]} ): IStaffInfo {
-  const name = _.get(staffInfo, 'staff.nickname') || _.get(staffInfo, 'staff.name') || '-'
+// eslint-disable-next-line max-len
+function getStaffInfo (staffInfo: { staffs: any[], experts: any[], group_leader: any[], supervisor: any[]} ): IStaffInfo {
+  const staffsInfo = staffInfo.staffs || []
+  const staffsNames = staffsInfo.map(item => item.nickname || item.name || '异常')
+  let staffIds = staffsInfo.map(item => item.id)
+  staffIds = staffIds.filter(item => item)
+  const staffsName = staffsNames.join('、')
+
   const expertsInfo = staffInfo.experts || []
   const expertsNames = expertsInfo.map(item => item.nickname || item.name || '异常')
   const expertsName = expertsNames.join('、')
@@ -30,7 +37,8 @@ function getStaffInfo (staffInfo: { staff: any, experts: any[], group_leader: an
   const supervisorName = supervisorNames.join('、')
 
   return {
-    name,
+    staffIds,
+    name: staffsName,
     expertsName,
     groupLeaderName,
     supervisorName

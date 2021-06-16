@@ -24,7 +24,7 @@ interface ICommitInfo {
 export default class PoolRecordModel {
   // TODO: cf
   base: any
-  id: number // 抽片记录id
+  id: string // 抽片记录id
   businessId: number | string
   commitInfo?: ICommitInfo
   streamInfo?: StreamOrderModel

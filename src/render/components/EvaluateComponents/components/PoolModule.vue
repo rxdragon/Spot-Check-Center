@@ -1,6 +1,6 @@
 <template>
   <div class="pool-module module-panel mb-6">
-    <div v-if="poolItemData.streamInfo" class="module-title">
+    <div v-if="poolItemData.streamInfo" class="module-title mb-4">
       <div class="title-chunk spot-num">编号：{{ poolItemData.streamInfo.spotNum }}</div>
       <div class="title-chunk product-name">产品名称：{{ poolItemData.streamInfo.productName }}</div>
       <div class="title-chunk store-type">
@@ -25,9 +25,8 @@
 
 <script lang="ts">
 import type PoolRecordModel from '@/model/PoolRecordModel'
-import { SPOT_TYPE } from '@/model/Enumerate'
 
-import { defineComponent, PropType, inject } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import PhotoBox from '@/components/PhotoBox/index.vue'
 
 export default defineComponent({
@@ -38,28 +37,12 @@ export default defineComponent({
   },
   emits: ['evaluatePhoto'],
   setup (props, { emit }) {
-    const type = inject('type') as SPOT_TYPE
 
     const onSelectPhoto = (photoIndex: number) => {
-      const photoData = props.poolItemData.photoList?.map((photoItem, index: number) => {
-        const { streamInfo } = props.poolItemData
-        const photoInfo = {
-          ...streamInfo,
-          aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
-        }
-        return {
-          // todo photoModel 增加完成src
-          title: `原片（${index + 1}/${props.poolItemData.photoList?.length}）`,
-          src: photoItem.path,
-          photoInfo,
-          markPath: '',
-          markJson: '',
-          markBase: ''
-        }
-      })
+      const poolItemId = props.poolItemData.id
 
       const data = {
-        photoData,
+        poolItemId,
         photoIndex
       }
       emit('evaluatePhoto', data)

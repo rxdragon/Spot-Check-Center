@@ -15,7 +15,7 @@ function getMinMaxNumer (dom: any) {
 }
 
 export default {
-  beforeUpdate: function (el:any) {
+  beforeMount: function (el: any) {
     el.addEventListener('keyup', () => {
       const reg = /^[0-9]*$/g
       const reg2 = /[0-9]+/g
