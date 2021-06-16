@@ -1,5 +1,6 @@
 <template>
   <div class="evaluate-history-module">
+    <!-- 照片信息 -->
     <div class="panel-title mb-6">照片信息</div>
     <div class="photo-list overflow-x-auto overscroll-x-contain">
       <PhotoBox
@@ -30,7 +31,9 @@
       </PhotoBox>
     </div>
     <el-divider />
+    <!-- 订单信息 -->
     <div class="panel-title mb-6">订单信息</div>
+    <!-- 订单以及门店信息 -->
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">订单号：{{ streamInfo.orderNum }}</div>
       <div class="info-item">产品名称：{{ streamInfo.productName }}</div>
@@ -43,6 +46,7 @@
       </div>
       <div class="info-item">门店：{{ streamInfo.storeName }}</div>
     </div>
+    <!-- 化妆师信息 -->
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">
         化妆师：{{ dresserInfo.name }}
@@ -54,6 +58,7 @@
         化妆专家：{{ dresserInfo.expertsName }}
       </div>
     </div>
+    <!-- 备注信息 -->
     <div class="order-info grid grid-cols-1 mb-4">
       <div class="info-item">订单备注：{{ note.orderNote }}</div>
     </div>
@@ -64,13 +69,21 @@
       <div class="info-item">化妆备注：{{ note.dresserNote }}</div>
     </div>
     <el-divider />
+    <!-- 评价信息 -->
     <div class="panel-title grid grid-cols-12 mb-6">
       <div class="col-start-1 col-end-4">评价信息</div>
       <div class="evaluate-title-info grid grid-cols-3 col-end-13 col-span-4">
         <div>总评分：{{ tagInfo.totalScore }}</div>
         <div>评分人：{{ tagInfo.raterName }}</div>
         <div>
-          <el-button size="small" class="change-evaluate-btn" type="primary">修改评分</el-button>
+          <el-button
+            size="small"
+            class="change-evaluate-btn"
+            type="primary"
+            @click="onEvaluatePhoto(0)"
+          >
+            修改评分
+          </el-button>
         </div>
       </div>
     </div>
@@ -94,16 +107,16 @@
 <script lang="ts">
 import { computed, defineComponent, inject } from 'vue'
 import { SPOT_TYPE } from '@/model/Enumerate'
-
+// import type PoolRecordModel from '@/model/PoolRecordModel'
 import PhotoBox from '@/components/PhotoBox/index.vue'
 
 export default defineComponent({
   name: 'EvaluateHistoryModule',
   components: { PhotoBox },
   props: {
-    recordInfo: { type: Object, required: true },
+    recordInfo: { type: Object, required: true }
   },
-  emits: ['previewPhoto'],
+  emits: ['previewPhoto', 'evaluatePhoto'],
   data () {
     return {
       SPOT_TYPE
@@ -111,10 +124,13 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     const type = inject('type')
+    /** 
+     * @description 照片预览 
+     */
     const onSelectPhoto = (photoIndex: string | number | symbol) => {
-      const photoData = props.recordInfo.photoList.map((photoItem: any, index: number) => {
+      const photoData = props.recordInfo.photoList?.map((photoItem: any, index: number) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { baseData, photoList, ...orderInfo } = props.recordInfo.streamInfo
+        const { ...orderInfo } = props.recordInfo.streamInfo
         return {
           title: `第${index + 1}张图`,
           ...photoItem,
@@ -127,6 +143,32 @@ export default defineComponent({
       }
       emit('previewPhoto', data)
     }
+    /** 
+     * @description 修改评分
+     */
+    const onEvaluatePhoto = (photoIndex: string | number | symbol) => {
+      const photoData = props.recordInfo.photoList?.map((photoItem: any, index: number) => {
+        const { streamInfo } = props.recordInfo
+        const photoInfo = {
+          ...streamInfo,
+          aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
+        }
+        return {
+          // todo photoModel 增加完成src
+          title: `原片（${index + 1}/${props.recordInfo.photoList?.length}）`,
+          src: photoItem.path,
+          photoInfo,
+          markPath: '',
+          markJson: '',
+          markBase: ''
+        }
+      })
+      const data = {
+        photoData,
+        photoIndex
+      }
+      emit('evaluatePhoto', data)
+    }
 
     const photoList = computed (() => {
       return props.recordInfo.photoList
@@ -137,11 +179,11 @@ export default defineComponent({
     })
 
     const note = computed (() => {
-      return props.recordInfo.streamInfo.note
+      return props.recordInfo.streamInfo?.note
     })
 
     const dresserInfo = computed (() => {
-      return props.recordInfo.streamInfo.dresserInfo
+      return props.recordInfo.streamInfo?.dresserInfo
     })
 
     const tagInfo = computed (() => {
@@ -150,6 +192,7 @@ export default defineComponent({
     
     return {
       onSelectPhoto,
+      onEvaluatePhoto,
       type,
       photoList,
       streamInfo,

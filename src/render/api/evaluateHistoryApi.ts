@@ -1,12 +1,15 @@
 // import axios from '@/plugins/axios'
 import { SPOT_TYPE } from '@/model/Enumerate'
-// import StreamOrderModel from '@/model/StreamOrderModel'
 import AuditSpotPhotoModel from '@/model/AuditSpotPhotoModel'
-import EvaluateModel from '@/model/EvaluateModel'
-// import PoolPhotoModel from '../model/PoolPhotoModel'
+import PoolRecordModel from '@/model/PoolRecordModel'
 
 export interface IgetHistoryRecordsParams {
   type: SPOT_TYPE | string
+  productIds?: number[]
+  staffIds?: string[]
+  supervisorArr?: string[]
+  problemTagsIds?: string[]
+  score?: number[]
   startAt?: string
   endAt?: string
   cloudOrderNum?: string
@@ -14,16 +17,13 @@ export interface IgetHistoryRecordsParams {
   pageSize: number
 }
 
-interface IHistoryRecordList extends EvaluateModel {
-  photoList: any[]
-  getStreamInfo: any
-  getPoolPhotoList: any
-  getPoolAppealsModel: any
-}
+// interface IHistoryRecordList extends PoolRecordModel {
+//   photoList: AuditSpotPhotoModel[]
+// }
 
 interface IgetHistoryRecordsRes {
+  list: PoolRecordModel[]
   total: number
-  list: EvaluateModel[]
 }
 /**
  * @description 获取历史记录列表
@@ -163,17 +163,25 @@ export async function getHistoryRecords (params: IgetHistoryRecordsParams): Prom
     },
     "success": true
   }
-  const listData: IHistoryRecordList[] = res.msg.data.map((item: any) => {
-    const photoQuality = _.get(item, 'photos').map((item: any) => {
+  const listData: PoolRecordModel[] = res.msg.data.map((historyRecordItem: any, historyRecordIndex: number) => {
+    const poolRecordModel = new PoolRecordModel(historyRecordItem)
+    const pagerInfo = {
+      page: params.page,
+      pageSize: params.pageSize,
+      index: historyRecordIndex,
+      total: res.msg.data[0].total,
+    }
+    poolRecordModel.getStreamInfo(historyRecordItem.streamOrder, pagerInfo)
+    poolRecordModel.getTags(historyRecordItem)
+    const photoQuality = _.get(historyRecordItem, 'photos').map((item: any) => {
       return item.photo_quality || []
     })
     const historyRecordData: any = {
-      ...new EvaluateModel(item),
+      ...poolRecordModel,
       photoList: photoQuality.map((photoItem: any) => new AuditSpotPhotoModel(photoItem))
     }
     return historyRecordData
   })
-
   const createData = {
     list: listData,
     total: res.msg.data[0].total

@@ -1,4 +1,4 @@
-# 0.1.0 (2021-06-10)
+# 0.1.0 (2021-06-16)
 
 ### 🌟 新功能
 范围|描述|commitId
@@ -6,11 +6,13 @@
  - | 代码格式修改 | [5716de4](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/5716de4)
  - | 更新标记组件 | [dc84166](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dc84166)
  - | 更新打分组件 | [ce28726](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/ce28726)
+ - | 更新代码 | [ffa65d0](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/ffa65d0)
  - | 更新代码 | [397fa4c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/397fa4c)
  - | 更新代码 | [877aff9](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/877aff9)
  - | 更新评价历史记录根组件 | [9384490](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9384490)
  - | 更新评价配置和历史相关组件 | [49697eb](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/49697eb)
  - | 历史记录相关的数据模块以及接口查询 | [c4114c5](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4114c5)
+ - | 完成评分配置组件 | [c4bc9cf](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4bc9cf)
  - | 完成预览组件相关信息 | [1426bc7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1426bc7)
  - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
  - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)

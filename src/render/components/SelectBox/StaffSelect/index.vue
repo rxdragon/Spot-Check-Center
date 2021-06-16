@@ -8,7 +8,6 @@
       v-bind="$attrs"
       placeholder="请选择伙伴"
       :show-all-levels="false"
-      :popper-append-to-body="false"
       :disabled="componentData.loadingDown"
       filterable
       clearable
