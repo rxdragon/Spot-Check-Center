@@ -1,6 +1,5 @@
 // import axios from '@/plugins/axios'
 import { SPOT_TYPE } from '@/model/Enumerate'
-import AuditSpotPhotoModel from '@/model/AuditSpotPhotoModel'
 import PoolRecordModel from '@/model/PoolRecordModel'
 
 export interface IgetHistoryRecordsParams {
@@ -172,15 +171,9 @@ export async function getHistoryRecords (params: IgetHistoryRecordsParams): Prom
       total: res.msg.data[0].total,
     }
     poolRecordModel.getStreamInfo(historyRecordItem.streamOrder, pagerInfo)
+    poolRecordModel.getPoolPhotoList()
     poolRecordModel.getTags(historyRecordItem)
-    const photoQuality = _.get(historyRecordItem, 'photos').map((item: any) => {
-      return item.photo_quality || []
-    })
-    const historyRecordData: any = {
-      ...poolRecordModel,
-      photoList: photoQuality.map((photoItem: any) => new AuditSpotPhotoModel(photoItem))
-    }
-    return historyRecordData
+    return poolRecordModel
   })
   const createData = {
     list: listData,

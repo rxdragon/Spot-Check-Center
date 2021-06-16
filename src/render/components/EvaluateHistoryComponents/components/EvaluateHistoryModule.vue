@@ -6,7 +6,7 @@
       <PhotoBox
         v-for="(photoItem, photoIndex) in photoList"
         :key="photoItem.id"
-        :src="photoItem.path"
+        :src="photoItem.auditSpotModel.path"
         version=""
         class="mr-4"
         @click="onSelectPhoto(photoIndex)"
@@ -133,7 +133,7 @@ export default defineComponent({
         const { ...orderInfo } = props.recordInfo.streamInfo
         return {
           title: `第${index + 1}张图`,
-          ...photoItem,
+          ...photoItem.auditSpotModel,
           orderInfo
         }
       })

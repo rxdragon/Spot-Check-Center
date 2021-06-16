@@ -13,6 +13,7 @@
  - | 更新评价配置和历史相关组件 | [49697eb](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/49697eb)
  - | 历史记录相关的数据模块以及接口查询 | [c4114c5](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4114c5)
  - | 完成评分配置组件 | [c4bc9cf](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4bc9cf)
+ - | 完成评价历史记录组件 | [dfbc706](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dfbc706)
  - | 完成预览组件相关信息 | [1426bc7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1426bc7)
  - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
  - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)

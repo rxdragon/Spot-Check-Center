@@ -71,7 +71,7 @@
           class="mt-6"
           :record-info="item"
           @preview-photo="onPreviewPhotoList"
-          @evaluatePhoto="onEvaluatePhoto"
+          @evaluate-photo="onEvaluatePhoto"
         />
       </div>
       <!-- 分页 -->
@@ -90,15 +90,17 @@
     <PreviewPhoto
       v-if="showPreview"
       v-model:showPreview="showPreview"
-      :imgarray="photos"
+      :imgarray="previewPhotos"
       :index="previewIndex"
     />
     <!-- 修改评分组件 -->
     <EvaluatePhoto
       v-if="showEvaluate"
       v-model:showEvaluate="showEvaluate"
-      :imgarray="imgarray"
+      :imgarray="evaluatePhotos"
       :index="evaluateIndex"
+      @changePool="onChangePool"
+      @skipStaff="onSkipStaff"
       @submitData="onSubmitData"
     />
   </div>
@@ -122,8 +124,9 @@ import EvaluateHistoryModule from './components/EvaluateHistoryModule.vue'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
 import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
 
+import * as EvaluateApi from '@/api/evaluateApi'
 import * as EvaluateHistoryApi from '@/api/evaluateHistoryApi'
-import { SPOT_TYPE } from '@/model/Enumerate'
+import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import PoolRecordModel from '@/model/PoolRecordModel'
 
 export default defineComponent({
@@ -144,53 +147,8 @@ export default defineComponent({
   setup () {
     const route = useRoute()
     const store = useStore()
-    const type: string = inject('type', '')
-    const organizationType = inject('organizationType')
-
-    const imgarray = ref<any>([])
-    const evaluateIndex = ref(0)
-    const showEvaluate = ref(false)
-    /** 
-     * @description 修改评分
-     */
-    const onEvaluatePhoto = ({ photoIndex, photoData }: { photoIndex: number, photoData: any }) => {
-      imgarray.value = photoData
-      evaluateIndex.value = photoIndex
-      showEvaluate.value = true
-    }
-
-    const poolList = ref<PoolRecordModel[]>([])
-    /** 
-     * @description 提交评分 
-     */
-    const onSubmitData = (data: any) => {
-      // 记入提交的uuid，获取下一个数据的uuid
-      // 更新数据列表
-      // 获取记录id的数据
-      console.warn(data)
-      // eslint-disable-next-line no-use-before-define
-      const photoData = poolList.value[1].photoList?.map((photoItem, index: number) => {
-        // eslint-disable-next-line no-use-before-define
-        const { streamInfo } = poolList.value[1]
-        const photoInfo = {
-          ...streamInfo,
-          aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
-        }
-        return {
-          // todo photoModel 增加完成src
-          // eslint-disable-next-line no-use-before-define
-          title: `原片（${index + 1}/${poolList.value[1].photoList?.length}）`,
-          src: photoItem.path,
-          photoInfo,
-          markPath: '',
-          markJson: '',
-          markBase: ''
-        }
-      })
-
-      imgarray.value = photoData
-      evaluateIndex.value = 0
-    }
+    const type = inject('type') as SPOT_TYPE
+    const organizationType = inject('organizationType') as ORGANIZATION_TYPE
 
     const productIds = ref([])
     const staffs = ref([])
@@ -205,6 +163,7 @@ export default defineComponent({
       total: 10
     })
     const arraignmentRecordList = ref<any>([])
+    const poolList = ref<PoolRecordModel[]>([])
     /** 
      * @description 查询历史记录相关数据 
      */
@@ -232,6 +191,7 @@ export default defineComponent({
         // delete req.endAt
       }
       const res = await EvaluateHistoryApi.getHistoryRecords(req)
+      poolList.value = res.list
       pager.total = res.total
       arraignmentRecordList.value = res.list
     }
@@ -252,14 +212,144 @@ export default defineComponent({
 
     const showPreview = ref(false)
     const previewIndex = ref(0)
-    const photos = ref([])
+    const previewPhotos = ref([])
     /** 
      * @description 监听预览图片
      */
     const onPreviewPhotoList = ({ photoIndex, photoData }: { photoIndex: number, photoData: any }) => {
       previewIndex.value = photoIndex
-      photos.value = photoData
+      previewPhotos.value = photoData
       showPreview.value = true
+    }
+
+    /**
+     * 评分
+     */
+    const evaluatePhotos = ref<any>([])
+    const evaluateIndex = ref(0)
+    const showEvaluate = ref(false)
+    const evaluatePoolRecordId = ref('') // 正在打分id
+    /** 
+     * @description 监听修改评分
+     */
+    const onEvaluatePhoto = ({ photoIndex, photoData }: { photoIndex: number, photoData: any }) => {
+      evaluatePhotos.value = photoData
+      evaluateIndex.value = photoIndex
+      showEvaluate.value = true
+    }
+
+    /**
+     * @description 显示打分数据
+     */
+    const evaluatePhoto = (poolItemId: string, photoIndex: number) => {
+      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === poolItemId)
+      if (!findPoolItemData) return newMessage.warning('未找到对应照片')
+      evaluatePoolRecordId.value = poolItemId
+      const photoData = findPoolItemData.photoList?.map((photoItem, index: number) => {
+        const { streamInfo } = findPoolItemData
+        const photoInfo = {
+          ...streamInfo,
+          aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
+        }
+        return {
+          // todo photoModel 增加完成src
+          id: photoItem.id,
+          title: `原片（${index + 1}/${findPoolItemData.photoList?.length}）`,
+          src: photoItem.path,
+          photoInfo,
+          markPath: '',
+          markJson: '',
+          markBase: ''
+        }
+      })
+      evaluateIndex.value = photoIndex
+      evaluatePhotos.value = photoData
+      showEvaluate.value = true
+    }
+
+    /**
+     * @description 跳转下一个评分内容
+     */
+    const goNextEvaluatePhoto = async () => {
+      // 获取下一个数据的uuid
+      const findPoolItemIndex = poolList.value.findIndex(poolItem => poolItem.id === evaluatePoolRecordId.value)
+      if (findPoolItemIndex < 0) return newMessage.warning('获取当前uuid失败，goNextEvaluatePhoto')
+      const nextIndex = findPoolItemIndex + 1
+      let nextPoolItemId = poolList.value[nextIndex].id
+      const isPageLastPhoto = (findPoolItemIndex + 1) === poolList.value.length
+      const isAllLast = pager.total === 1
+      if (isAllLast) {
+        newMessage.success('你已经打完全部照片')
+      } else if (isPageLastPhoto && pager.page > 1 && findPoolItemIndex === 0 ) {
+        // 向前翻页
+        pager.page--
+        await getHistoryRecords()
+        nextPoolItemId = poolList.value[0].id
+      } else if (isPageLastPhoto) {
+        // 取上一个值
+        nextPoolItemId = poolList.value[findPoolItemIndex - 1].id
+        await getHistoryRecords()
+      } else {
+        // 更新数据列表
+        await getHistoryRecords()
+      }
+      // 显示打分数据
+      evaluatePhoto(nextPoolItemId, 0)
+    }
+
+    /**
+     * @description 跳过伙伴
+     */
+    const onSkipStaff = async () => {
+      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
+      if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSkipStaff')
+      const staffIds = type === SPOT_TYPE.MAKEUP ? findPoolItemData.streamInfo?.dresserInfo.staffIds : findPoolItemData.streamInfo?.photographyerInfo.staffIds
+      if (!staffIds) return newMessage.warning('未找到对应的伙伴id')
+      const poolItemId = findPoolItemData.id
+      const req = {
+        staffIds,
+        poolItemId,
+        type,
+        organizationType
+      }
+      await EvaluateApi.skipStaff(req)
+      newMessage.success('跳过伙伴成功，今日将不会再抽取')
+      await goNextEvaluatePhoto()
+    }
+
+    /**
+     * @description 换一单
+     */
+    const onChangePool = async () => {
+      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
+      if (!findPoolItemData) return newMessage.warning('onChangePool')
+      const poolItemId = findPoolItemData.id
+      const req = {
+        poolItemId,
+        type,
+        organizationType
+      }
+      await EvaluateApi.changePool(req)
+      // TODO: 待定
+      newMessage.success('换取照片成功')
+      await goNextEvaluatePhoto()
+    }
+
+    /** 
+     * @description 提交评分 
+     */
+    const onSubmitData = async (data: any) => {
+      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
+      if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSubmitData')
+      const req = {
+        poolItemId: findPoolItemData.id,
+        photos: data.photos,
+        tags: data.tags,
+        type,
+        organizationType
+      }
+      await EvaluateApi.emptyPoolByStaffId(req)
+      await goNextEvaluatePhoto()
     }
 
     /** 
@@ -284,11 +374,12 @@ export default defineComponent({
       searchData,
       handlePage,
       showPreview,
-      photos,
+      previewPhotos,
       previewIndex,
       onPreviewPhotoList,
+      onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate,
       onSubmitData,
-      onEvaluatePhoto, imgarray, evaluateIndex, showEvaluate
+      onSkipStaff, onChangePool
     }
   }
 })
