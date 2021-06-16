@@ -4,12 +4,15 @@
       <el-button type="primary" @click="addGradeLabel">添加评分项</el-button>
     </div>
     <div class="grade-label-list">
-      <GradeLabelItem
-        v-for="gradeLabelItem in gradeLabelList"
-        :key="gradeLabelItem.id"
-        :grade-label-info="gradeLabelItem"
-        :grade-label-list="gradeLabelList"
-      />
+      <transition-group name="list-complete" tag="p">
+        <GradeLabelItem
+          v-for="gradeLabelItem in gradeLabelList"
+          :key="gradeLabelItem.id"
+          :grade-label-info="gradeLabelItem"
+          :grade-label-list="gradeLabelList"
+          class="list-complete-item"
+        />
+      </transition-group>
     </div>
   </div>
 </template>
@@ -53,3 +56,15 @@ export default defineComponent({
   }
 })
 </script>
+
+
+<style lang="less" scoped>
+.grade-label-list {
+  width: 100%;
+
+  p {
+    position: relative;
+    width: 100%;
+  }
+}
+</style>

@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar-logo-container" :class="{ collapse: collapse }">
     <router-link key="expand" class="sidebar-logo-link" to="/">
-      <transition name="fade" mode="out-in">
+      <transition name="el-fade-in-linear" mode="out-in">
         <div v-if="collapse" class="sidebar-logo sidebar-logo-collapse-image" />
         <div v-else class="sidebar-logo sidebar-logo-image" />
       </transition>
@@ -54,7 +54,7 @@ export default defineComponent({
     .sidebar-logo-link {
       display: flex !important;
       align-items: center !important;
-      justify-content: center !important;
+      justify-content: flex-start !important;
       width: 100%;
       height: 100%;
 

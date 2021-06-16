@@ -491,7 +491,7 @@ export default defineComponent({
   }
 }
 
-/deep/ .el-loading-mask {
+:deep(.el-loading-mask) {
   z-index: 3500 !important;
 }
 

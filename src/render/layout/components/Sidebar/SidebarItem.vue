@@ -15,12 +15,7 @@
       </AppLink>
     </template>
     <!-- 多个菜单 -->
-    <el-submenu
-      v-else
-      ref="subMenu"
-      :index="resolvePath(routeItem.path)"
-      popper-append-to-body
-    >
+    <el-submenu v-else ref="subMenu" :index="resolvePath(routeItem.path)">
       <template #title>
         <item v-if="routeItem.meta" :icon="routeItem.meta && routeItem.meta.icon" :title="routeItem.meta.title" />
       </template>

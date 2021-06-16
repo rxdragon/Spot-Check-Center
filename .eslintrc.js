@@ -30,7 +30,8 @@ module.exports = {
     VueRouter: true,
     __APP_INFO__: true,
     __APP__: true,
-    _: true // lodash
+    _: true, // lodash
+    idType: true
   },
   // 启用的规则及其各自的错误级别
   rules: {

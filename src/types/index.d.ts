@@ -30,3 +30,5 @@ declare module '*.gif' {
 declare module '*.less' {
   export const less: any
 }
+
+declare type idType = string | number

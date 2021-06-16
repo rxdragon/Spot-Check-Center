@@ -250,11 +250,11 @@ export default defineComponent({
   }
 
   .tool-color {
-    & /deep/ .el-color-picker--mini {
+    :deep(.el-color-picker--mini) {
       height: 25px !important;
     }
 
-    & /deep/ .el-color-picker__trigger {
+    :deep(.el-color-picker__trigger) {
       width: 25px !important;
       height: 25px !important;
       border: none;

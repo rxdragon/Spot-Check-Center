@@ -119,13 +119,84 @@ export async function addScoreConfig (params: IAddScoreConfigParams): Promise<nu
 interface IDelScoreConfigParams extends IEvaluateAPi {
   id: number
 }
-export function delScoreConfig (params: IDelScoreConfigParams) {
+export async function delScoreConfig (params: IDelScoreConfigParams) {
   const url = '/project_cloud/checkPool/delScoreConfig'
   // const url = `${getApiUrl(params.type, params.organizationType)}/delScoreConfig`
-  return axios({
+  const res: any = await axios({
     url,
     method: 'PUT',
     data: params
   })
+  return res
 }
 
+/**
+ * @description 获取评分人列表
+ */
+export interface IGetTakeStaffListRes {
+  nickname: string
+  id: number
+}
+export async function getTakeStaffList (params: IEvaluateAPi): Promise<IGetTakeStaffListRes[]> {
+  const url = '/project_cloud/checkPool/getTakeStaffList'
+  // const url = `${getApiUrl(params.type, params.organizationType)}/getTakeStaffList`
+  const res: any = await axios({
+    url,
+    method: 'GET'
+  })
+  const list: IGetTakeStaffListRes[] = res.map((item: any) => {
+    return {
+      nickname: item.nickname || item.name,
+      id: item.id,
+    }
+  })
+  return list
+}
+
+
+/**
+ * @description 清空评分人信息
+ */
+export interface IEmptyCheckPoolByStaffIdParams extends IEvaluateAPi {
+  staffIds?: number[]
+}
+export async function emptyCheckPoolByStaffId (params: IEmptyCheckPoolByStaffIdParams): Promise<boolean> {
+  const url = '/project_cloud/checkPool/emptyCheckPoolByStaffId'
+  // const url = `${getApiUrl(params.type, params.organizationType)}/emptyCheckPoolByStaffId`
+  const res: any = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
+  return res
+}
+
+/**  
+ * @description 新款应用
+ */
+interface ISetNewConfigParams extends IEvaluateAPi {
+  state: boolean
+}
+export async function setNewConfig (params: ISetNewConfigParams): Promise<boolean> {
+  const url = `${getApiUrl(params.type, params.organizationType)}/setNewConfig`
+  const res: any = await axios({
+    url,
+    method: 'GET',
+    params
+  })
+  return res
+}
+
+/**
+ * @description 获取通用配置
+ * @param params 
+ */
+export async function getScoreGeneralConfig (params: IEvaluateAPi): Promise<boolean> {
+  const url = `${getApiUrl(params.type, params.organizationType)}/getScoreGeneralConfig`
+  const res: any = await axios({
+    url,
+    method: 'GET',
+    params
+  })
+  return res.is_use_new
+}

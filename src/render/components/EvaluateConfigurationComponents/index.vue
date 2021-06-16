@@ -1,6 +1,19 @@
 <template>
   <div class="evaluate-configuration-components">
-    <div class="headle-plugins">
+    <teleport to="#headerContent">
+      <!-- 新款运用 -->
+      <div class="switch-new-apply mr-4 text-sm leading-7">
+        新款应用：
+        <el-switch
+          v-model="useNewProduct"
+          active-color="#4669FB"
+          active-text="开启"
+          inactive-text="关闭"
+          :disabled="useNewProductDisabled"
+          @change="onUseNewProductChange"
+        />
+      </div>
+      <!-- 添加列别 -->
       <el-popover
         v-model:visible="showAddCategoryDialog"
         placement="bottom-start"
@@ -24,7 +37,10 @@
           <el-button type="primary">添加类别</el-button>
         </template>
       </el-popover>
-    </div>
+      <!-- 清空评分 -->
+      <el-button type="danger" @click="showEmptyDiglog">清空评分</el-button>
+    </teleport>
+    
     <el-tabs v-model="activeName">
       <el-tab-pane v-for="gradeClass in tabList" :key="gradeClass.id" :name="gradeClass.stringId">
         <template #label>
@@ -50,6 +66,8 @@
         <GradeClassItem :grade-class-info="gradeClass" />
       </el-tab-pane>
     </el-tabs>
+
+    <EmptyPeoplePool v-model="emptyDiglogShow" />
   </div>
 </template>
 
@@ -59,13 +77,14 @@ import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
 import GradeClassItem from './components/GradeClassItem.vue'
+import EmptyPeoplePool from './components/EmptyPeoplePool.vue'
 import * as GradeConfigurationApi from '@/api/gradeConfigurationApi'
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import { newMessage } from '@/utils/message'
 
 export default defineComponent({
   name: 'EvaluateConfigurationComponents',
-  components: { GradeClassItem },
+  components: { GradeClassItem, EmptyPeoplePool },
   setup () {
     const vm = getCurrentInstance()
     const store = useStore()
@@ -159,9 +178,56 @@ export default defineComponent({
       }
     }
 
+    /** 清空评分 */
+    const emptyDiglogShow = ref(false)
+    const showEmptyDiglog = () => {
+      emptyDiglogShow.value = true
+    }
+
+    /** 新款应用 */
+    const useNewProduct = ref(false)
+    const useNewProductDisabled = ref(false)
+    const useNewProductLoading = ref(false)
+    const getUserInfoData = async () => {
+      try {
+        useNewProductLoading.value = true
+        const req = {
+          type,
+          organizationType
+        }
+        const res = await GradeConfigurationApi.getScoreGeneralConfig(req)
+        useNewProduct.value = res
+        useNewProductDisabled.value = false
+      } catch {
+        useNewProductDisabled.value = true
+      } finally {
+        useNewProductLoading.value = false
+      }
+    }
+    getUserInfoData()
+
+    // 监听新款应用
+    const onUseNewProductChange = async () => {
+      try {
+        const req = {
+          state: useNewProduct.value,
+          type,
+          organizationType
+        }
+        const res = await GradeConfigurationApi.setNewConfig(req)
+        if (!res) {
+          useNewProduct.value = !useNewProduct.value
+        }
+      } catch {
+        useNewProduct.value = !useNewProduct.value
+      }
+    }
+
     return {
       tabList, activeName, editGradeClassName, openEditGradeClassName,
-      showAddCategoryDialog, newGradeClassName, addGradeClass
+      showAddCategoryDialog, newGradeClassName, addGradeClass,
+      showEmptyDiglog, emptyDiglogShow,
+      useNewProduct, onUseNewProductChange, useNewProductDisabled, useNewProductLoading
     }
   }
 })
@@ -177,15 +243,6 @@ export default defineComponent({
 .tab-pane-module {
   padding: 20px 16px 20px 16px;
   background-color: #fff;
-}
-
-.el-tab-pane {
-  &:nth-child(1) {
-    .module-panel {
-      border-top-left-radius: 0;
-      transform: all 0.3s;
-    }
-  }
 }
 </style>
 
@@ -206,6 +263,11 @@ export default defineComponent({
 
   .w150 {
     width: 150px;
+  }
+
+  .switch-new-apply {
+    font-size: 12px;
+    color: red;
   }
 }
 
