@@ -64,9 +64,9 @@ export default defineComponent({
     watch(
       disabledChecked,
       (value) => {
+        if (!disabledChecked.value.length) return
         const data = new Set([...defaultCheckedKeys.value, ...value])
         defaultChecks.value = [...data]
-        getAllStorePanel(value)
       },
       { immediate: true }
     )

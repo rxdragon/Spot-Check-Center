@@ -53,3 +53,32 @@ export async function getStoreStaffTree (params: IGetStoreStaffTreeParams) {
   })
   return createData
 }
+
+/**
+ * @description 获取职位分类下的伙伴
+ * @param params 
+ * @returns 
+ */
+export async function getPositionStaffs () {
+  // TODO: cf 优化，将数据存储在sesssion内
+  const res: any = await axios({
+    url: '/project_photo_quality/common/getPositionStaffs',
+    method: 'GET',
+  })
+
+  const createData: ICascaderSelect[] = res.map((storeItem: any) => {
+    // const storeChildren: ICascaderSelect[] = storeItem.children.map((staffItem: any) => {
+    //   return {
+    //     label: staffItem.name,
+    //     id: staffItem.id,
+    //   }
+    // })
+    const storeData = {
+      label: storeItem.name,
+      value: storeItem.id,
+      children: []
+    }
+    return storeData
+  })
+  return createData
+}

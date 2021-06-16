@@ -16,6 +16,7 @@ export default class StaffModel {
     name: string
     title: string
   }[]
+  configStore: [] // 管辖门店
 
   constructor (staffData: any) {
     this.id = staffData.id || ''
@@ -31,5 +32,6 @@ export default class StaffModel {
     this.availableCN = this.available ? '启用' : '禁用'
     this.departmentName = _.get(staffData, 'department.name') || '-'
     this.permissions = _.get(staffData, 'permissions') || []
+    this.configStore = _.get(staffData, 'config_store_ids') || []
   }
 }

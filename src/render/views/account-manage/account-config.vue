@@ -13,13 +13,23 @@
             <el-col v-bind="{ ...colConfig }">
               <div class="search-item">
                 <span>工号</span>
-                <el-input v-model.trim="staffNum" clearable placeholder="请输入内容" />
+                <el-input
+                  v-model.trim="staffNum"
+                  clearable
+                  placeholder="请输入工号"
+                  @keyup.enter="seachData(1)"
+                />
               </div>
             </el-col>
             <el-col v-bind="{ ...colConfig }">
               <div class="search-item">
                 <span>伙伴姓名</span>
-                <el-input v-model.trim="staffName" clearable placeholder="请输入内容" />
+                <el-input
+                  v-model.trim="staffName"
+                  clearable
+                  placeholder="请输入伙伴姓名"
+                  @keyup.enter="seachData(1)"
+                />
               </div>
             </el-col>
             <el-col v-bind="{ ...colConfig }">

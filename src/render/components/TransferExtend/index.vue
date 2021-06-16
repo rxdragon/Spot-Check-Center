@@ -271,12 +271,12 @@ export default defineComponent({
     },
     // 监视默认选中
     defaultCheckedKeys: {
-      handler (val) {
+      async handler (val) {
         if (val.length && this.defaultTransfer) {
-          this.$nextTick(() => {
-            this.from_check_keys = this.defaultCheckedKeys
-            this.addToAims()
-          })
+          await this.$nextTick()
+          this.from_check_keys = this.defaultCheckedKeys
+          await this.$nextTick()
+          this.addToAims()
         }
       },
       immediate: true

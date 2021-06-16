@@ -141,7 +141,7 @@ function findTypeId (value: STORE_TYPE): number {
       return -1
   }
 }
-interface IStoreInfo {
+export interface IStoreInfo {
   id: number
   pid: number
   label: string

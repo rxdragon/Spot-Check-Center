@@ -1,5 +1,5 @@
 <template>
-  <div class="store-staff-select">
+  <div class="position-staff-select">
     <el-cascader
       ref="staffCascader"
       :options="options"
@@ -26,7 +26,7 @@ import * as CommonalityApi from '@/api/commonalityApi'
 import { newMessage } from '~/render/utils/message'
 
 export default defineComponent({
-  name: 'StoreStaffSelect',
+  name: 'PositionStaffSelect',
   setup () {
     /** 确认配置选项 */
     const deafultProps = reactive({
@@ -41,8 +41,7 @@ export default defineComponent({
     const getStaffList = async () => {
       try {
         staffStoreLoading.value = true
-        const req = {}
-        options.value = await CommonalityApi.getStoreStaffTree(req)
+        options.value = await CommonalityApi.getPositionStaffs()
         staffStoreLoading.value = false
       } catch (error) {
         newMessage.error(String(error))
@@ -67,7 +66,7 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.store-staff-select {
+.position-staff-select {
   width: 100%;
 
   .el-cascader {

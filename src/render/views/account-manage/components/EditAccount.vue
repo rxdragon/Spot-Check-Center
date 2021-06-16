@@ -16,7 +16,8 @@
               v-model.trim="staffNum"
               :disabled="editType === EDIT_TYPE.EDIT"
               clearable
-              placeholder="请输入内容"
+              placeholder="请输入工号"
+              @keyup.enter="seachStaffData"
             />
           </div>
         </el-col>
@@ -27,7 +28,8 @@
               v-model.trim="staffName"
               :disabled="editType === EDIT_TYPE.EDIT"
               clearable
-              placeholder="请输入内容"
+              placeholder="请输入伙伴姓名"
+              @keyup.enter="seachStaffData"
             />
           </div>
         </el-col>
@@ -67,7 +69,7 @@
             </div>
             <div class="base-row mb-5">
               <span class="base-title">管辖伙伴</span>
-              <StoreStaffSelect v-model="configStaffIds" />
+              <PositionStaffSelect v-model="configStaffIds" />
             </div>
             <div class="base-row mb-5 items-start">
               <span class="base-title">管辖门店</span>
@@ -87,7 +89,9 @@
             </div>
             <div class="role-row mb-5 items-start">
               <span class="role-row-title">权限模块</span>
-              <Jurisdiction v-model:hasPermission="permissionGather" :role-permission="rolePermissionArr" />
+              <div class="role-row-content">
+                <Jurisdiction v-model:hasPermission="permissionGather" :role-permission="rolePermissionArr" />
+              </div>
             </div>
             <div class="role-row mb-5">
               <el-button type="primary" @click="submitData">提 交</el-button>
@@ -108,7 +112,7 @@ import RankSelect from '@SelectBox/RankSelect/index.vue'
 import StorePanel from '@/components/StorePanel/index.vue'
 import Jurisdiction from '@/components/Jurisdiction/index.vue'
 import RoleSelect from '@SelectBox/RoleSelect/index.vue'
-import StoreStaffSelect from '@SelectBox/StoreStaffSelect/index.vue'
+import PositionStaffSelect from '@SelectBox/PositionStaffSelect/index.vue'
 
 import * as StaffApi from '@/api/staffApi'
 import StaffModel from '@/model/StaffModel'
@@ -126,7 +130,7 @@ enum ACTIVE_TYPE {
 
 export default defineComponent({
   name: 'EditAccount',
-  components: { RankSelect, StorePanel, Jurisdiction, RoleSelect, StoreStaffSelect },
+  components: { RankSelect, StorePanel, Jurisdiction, RoleSelect, PositionStaffSelect },
   props: {
     modelValue: { type: Boolean, required: true },
     editType: { type: String as PropType<EDIT_TYPE>, required: true },
@@ -194,11 +198,13 @@ export default defineComponent({
     const staffInfo = ref<StaffModel>()
     const positionId = ref<idType>()
     const administerStaffIds = ref<number[]>([])
+    const defaultCheckedKeys = ref([]) // 默认选中门店
 
+    // 搜素用户信息
     const seachStaffData = async () => {
       try {
         store.dispatch('settingStore/showLoading', route.name)
-        if (!staffNum.value && !staffNum.value) return newMessage.warning('请输入搜索信息')
+        if (!staffNum.value && !staffName.value) return newMessage.warning('请输入搜索信息')
         const req: StaffApi.IGetStaffInfoParams = {}
         if (staffNum.value) req.staffId = staffNum.value
         if (staffName.value) req.staffName = staffName.value
@@ -208,6 +214,7 @@ export default defineComponent({
         positionId.value = staffInfo.value.positionId
         activeRoleId.value = staffInfo.value.rolesId
         staffPermission.value = staffInfo.value.permissions.map(item => item.id)
+        defaultCheckedKeys.value = staffInfo.value.configStore
         // todo:cf 添加门店相关信息
 
         await getRoleInfo(activeRoleId.value)
@@ -226,9 +233,9 @@ export default defineComponent({
 
     /** 用户权限相关 */
     const activeName = ref(ACTIVE_TYPE.BASE)
-    const selectStore = ref([])
     const configStaffIds = ref<idType[]>([])
-    const defaultCheckedKeys = ref([]) // 默认选中门店
+    const selectStore = ref<StaffApi.IStoreInfo[]>([])
+
 
     /** 提交用户信息 */
     const submitData = async () => {
@@ -242,8 +249,15 @@ export default defineComponent({
           roleId: activeRoleId.value,
           positionId: positionId.value
         }
-        if (selectStore.value.length) req.configStoreIds = selectStore.value
-        if (configStaffIds.value.length) req.configStaffIds = selectStore.value
+
+        let storeIds: idType[] = []
+        selectStore.value.forEach((listItem) => {
+          const childrenIds: idType[] = listItem.children.map(item => item.id)
+          storeIds = [...storeIds, ...childrenIds]
+        })
+
+        if (storeIds.length) req.configStoreIds = storeIds
+        if (configStaffIds.value.length) req.configStaffIds = configStaffIds.value
         if (permissionGather.value.length) req.permissionIds = permissionGather.value
 
         if (editType.value === EDIT_TYPE.EDIT) {
@@ -326,6 +340,10 @@ export default defineComponent({
       margin-right: 12px;
       font-size: 14px;
       color: #303133;
+    }
+
+    .role-row-content {
+      width: 100%;
     }
   }
 }
