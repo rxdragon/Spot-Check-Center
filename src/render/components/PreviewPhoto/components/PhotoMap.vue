@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, getCurrentInstance, reactive, toRefs, watch } from 'vue'
-import * as DownPhoto from '@/utils/DownPhoto'
+import * as DownPhoto from '@/utils/downPhoto'
 
 export default defineComponent({
   props: {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 function assertPath (path: string) {
   if (typeof path !== 'string') {
     throw new TypeError('Path must be a string. Received ' + path)

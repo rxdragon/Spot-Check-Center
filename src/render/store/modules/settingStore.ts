@@ -10,7 +10,9 @@ const state: ISettingStore = {
   imgUpdateFinishDomain: process.env.VUE_APP_UPDATE_FINISH_DOMAIN,
   updateDomain: process.env.VUE_APP_UPDATE_DOMAIN,
   collapse: SessionTool.getCollapseStorage(),
-  loadRoutes: []
+  loadRoutes: [],
+  // TODO: cf
+  savePath: '/Users/yzend/Desktop/'
 }
 
 const mutations: MutationTree<ISettingStore> = {
@@ -28,18 +30,26 @@ const mutations: MutationTree<ISettingStore> = {
     const loadRoutes = new Set(state.loadRoutes)
     loadRoutes.delete(routeName)
     state.loadRoutes = [...loadRoutes]
-  }
+  },
+  SET_SAVE_PATH: (state, data) => {
+    state.savePath = data
+  },
 }
 
 const actions: ActionTree<ISettingStore, State> = {
   showLoading ({ commit }, routeName: string) {
     commit('SHOW_LOADING', routeName)
   },
+  // 取消loadign
   hiddenLoading ({ commit }, routeName: string) {
     setTimeout(() => {
       commit('HIDDEN_LOADING', routeName)
     }, 300)
-  }
+  },
+  // 设置保存路径
+  setSavePath ({ commit }, path) {
+    commit('SET_SAVE_PATH', path)
+  },
 }
 
 export default {

@@ -20,6 +20,7 @@ interface ISettingStore {
   imgUpdateFinishDomain: string | undefined
   collapse: boolean
   loadRoutes: string[]
+  savePath: string
 }
 
 interface ITagsViewStore {

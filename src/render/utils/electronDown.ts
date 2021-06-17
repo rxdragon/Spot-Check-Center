@@ -2,6 +2,7 @@
 import type { IDownItem, IDownloadConfig, IDownloadProcessIpcData, IFileDownloadConfig } from '~/main/downModule/index'
 import type { IpcRendererEvent } from 'electron'
 
+import { reactive, toRaw } from 'vue'
 import { DOWN_STATE } from '~/main/downModule/downModuleEnum'
 import { v4 as uuidv4 } from 'uuid'
 import { getFileIcon } from '@/utils/getFileIcon'
@@ -42,21 +43,21 @@ export default class ElectronDown {
   private static instance: ElectronDown
 
   maxCount = 5
-  waitDownloadList: any[] // 待下载队列
-  downingLoadList: any[] // 正在下载队列
+  waitDownloadList: IDownItem[] // 待下载队列
+  downingLoadList: IDownItem[] // 正在下载队列
   downloadList: Record<string, IDownItem> // 全部队列信息
   onListChange: () => void
 
   private constructor () {
     this.waitDownloadList = []
     this.downingLoadList = []
-    this.downloadList = {}
+    this.downloadList = reactive({})
     this.onListChange = () => ({})
 
-    if (!window.ElectronIpcRenderer) return
-    window.ElectronIpcRenderer.on('download-manage:process', this.onDownloadProcess)
-    window.ElectronIpcRenderer.on('download-manage:error', this.onDownloadError)
-    window.ElectronIpcRenderer.on('download-manage:success', this.onDownloadSuccess)
+    if (!window.ElectronIpcRendererAddListener) return
+    window.ElectronIpcRendererAddListener.on('download-manage:process', this.onDownloadProcess.bind(this))
+    window.ElectronIpcRendererAddListener.on('download-manage:error', this.onDownloadError.bind(this))
+    window.ElectronIpcRendererAddListener.on('download-manage:success', this.onDownloadSuccess.bind(this))
   }
 
   /** 获取实例 */
@@ -105,7 +106,7 @@ export default class ElectronDown {
       {},
       fileDownloadConfig,
       {
-        uuid: uuidv4(),
+        uuid,
         path: selfPath.joinPath(folderPath, fileDownloadConfig.path)
       }
     )
@@ -125,9 +126,9 @@ export default class ElectronDown {
       iconSrc: ''
     }
     this.downloadList[uuid] = createData
-    this.waitDownloadList.push(this.downloadList[uuid])
+    const waitDownItem = toRaw(this.downloadList[uuid])
+    this.waitDownloadList.push(waitDownItem)
     this.limitDownCount()
-    this.onListChange()
   }
 
   /** 多个文件添加下载 */
@@ -145,7 +146,6 @@ export default class ElectronDown {
     if (result === 'fail') throw new Error('pause fail, maybe already pause or uuid not exists')
     this.downloadList[uuid].status = DOWN_STATE.PROGRESSING
     this.downloadList[uuid].isUserPause = true
-    this.onListChange()
   }
 
   /** 恢复下载 */
@@ -155,7 +155,6 @@ export default class ElectronDown {
     if (result === 'fail') throw new Error('pause fail, maybe not pause or uuid not exists')
     this.downloadList[uuid].status = DOWN_STATE.INTERRUPTED
     this.downloadList[uuid].isUserPause = false
-    this.onListChange()
   }
 
   /** 删除单个下载项目 */
@@ -168,7 +167,6 @@ export default class ElectronDown {
     const findDeleteIndex = this.waitDownloadList.findIndex(item => item.config.uuid === uuid)
     if (findDeleteIndex >= 0) this.waitDownloadList.splice(findDeleteIndex, 1)
     delete this.downloadList[uuid]
-    this.onListChange()
   }
 
   /** 将完成项目转移到 列表 */
@@ -185,7 +183,6 @@ export default class ElectronDown {
         delete this.downloadList[uuid]
       }
     }
-    this.onListChange()
   }
 
   /** 取消下载 */
@@ -195,7 +192,6 @@ export default class ElectronDown {
     if (result === 'fail') throw new Error('pause fail, maybe not pause or uuid not exists')
     this.downloadList[uuid].status = DOWN_STATE.CANCELLED
     this.limitDownCount(uuid)
-    this.onListChange()
   }
 
   /** 更改下载完成后名字 */
@@ -214,7 +210,6 @@ export default class ElectronDown {
       }
       item.savePath = newFilePath
       item.iconSrc = await getFileIcon(newFilePath)
-      this.onListChange()
     })
   }
 
@@ -228,7 +223,6 @@ export default class ElectronDown {
       this.downloadList[uuid].downInfo = downInfo
       const iconSrc = await getFileIcon(this.downloadList[uuid].savePath)
       this.downloadList[uuid].iconSrc = iconSrc
-      this.onListChange()
     }
   }
 
@@ -238,7 +232,6 @@ export default class ElectronDown {
       this.downloadList[uuid].status = DOWN_STATE.INTERRUPTED
       this.limitDownCount(uuid)
       console.error(uuid, 'error')
-      this.onListChange()
     }
   }
 

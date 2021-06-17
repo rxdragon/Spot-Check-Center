@@ -132,44 +132,6 @@ const download = (options: IDownloadOptions, callback: IQueueItem['callback']) =
   }
 }
 
-// 批量下载
-const bulkDownload = (options: any, callback: any) => {
-  options = Object.assign({}, { urls: [], path: '' }, options)
-
-  console.log(options)
-
-  // const urlsCount = options.urls.length
-  // const finished = []
-  // const errors = []
-
-  // options.urls.forEach((url: string) => {
-  //   download(
-  //     { url, path: options.path, onProgress: options.onProgress },
-  //     function (error, itemInfo) {
-  //       if (error) {
-  //         errors.push(itemInfo.url)
-  //       } else {
-  //         finished.push(itemInfo.url)
-  //       }
-
-  //       const errorsCount = errors.length
-  //       const finishedCount = finished.length
-
-  //       if (typeof options.onResult === 'function') {
-  //         options.onResult(finishedCount, errorsCount, itemInfo.url)
-  //       }
-
-  //       if ((finishedCount + errorsCount) === urlsCount) {
-  //         if (errorsCount > 0) {
-  //           callback(new Error(errorsCount + ' downloads failed'), finished, errors)
-  //         } else {
-  //           callback(null, finished, [])
-  //         }
-  //       }
-  //     })
-  // })
-}
-
 // 注册监听事件
 interface registerOpts {
   downloadFolder: string
@@ -267,6 +229,5 @@ const register = (opts: registerOpts) => {
 
 export default {
   register,
-  download,
-  bulkDownload
+  download
 }

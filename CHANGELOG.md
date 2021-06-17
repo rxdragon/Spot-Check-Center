@@ -18,6 +18,7 @@
  - | 更新用户信息修改后列表页面的操作 | [b40abb0](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/b40abb0)
  - | 联动完成角色组相关功能，完成保存账号部分功能 | [bc44cde](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bc44cde)
  - | 完成评分配置组件 | [c4bc9cf](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4bc9cf)
+ - | 完成下载管理器ts化 | [1ea6319](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1ea6319)
  - | 完成预览组件相关信息 | [1426bc7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1426bc7)
  - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
  - | 新增编辑窗口 | [c45813d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c45813d)

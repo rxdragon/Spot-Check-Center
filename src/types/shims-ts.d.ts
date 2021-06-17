@@ -10,7 +10,7 @@ declare module 'axios' {
 
 import type { App } from 'vue'
 
-import type { IpcRenderer } from 'electron'
+import type { IpcRenderer, Shell } from 'electron'
 declare global {
   
   const __APP_INFO__: {
@@ -32,6 +32,14 @@ declare global {
     _: any
     __APP__: App
     ElectronIpcRenderer?: IpcRenderer
+    ElectronShell?: Shell
+    ElectronIpcRendererAddListener?: {
+      invoke: IpcRenderer['invoke']
+      on: IpcRenderer['on']
+      once: IpcRenderer['once']
+      postMessage: IpcRenderer['postMessage']
+      removeAllListeners: IpcRenderer['removeAllListeners']
+    }
     OriginalFs?: any
   }
 
