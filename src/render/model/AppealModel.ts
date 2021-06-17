@@ -47,7 +47,7 @@ function getDresserName (list: any[]) {
 /**
  * @description 申诉列表
  */
-export default class AppealListModel {
+export class AppealListModel {
   // TODO: lj
   base: any
   id: string

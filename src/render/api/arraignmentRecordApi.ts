@@ -72,7 +72,7 @@ interface IgetAuditRecordsRes {
   list: SpotCheckRecordModel[]
 }
 /**
- * @description 获取提审列表
+ * @description 获取提审列表(全部)
  */
 export async function getAuditRecords (params: IgetAuditRecordsParams): Promise<IgetAuditRecordsRes> {
   let url = ''
@@ -82,6 +82,44 @@ export async function getAuditRecords (params: IgetAuditRecordsParams): Promise<
       break
     case SPOT_TYPE.PHOTOGRAPHY:
       url = '/project_photo_quality/photography/getAuditRecords'
+      break
+    default:
+      break
+  }
+
+  const res: any = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
+  
+  const listData: ISpotCheckRecordList[] = res.list.map((item: any) => {
+    const photoQuality = _.get(item, 'photo_quality') || []
+    const arraignmentData: ISpotCheckRecordList = {
+      ...new SpotCheckRecordModel(item),
+      photoList: photoQuality.map((photoItem: any) => new AuditSpotPhotoModel(photoItem))
+    }
+    return arraignmentData
+  })
+
+  const createData = {
+    list: listData,
+    total: res.total
+  }
+  return createData
+}
+
+/**
+ * @description 获取提审列表(区域)
+ */
+export async function getAreaAuditRecords (params: IgetAuditRecordsParams): Promise<IgetAuditRecordsRes> {
+  let url = ''
+  switch (params.type) {
+    case SPOT_TYPE.MAKEUP:
+      url = '/project_photo_quality/makeup/getAreaAuditRecords'
+      break
+    case SPOT_TYPE.PHOTOGRAPHY:
+      url = '/project_photo_quality/photography/getAreaAuditRecords'
       break
     default:
       break

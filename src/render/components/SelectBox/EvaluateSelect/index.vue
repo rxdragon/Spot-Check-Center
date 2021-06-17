@@ -27,7 +27,7 @@ export default defineComponent({
   props: {
     type: { type: String, default: '' }
   },
-  setup () {
+  setup (props) {
     /** 组件基本属性 */
     const deafultProps = reactive({
       multiple: true,
@@ -43,7 +43,10 @@ export default defineComponent({
     const getAllLabel = async () => {
       try {
         loading.value = true
-        const res: any[] = await SelectDataApi.getEvaluateSelectList()
+        const req = {
+          type: props.type
+        }
+        const res: any[] = await SelectDataApi.getEvaluateSelectList(req)
         options.value = res
       } finally {
         loading.value = false

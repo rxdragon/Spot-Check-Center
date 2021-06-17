@@ -25,6 +25,7 @@
  - | 新增角色组功能 | [9109ea7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9109ea7)
  - | 新增添加评分项目动效 | [08d1da6](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/08d1da6)
  - | 新增添加账号功能 | [4b15860](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/4b15860)
+ - | 修改请求接口组合参数的写法 | [014d247](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/014d247)
  - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)
  - | 增加评价信息洁面 | [f778aef](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f778aef)
  - | 质检报告 | [1b23561](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1b23561)

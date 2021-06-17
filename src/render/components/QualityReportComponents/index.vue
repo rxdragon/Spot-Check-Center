@@ -49,7 +49,7 @@
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>评价标签</span>
-          <EvaluateSelect v-model="evaluateIds" />
+          <EvaluateSelect v-model="evaluateIds" :type="type" />
         </div>
       </el-col>
       <!-- 分数 -->
@@ -149,73 +149,28 @@ const QUALITY_COMPONENT = {
 export default defineComponent({
   name: 'QualityReportComponents',
   components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StoreStaffSelect, AiTagSelect, GradeBox, ScopeSearch, JobContentSelect, EvaluateSelect },
-  data () {
-    return {
-      colConfig: {
-        span: 24,
-        xl: 6,
-        lg: 8,
-        md: 10,
-        sm: 10,
-        xs: 24
-      }
-    }
-  },
   setup () {
     const route = useRoute()
     const store = useStore()
-
+    const colConfig = reactive({
+      span: 24,
+      xl: 6,
+      lg: 8,
+      md: 10,
+      sm: 10,
+      xs: 24
+    })
     const type: string = inject('type') as SPOT_TYPE
     const organizationType = inject('organizationType') as ORGANIZATION_TYPE
     const rangeType = inject('rangeType', 'all')
-
-    const timeSpan: Ref<string | never | any[]> = ref('')
-    const aiTimeSpan: Ref<string | never | any[]> = ref('')
-    const startAt = dayjs().subtract(36, 'hour').format('YYYY-MM-DD 00:00:00')
-    const endAt = dayjs().format('YYYY-MM-DD 00:00:00')
-    timeSpan.value = [startAt, endAt]
-    aiTimeSpan.value = [startAt, endAt]
-    const orderNum = ref('')
-    const aiTag = ref('')
-    const scopeData = ref([])
     const pager = reactive({
       page: 1,
       pageSize: 10,
       total: 10
     })
-    const activeName = ref('GradeBox')
-    const gradeBoxData:any = ref([])
-    const productIds = ref([])
-    const staffs = ref([])
-    const jobContentIds = ref([])
-    const evaluateIds = ref([])
-    const onlyNew = ref(false)
-    const onlyOld = ref(false)
-    const axiosType = ref('')
-    const quotaData = reactive({
-      dresserQuantity: '',
-      expertAvgScore: '',
-      orderQuantity: '',
-      staffAvgScore: '',
-      storeAvgScore: '',
-      supervisorAvgScore: '',
-    })
-
-    const changeOnlyNew = () => {
-      if (onlyNew.value) onlyOld.value = false
-    }
-    const changeOnlyOld = () => {
-      if (onlyOld.value) onlyNew.value = false
-    }
-    /** 伙伴和职能互斥 */
-    watch(staffs, (val) => {
-      if (val.length > 0) jobContentIds.value = []
-    })
-    watch(jobContentIds, (val) => {
-      if (val.length > 0) staffs.value = []
-    })
 
     /** 是否显示海马体产品 */
+    const axiosType = ref('')
     const showHimoProduct = ref(false)
     const showFamilyProduct = ref(false)
     if (organizationType === ORGANIZATION_TYPE.HIMO) {
@@ -229,21 +184,20 @@ export default defineComponent({
       if (type === SPOT_TYPE.PHOTOGRAPHY) axiosType.value = QUALITY_TYPE.FAMILY_PHOTOGRAPHY
     }
 
-    provide('gradeBoxData', gradeBoxData)
-    provide('quotaData', quotaData)
-
     /** 获取提审统计数据 */
-    const auditRecordTotal = ref({
+    const auditRecordTotal = reactive({
       auditRecordCount: 0,
       auditRecordProblemCount: 0,
       photoQualityCount: 0,
       photoQualityProblemCount: 0
     })
-    
+
     /**
      * @description 获取质检报告评分明细模块
     */
     /** 质检报告 */
+    const gradeBoxData:any = ref([])
+    provide('gradeBoxData', gradeBoxData)
     const spotPageData = {
       pageTotal: 0,
       pageNum: 1
@@ -261,6 +215,15 @@ export default defineComponent({
     }
 
     /** 质检报告绩效 */
+    const quotaData = reactive({
+      dresserQuantity: '',
+      expertAvgScore: '',
+      orderQuantity: '',
+      staffAvgScore: '',
+      storeAvgScore: '',
+      supervisorAvgScore: '',
+    })
+    provide('quotaData', quotaData)
     const getQuota = async (req: QualityApi.IgetQualityParams) => {
       let res: any
       if (rangeType === 'all') {
@@ -276,13 +239,48 @@ export default defineComponent({
       quotaData.supervisorAvgScore = res.data.supervisorAvgScore
     }
 
+    /**
+     * @description 页面数据
+    */
+    const productIds = ref([])
+    const staffs = ref([])
+    const evaluateIds = ref([])
+    const jobContentIds = ref([])
+    const scopeData = ref([])
+    const onlyNew = ref(false)
+    const onlyOld = ref(false)
+    const orderNum = ref('')
+    const aiTag = ref('')
+    const timeSpan: Ref<string | never | any[]> = ref('')
+    const aiTimeSpan: Ref<string | never | any[]> = ref('')
+    const startAt = dayjs().subtract(36, 'hour').format('YYYY-MM-DD 00:00:00')
+    const endAt = dayjs().format('YYYY-MM-DD 00:00:00')
+    timeSpan.value = [startAt, endAt]
+    aiTimeSpan.value = [startAt, endAt]
+    /** 伙伴和职能互斥 */
+    watch(staffs, (val) => {
+      if (val.length > 0) jobContentIds.value = []
+    })
+    watch(jobContentIds, (val) => {
+      if (val.length > 0) staffs.value = []
+    })
+    /** 只看新人和只看正式伙伴互斥 */
+    const changeOnlyNew = () => {
+      if (onlyNew.value) onlyOld.value = false
+    }
+    const changeOnlyOld = () => {
+      if (onlyOld.value) onlyNew.value = false
+    }
     /** 统一调用质检报告模块 */
     const getResultAndQuota = () => {
-      const req = {} as QualityApi.IgetQualityParams
-      req.page = pager.page
-      req.pageSize = pager.pageSize
-      req.type = type
-      req.organizationType = organizationType
+      const req: QualityApi.IgetQualityParams = {
+        page: pager.page,
+        pageSize: pager.pageSize,
+        type: type,
+        organizationType: organizationType,
+        startTime: '',
+        endTime: ''
+      }
       if (timeSpan.value) {
         req.startTime = TimeUtil.searchStartTime(timeSpan.value[0])
         req.endTime = TimeUtil.searchEndTime(timeSpan.value[1])
@@ -300,20 +298,20 @@ export default defineComponent({
       getQuota(req)
     }
 
-
     /**
      * @description 获取AI报告
      */
     const arraignmentRecordList = ref<any>([])
     const aiPageData = {
       pageTotal: 0,
-      pageNum: 2
+      pageNum: 1
     }
-    const getAuditRecords = async () => {
-      const req = {} as ArraignmentRecordApi.IgetAuditRecordsParams
-      req.type = type
-      req.page = pager.page,
-      req.pageSize = pager.pageSize
+    const getRecords = async () => {
+      const req: ArraignmentRecordApi.IgetAuditRecordsParams = {
+        type: type,
+        page: pager.page,
+        pageSize: pager.pageSize
+      }
       if (aiTimeSpan.value) {
         req.startAt = TimeUtil.searchStartTime(aiTimeSpan.value[0])
         req.endAt = TimeUtil.searchEndTime(aiTimeSpan.value[1])
@@ -324,39 +322,22 @@ export default defineComponent({
       if (staffs.value) req.staffIds = staffs.value
       if (onlyNew.value) req.onlyNew = onlyNew.value
       if (onlyOld.value) req.onlyOld = onlyOld.value
-
+      let res
       if (rangeType === 'all') {
-        const res = await ArraignmentRecordApi.getAuditRecords(req)
+        res = await ArraignmentRecordApi.getAuditRecords(req)
         aiPageData.pageTotal = res.total
         aiPageData.pageNum = pager.page
         arraignmentRecordList.value = res.list
       } else if (rangeType === 'region') {
-        const res = await ArraignmentRecordApi.getAuditRecords(req)
+        res = await ArraignmentRecordApi.getAreaAuditRecords(req)
         aiPageData.pageTotal = res.total
         aiPageData.pageNum = pager.page
         arraignmentRecordList.value = res.list
       }
     }
     
-    /** 获取全部数据 */
-    const searchData = async (page?: number) => {
-      pager.page = page ? page : pager.page
-      if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
-      try {
-        store.dispatch('settingStore/showLoading', route.name)
-        if (activeName.value === 'GradeBox' ) {
-          getResultAndQuota()
-        } else {
-          getAuditRecords()
-        }
-      } finally {
-        store.dispatch('settingStore/hiddenLoading', route.name)
-      }
-    }
-    getResultAndQuota()
-    getAuditRecords()
-
     /** 监听tab切换同步分页信息 */
+    const activeName = ref('GradeBox')
     watch(activeName, (val) => {
       if (val === 'ArraignmentRecordModule') {
         pager.total = aiPageData.pageTotal
@@ -367,6 +348,25 @@ export default defineComponent({
         pager.page = spotPageData.pageNum
       }
     })
+
+    /** 获取全部数据 */
+    const searchData = async (page?: number) => {
+      pager.page = page ? page : pager.page
+      if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        if (activeName.value === 'GradeBox' ) {
+          getResultAndQuota()
+        } else {
+          getRecords()
+        }
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
+      }
+    }
+    /** 页面初始化调用 */
+    getResultAndQuota()
+    getRecords()
 
     /** 监听预览图片 */
     const showPreview = ref(false)
@@ -391,6 +391,7 @@ export default defineComponent({
       type,
       organizationType,
       rangeType,
+      colConfig,
       timeSpan,
       aiTimeSpan,
       orderNum,

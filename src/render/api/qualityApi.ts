@@ -54,7 +54,7 @@ export async function getAllQualityReport (params: IgetQualityParams): Promise<I
   const res: any = await axios({
     url,
     method: 'POST',
-    params
+    data: params
   })
   // const msg = { total: 10, data: [
   //   {
@@ -408,7 +408,7 @@ export async function getAreaQualityReport (params: IgetQualityParams): Promise<
   const res: any = await axios({
     url,
     method: 'POST',
-    params
+    data: params
   })
   const data = res.data
   const list: EvaluateModel[] = data.map((item: any) => {
@@ -517,7 +517,7 @@ export async function getAreaQuota (params: IgetQualityParams): Promise<IGetRepo
   const res = await axios({
     url,
     method: 'POST',
-    params
+    data: params
   })
 
   const data = res.data

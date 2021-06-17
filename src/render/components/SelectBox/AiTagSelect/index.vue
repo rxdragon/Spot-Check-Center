@@ -1,6 +1,6 @@
 <template>
   <div class="aiTag-select">
-    <el-select v-bind="$attrs" placeholder="请选择Ai标签">
+    <el-select v-bind="$attrs" clearable placeholder="请选择Ai标签">
       <el-option
         v-for="(optionItem, optionIndex) in options"
         :key="optionIndex"
