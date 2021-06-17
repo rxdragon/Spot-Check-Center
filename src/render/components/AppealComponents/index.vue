@@ -32,7 +32,7 @@
           <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
             <div class="search-item">
               <span>伙伴</span>
-              <StaffSelect v-model="staffs" />
+              <StoreStaffSelect v-model="staffs" />
             </div>
           </el-col>
           <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
@@ -144,7 +144,7 @@ import { useStore } from '@/store/index'
 import { useRouter, useRoute } from 'vue-router'
 import { defineComponent, inject, reactive, Ref, ref, watch } from 'vue'
 import DatePicker from '@/components/DatePicker/index.vue'
-import StaffSelect from '@/components/SelectBox/StaffSelect/index.vue'
+import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
 import JobContentSelect from '@/components/SelectBox/JobContentSelect/index.vue'
 import ReviewStatusSelect from '@/components/SelectBox/ReviewStatusSelect/index.vue'
 // import dayjs from 'dayjs'
@@ -156,7 +156,7 @@ import { appealStatusToCN, APPEAL_STATUS } from '@/model/AppealModel'
  
 export default defineComponent({
   name: 'AppealComponents',
-  components: { DatePicker, StaffSelect, JobContentSelect, ReviewStatusSelect },
+  components: { DatePicker, StoreStaffSelect, JobContentSelect, ReviewStatusSelect },
   setup () {
     const router = useRouter()
     const route = useRoute()
@@ -214,45 +214,36 @@ export default defineComponent({
      * @description 初审相关
     */
     /** 获取申诉列表 */
-    const getAppealByPage = async () => {
-      const req = {
-        startAt: '',
-        endAt: '',
-        cloudOrderNum: orderNum.value,
-        serviceType: type,
-        appealStatus: '',
-        inputStaffIds: inputStaffIds.value,
-        staffId: staffs.value,
-        page: pager.page,
-        pageSize: pager.pageSize,
-      }
-      if (timeSpan.value) {
-        req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
-        req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
-      }
+    const getAppealByPage = async (req: AppealApi.IGetAppealParams) => {
       const res = await AppealApi.getAppealByPage(req, organizationType)
       pager.total = res.total
       tableData.value = res.list
     }
     /** 获取初审申诉绩效 */
-    const getFirstAppealQuota = async () => {
-      const req = {
-        startAt: '',
-        endAt: '',
-        cloudOrderNum: '',
-        serviceType: type,
-        appealStatus: '',
-        inputStaffIds: '',
-        staffId: staffs.value,
-        page: pager.page,
-        pageSize: pager.pageSize,
-      }
-      const res = await AppealApi.getFirstAppealQuota(req, organizationType)
+    const getAppealQuota = async (req: AppealApi.IGetAppealParams) => {
+      const res = await AppealApi.getAppealQuota(req, organizationType)
       appealCount.value = res.count
       appealRefuseCount.value = res.refuseCount
     }
-    getAppealByPage()
-    getFirstAppealQuota()
+
+    const getAppealData = () => {
+      const req = {} as AppealApi.IGetAppealParams
+      req.page = pager.page
+      req.pageSize = pager.pageSize
+      req.serviceType = type
+      if (timeSpan.value) {
+        req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
+        req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
+      }
+      if (orderNum.value) req.cloudOrderNum = orderNum.value
+      if (inputStaffIds.value) req.inputStaffIds = inputStaffIds.value
+      if (staffs.value.length > 0) req.staffId = staffs.value
+      if (appealStatus.value) req.appealStatus = appealStatus.value
+
+      getAppealByPage(req)
+      getAppealQuota(req)
+    }
+    getAppealData()
 
     /**
      * @description 复审相关
@@ -276,8 +267,8 @@ export default defineComponent({
      * @description 监听tab切换
     */
     watch(appealType, (val) => {
-      if (val === 'first') getAppealByPage()
-      if (val === 'second') getAppealByPage()
+      if (val === 'first') getAppealData()
+      if (val === 'second') getAppealData()
     })
 
     const routerGo = (id: string) => {
@@ -335,7 +326,7 @@ export default defineComponent({
       pager.page = page ? page : pager.page
       try {
         store.dispatch('settingStore/showLoading', route.name)
-        getAppealByPage()
+        getAppealData()
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }

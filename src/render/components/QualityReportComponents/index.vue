@@ -36,7 +36,7 @@
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>伙伴</span>
-          <StaffSelect v-model="staffs" />
+          <StoreStaffSelect v-model="staffs" />
         </div>
       </el-col>
       <el-col v-bind="{ ...colConfig }">
@@ -125,7 +125,7 @@ import DatePicker from '@/components/DatePicker/index.vue'
 import ArraignmentRecordModule from './ArraignmentRecordModule.vue'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
-import StaffSelect from '@/components/SelectBox/StaffSelect/index.vue'
+import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
 import AiTagSelect from '@/components/SelectBox/AiTagSelect/index.vue'
 import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import JobContentSelect from '@/components/SelectBox/JobContentSelect/index.vue'
@@ -148,7 +148,7 @@ const QUALITY_COMPONENT = {
 
 export default defineComponent({
   name: 'QualityReportComponents',
-  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StaffSelect, AiTagSelect, GradeBox, ScopeSearch, JobContentSelect, EvaluateSelect },
+  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StoreStaffSelect, AiTagSelect, GradeBox, ScopeSearch, JobContentSelect, EvaluateSelect },
   data () {
     return {
       colConfig: {
@@ -192,6 +192,14 @@ export default defineComponent({
     const onlyNew = ref(false)
     const onlyOld = ref(false)
     const axiosType = ref('')
+    const quotaData = reactive({
+      dresserQuantity: '',
+      expertAvgScore: '',
+      orderQuantity: '',
+      staffAvgScore: '',
+      storeAvgScore: '',
+      supervisorAvgScore: '',
+    })
 
     const changeOnlyNew = () => {
       if (onlyNew.value) onlyOld.value = false
@@ -199,6 +207,13 @@ export default defineComponent({
     const changeOnlyOld = () => {
       if (onlyOld.value) onlyNew.value = false
     }
+    /** 伙伴和职能互斥 */
+    watch(staffs, (val) => {
+      if (val.length > 0) jobContentIds.value = []
+    })
+    watch(jobContentIds, (val) => {
+      if (val.length > 0) staffs.value = []
+    })
 
     /** 是否显示海马体产品 */
     const showHimoProduct = ref(false)
@@ -215,6 +230,7 @@ export default defineComponent({
     }
 
     provide('gradeBoxData', gradeBoxData)
+    provide('quotaData', quotaData)
 
     /** 获取提审统计数据 */
     const auditRecordTotal = ref({
@@ -223,6 +239,7 @@ export default defineComponent({
       photoQualityCount: 0,
       photoQualityProblemCount: 0
     })
+    
     /**
      * @description 获取质检报告评分明细模块
     */
@@ -232,32 +249,31 @@ export default defineComponent({
       pageNum: 1
     }
     const getSpotCheckResult = async (req: QualityApi.IgetQualityParams) => {
+      let res: QualityApi.IGetReportRes
       if (rangeType === 'all') {
-        const res = await QualityApi.getAllQualityReport(req)
-        spotPageData.pageTotal = res.total
-        spotPageData.pageNum = pager.page
-        gradeBoxData.value = res.list
-      } else if (rangeType === 'region') {
-        const res = await QualityApi.getAreaQualityReport(req)
-        spotPageData.pageTotal = res.total
-        spotPageData.pageNum = pager.page
-        gradeBoxData.value = res.list
+        res = await QualityApi.getAllQualityReport(req)
+      } else {
+        res = await QualityApi.getAreaQualityReport(req)
       }
+      spotPageData.pageTotal = res.total
+      spotPageData.pageNum = pager.page
+      gradeBoxData.value = res.list
     }
 
     /** 质检报告绩效 */
-    const getAllQuota = async (req: QualityApi.IgetQualityParams) => {
+    const getQuota = async (req: QualityApi.IgetQualityParams) => {
+      let res: any
       if (rangeType === 'all') {
-        const res = await QualityApi.getAllQuota(req)
-        spotPageData.pageTotal = res.total
-        spotPageData.pageNum = pager.page
-        gradeBoxData.value = res.list
+        res = await QualityApi.getAllQuota(req)
       } else if (rangeType === 'region') {
-        const res = await QualityApi.getAreaQuota(req)
-        spotPageData.pageTotal = res.total
-        spotPageData.pageNum = pager.page
-        gradeBoxData.value = res.list
+        res = await QualityApi.getAreaQuota(req)
       }
+      quotaData.dresserQuantity = res.data.dresserQuantity
+      quotaData.expertAvgScore = res.data.expertAvgScore
+      quotaData.orderQuantity = res.data.orderQuantity
+      quotaData.staffAvgScore = res.data.staffAvgScore
+      quotaData.storeAvgScore = res.data.storeAvgScore
+      quotaData.supervisorAvgScore = res.data.supervisorAvgScore
     }
 
     /** 统一调用质检报告模块 */
@@ -281,7 +297,7 @@ export default defineComponent({
       if (onlyOld.value) req.onlyOld = onlyOld.value
 
       getSpotCheckResult(req)
-      getAllQuota(req)
+      getQuota(req)
     }
 
 
@@ -294,19 +310,10 @@ export default defineComponent({
       pageNum: 2
     }
     const getAuditRecords = async () => {
-      const req: ArraignmentRecordApi.IgetAuditRecordsParams = {
-        type,
-        page: pager.page,
-        pageSize: pager.pageSize,
-        startAt: '',
-        endAt: '',
-        cloudOrderNum: orderNum.value,
-        auditState: aiTag.value,
-        supervisorArr: jobContentIds.value,
-        staffIds: staffs.value,
-        onlyNew: onlyNew.value,
-        onlyOld: onlyOld.value,
-      }
+      const req = {} as ArraignmentRecordApi.IgetAuditRecordsParams
+      req.type = type
+      req.page = pager.page,
+      req.pageSize = pager.pageSize
       if (aiTimeSpan.value) {
         req.startAt = TimeUtil.searchStartTime(aiTimeSpan.value[0])
         req.endAt = TimeUtil.searchEndTime(aiTimeSpan.value[1])
@@ -349,6 +356,7 @@ export default defineComponent({
     getResultAndQuota()
     getAuditRecords()
 
+    /** 监听tab切换同步分页信息 */
     watch(activeName, (val) => {
       if (val === 'ArraignmentRecordModule') {
         pager.total = aiPageData.pageTotal

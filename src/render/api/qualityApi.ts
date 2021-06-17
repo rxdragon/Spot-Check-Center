@@ -2,6 +2,7 @@
 import axios from '@/plugins/axios'
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import EvaluateModel from '@/model/EvaluateModel'
+import SpotQuotaModel from '@/model/SpotQuotaModel'
 import { IEvaluateAPi } from '@/api/evaluateApi'
 
 /**
@@ -38,7 +39,7 @@ export interface IgetQualityParams extends IEvaluateAPi {
   pageSize?: number
 }
 
-interface IGetReportRes {
+export interface IGetReportRes {
   list: EvaluateModel[],
   total: number
 }
@@ -424,16 +425,73 @@ export async function getAreaQualityReport (params: IgetQualityParams): Promise<
  * @description 质检报告绩效(全员)
  * @param {*} params
  */
-export async function getAllQuota (params: IgetQualityParams): Promise<IGetReportRes> {
+export async function getAllQuota (params: IgetQualityParams) {
   // TODO lj
-  const url = `${getApiUrl(params.type, params.organizationType)}/getAllQuota`
-  const res = await axios({
-    url,
-    method: 'GET',
-    params
-  })
+  // const url = `${getApiUrl(params.type, params.organizationType)}/getAllQuota`
+  // const res = await axios({
+  //   url,
+  //   method: 'POST',
+  //   params
+  // })
+  const res = {
+    "msg": {
+      "avg": {
+        "commitInfo.star": 4.5
+      },
+      "avg_group": {
+        "store_id-commitInfo.total": [
+          {
+            "_id": 1,
+            "result": 2
+          },
+          {
+            "_id": 2,
+            "result": 4
+          }
+        ]
+      },
+      "count": {
+        "all": 2
+      },
+      "count_distinct": {
+        "staff_id": 1,
+        "store_id": 1
+      },
+      "count_unwind": {
+        "problem_tags": [
+          {
+            "_id": 4,
+            "value": 2
+          },
+          {
+            "_id": 3,
+            "value": 2
+          },
+          {
+            "_id": 2,
+            "value": 2
+          },
+          {
+            "_id": 1,
+            "value": 2
+          }
+        ]
+      },
+      "max": {
+        "commitInfo.star": 5
+      },
+      "min": {
+        "commitInfo.star": 4
+      },
+      "sum": {
+        "businessId": 238,
+        "commitInfo.total": 9
+      }
+    },
+    "success": true
+  }
 
-  const data = res.data
+  const data = new SpotQuotaModel(res.msg)
   // if (!data.length) {
   //   return {
   //     list: [],
@@ -442,12 +500,9 @@ export async function getAllQuota (params: IgetQualityParams): Promise<IGetRepor
   //     pageTotal: data.total || null
   //   }
   // }
-  const list: EvaluateModel[] = data.map((item: any) => {
-    return new EvaluateModel(item)
-  })
-  const createData: IGetReportRes = {
-    list: list,
-    total: 10
+
+  const createData = {
+    data: data
   }
   return createData
 }
@@ -461,7 +516,7 @@ export async function getAreaQuota (params: IgetQualityParams): Promise<IGetRepo
   const url = `${getApiUrl(params.type, params.organizationType)}/getAreaQuota`
   const res = await axios({
     url,
-    method: 'GET',
+    method: 'POST',
     params
   })
 

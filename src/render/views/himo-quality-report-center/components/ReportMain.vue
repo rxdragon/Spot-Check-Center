@@ -24,7 +24,7 @@
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>伙伴</span>
-          <StaffSelect v-model="staffs" />
+          <StoreStaffSelect v-model="staffs" />
         </div>
       </el-col>
       <!-- 分数 -->
@@ -116,14 +116,14 @@ import DatePicker from '@/components/DatePicker/index.vue'
 import ArraignmentRecordModule from './ArraignmentRecordModule.vue'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
-import StaffSelect from '@/components/SelectBox/StaffSelect/index.vue'
+import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
 import AiTagSelect from '@/components/SelectBox/AiTagSelect/index.vue'
 import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
 
 export default defineComponent({
   name: 'MakeupQualityReport',
-  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StaffSelect, AiTagSelect, ScopeSearch },
+  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StoreStaffSelect, AiTagSelect, ScopeSearch },
   data () {
     return {
       colConfig: {

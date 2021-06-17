@@ -40,7 +40,7 @@ export async function createAppeal (params: ICreateAppealParams, axiosType: ORGA
   // })
 }
 
-interface IGetAppealParams {
+export interface IGetAppealParams {
   startAt?: string
   endAt?: string
   cloudOrderNum?: string
@@ -232,11 +232,11 @@ export async function getSecondAppealByPage (params: IGetAppealParams, axiosType
 }
 
 /**
-* @description 获取初审申诉绩效
+* @description 获取申诉绩效
 */
-export async function getFirstAppealQuota (params: IGetAppealParams, axiosType: ORGANIZATION_TYPE) {
+export async function getAppealQuota (params: IGetAppealParams, axiosType: ORGANIZATION_TYPE) {
   // eslint-disable-next-line no-unused-vars
-  const url = `${getApiUrl(axiosType)}/getFirstAppealQuota`
+  const url = `${getApiUrl(axiosType)}/getAppealQuota`
   // await axios({
   //   url,
   //   method: 'POST',

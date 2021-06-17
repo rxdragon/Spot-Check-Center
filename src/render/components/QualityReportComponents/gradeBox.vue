@@ -1,5 +1,13 @@
 <template>
   <div class="divide-y-4 divide-gray-200">
+    <div class="top-msg flex mb-6">
+      <span class="flex-1">被评价单量: {{ quotaData.dresserQuantity }}</span>
+      <span class="flex-1">被评价化妆师: {{ quotaData.expertAvgScore }}</span>
+      <span class="flex-1">伙伴平均分: {{ quotaData.orderQuantity }}</span>
+      <span class="flex-1">门店平均分: {{ quotaData.staffAvgScore }}</span>
+      <span class="flex-1">职能-专家平均分: {{ quotaData.storeAvgScore }}</span>
+      <span class="flex-1">职能-督导平均分: {{ quotaData.supervisorAvgScore }}</span>
+    </div>
     <div
       v-for="(item, index) in gradeBoxData"
       :key="item.id"
@@ -9,14 +17,6 @@
       <!-- 列表 -->
       <!-- 照片信息 -->
       <div class="photo-panel mb-6">
-        <div class="top-msg flex mb-6">
-          <span class="flex-1">被评价单量</span>
-          <span class="flex-1">被评价化妆师</span>
-          <span class="flex-1">伙伴平均分</span>
-          <span class="flex-1">门店平均分</span>
-          <span class="flex-1">职能-专家平均分</span>
-          <span class="flex-1">职能-督导平均分</span>
-        </div>
         <div class="panel-title">照片信息</div>
         <div class="panel-content">
           <div class="photo-list grade-photo-list overflow-x-auto overscroll-x-contain">
@@ -122,7 +122,7 @@
 import { defineComponent, inject, ref } from 'vue'
 import PhotoBox from '@/components/PhotoBox/index.vue'
 import AppealPop from './AppealPop.vue'
-import { SPOT_TYPE, ORGANIZATION_TYPE, storeTypeToCN } from '@/model/Enumerate'
+import { SPOT_TYPE, storeTypeToCN } from '@/model/Enumerate'
 
 export default defineComponent({
   name: 'GradeBox',
@@ -133,7 +133,8 @@ export default defineComponent({
   emits: ['previewPhoto'],
   setup (props, { emit }) {
     const type = inject('type') as SPOT_TYPE
-    const gradeBoxData: any = inject('gradeBoxData') as ORGANIZATION_TYPE
+    const gradeBoxData: any = inject('gradeBoxData')
+    const quotaData: any = inject('quotaData')
 
     const onSelectPhoto = (info: any, photoIndex: string | number | symbol) => {
       const photoData = info.photoList.map((photoItem: any, index: number) => {
@@ -169,6 +170,7 @@ export default defineComponent({
     return {
       type,
       gradeBoxData,
+      quotaData,
       SPOT_TYPE,
       storeTypeToCN,
       dialogVisible,
@@ -185,6 +187,10 @@ export default defineComponent({
 </script>
 
 <style lang="less">
+.top-msg {
+  font-size: 14px;
+  color: #303133;
+}
 
 .grade-box {
   .grid-list {
@@ -194,11 +200,6 @@ export default defineComponent({
 
   .photo-panel {
     flex-shrink: 0;
-
-    .top-msg {
-      font-size: 14px;
-      color: #303133;
-    }
 
     .panel-title {
       display: flex;

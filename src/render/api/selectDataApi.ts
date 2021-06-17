@@ -1,5 +1,5 @@
 // TODO lj
-import axios from '@/plugins/axios'
+// import axios from '@/plugins/axios'
 // import * as SessionTool from '@/utils/sessionTool'
 
 interface ISelect {
@@ -82,55 +82,55 @@ export async function getJobContentSelectList (params: IJobContentParams) {
   // TODO lj
   // const params = { needDelete: false }
   // TODO lj
-  // const msg: any = {
-  //   "msg": [
-  //     {
-  //       "children": [{
-  //         "config_staff_ids": [
-  //           1,
-  //           2,
-  //           3
-  //         ],
-  //         "config_store_ids": [
-  //           1,
-  //           2,
-  //           3
-  //         ],
-  //         "id": 1,
-  //         "name": "张三",
-  //         "position_id": "1"
-  //       }],
-  //       "id": 1,
-  //       "name": "化妆组长"
-  //     },
-  //     {
-  //       "children": [{
-  //         "config_staff_ids": [
-  //           1,
-  //           2,
-  //           3
-  //         ],
-  //         "config_store_ids": [
-  //           1,
-  //           2,
-  //           3
-  //         ],
-  //         "id": 1,
-  //         "name": "张三三",
-  //         "position_id": "2"
-  //       }],
-  //       "id": 1,
-  //       "name": "化妆组长"
-  //     }
-  //   ],
-  //   "success": true
-  // }
+  const msg: any = {
+    "msg": [
+      {
+        "children": [{
+          "config_staff_ids": [
+            1,
+            2,
+            3
+          ],
+          "config_store_ids": [
+            1,
+            2,
+            3
+          ],
+          "id": 1,
+          "name": "张三",
+          "position_id": "1"
+        }],
+        "id": 1,
+        "name": "化妆组长"
+      },
+      {
+        "children": [{
+          "config_staff_ids": [
+            1,
+            2,
+            3
+          ],
+          "config_store_ids": [
+            1,
+            2,
+            3
+          ],
+          "id": 1,
+          "name": "张三三",
+          "position_id": "2"
+        }],
+        "id": 1,
+        "name": "化妆组长"
+      }
+    ],
+    "success": true
+  }
 
-  const msg: any = await axios({
-    url: '/project-photo-quality/common/getPositionStaffs',
-    method: 'get',
-    params
-  })
+  // const msg: any = await axios({
+  //   url: '/project-photo-quality/common/getPositionStaffs',
+  //   method: 'get',
+  //   params
+  // })
 
   const data = msg.msg
   const newData: IFilterSelectData[] = data.map((item: any) => {
