@@ -1,4 +1,5 @@
 import type { DownloadItem } from 'electron'
+import { DOWN_STATE } from './downModuleEnum'
 
 // 进度类型
 export interface IDownProgressInfo {
@@ -21,15 +22,20 @@ export interface IDownInfo {
   filename: string
   contentDisposition: string
   startTime: number
-  state: "progressing" | "interrupted"
+  state: DOWN_STATE
 }
+
+// 渲染进程调用下载如参
+export interface IFileDownloadConfig {
+  url: string // 下载文件的完整地址
+  path: string // 保存文件地址文件夹
+  downloadFolder?: string
+  rename?: string
+}
+
 // onNeedDownload 下载配置
-export interface IDownloadConfig {
+export interface IDownloadConfig extends IFileDownloadConfig {
   uuid: string
-  url: string
-  downloadFolder? :string
-  path: string
-  rename: string
 }
 
 // 下载配置
@@ -50,6 +56,33 @@ export interface IQueueItem {
   rename: string // 是否重命名
   downloadFolder: string
   path: string // 储存地址
-  callback: (error, downInfo: IDownCallBackInfo) => void // 回调函数
+  callback: (error: any, downInfo: IDownCallBackInfo) => void // 回调函数
   onProgress: (progress: IDownProgressInfo, downInfo: IDownInfo, item: DownloadItem) => void
+}
+
+
+/** 渲染进程下下载item */
+export interface IDownItem {
+  // progressing 下载中 completed 下载完成 cancelled 取消下载 interrupted 下载中断
+  status: DOWN_STATE // 下载状态
+  canResume: boolean // 是否可以重新下载
+  isUserPause: boolean // 是否是用户暂停
+  orginName: string // 原始文件名字
+  ext: string // 后缀 初始不可更改
+  rename: string // 重命名
+  fileName: string // 文件名 最后下载后的名字
+  savePath: string // 保存地址
+  config: IDownloadConfig // 下载配置信息
+  process: IDownProgressInfo | Record<string, any> // 下载进入信息
+  downInfo: IDownInfo | Record<string, any> // 下载信息
+  iconSrc: string // 图标地址
+}
+
+// 主线程和渲染线程通信使用数据
+export interface IDownloadProcessIpcData {
+  uuid: string
+  progress: IDownProgressInfo
+  downInfo: IDownInfo
+  status: DOWN_STATE // 状态
+  canResume: boolean // 能否恢复下载
 }

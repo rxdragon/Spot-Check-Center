@@ -6,7 +6,7 @@ import type { IDownloadOptions, IQueueItem, IDownInfo, IDownProgressInfo } from 
 import path from 'path'
 import electron, { BrowserWindow, net } from 'electron'
 import fs from 'fs'
-import console from 'console'
+import { DOWN_STATE } from './downModuleEnum'
 
 const app = electron.app
 let downloadFolder = '' // 下载路径
@@ -52,10 +52,10 @@ const download = (options: IDownloadOptions, callback: IQueueItem['callback']) =
       url: url, // 下载地址
       filename: filename, // 文件名字
       callback: callback, // 回调函数
-      rename: options.rename, // 是否重命名
       downloadFolder: folder,
       path: options.path.toString(), // 储存地址
-      onProgress: options.onProgress // 监听下载
+      onProgress: options.onProgress, // 监听下载
+      rename: options.rename || '' // 是否重命名
     }
     queue.push(createQueueItem)
 
@@ -196,7 +196,7 @@ function _registerListener (win: BrowserWindow, opts: registerOpts) {
     // 如果下载中断
     console.log(item.getState())
 
-    if (item.getState() === 'interrupted') {
+    if (item.getState() === DOWN_STATE.INTERRUPTED) {
       item.resume()
     }
 
@@ -231,7 +231,7 @@ function _registerListener (win: BrowserWindow, opts: registerOpts) {
         filename: item.getFilename(), // 下载文件名
         contentDisposition: item.getContentDisposition(), // 响应头中的Content-Disposition字段
         startTime: item.getStartTime(), // 开始下载时间
-        state
+        state: (state as DOWN_STATE.PROGRESSING | DOWN_STATE.INTERRUPTED)
       }
 
       if (typeof queueItem.onProgress === 'function') {
@@ -246,10 +246,10 @@ function _registerListener (win: BrowserWindow, opts: registerOpts) {
       // 如果下载中断
       console.log('down', state, item.getURL())
 
-      if (state === 'interrupted') {
+      if (state === DOWN_STATE.INTERRUPTED) {
         const message = `该文件${item.getFilename()} 下载中断`
         finishedDownloadCallback(new Error(message), { url: item.getURL(), filePath })
-      } else if (state === 'completed') {
+      } else if (state === DOWN_STATE.COMPLETED) {
         if (process.platform === 'darwin') { app.dock.downloadFinished(filePath) }
         finishedDownloadCallback(null, { url: item.getURL(), filePath })
       }

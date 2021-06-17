@@ -1,5 +1,6 @@
-import type { IDownloadConfig, IDownloadOptions } from './index.d'
+import type { IDownloadConfig, IDownloadOptions, IDownloadProcessIpcData } from './index'
 import type { DownloadItem, BrowserWindow, IpcMain, IpcMainEvent } from 'electron'
+import { DOWN_STATE } from './downModuleEnum'
 import DownloadManager from './DownloadManager'
 // 下载器 注册保存地址
 const downloadFolder = ''
@@ -29,13 +30,14 @@ function initDownloadManager (win: BrowserWindow, ipcMain: IpcMain) {
       ...downloadConfig,
       onProgress: (progress, downInfo, item) => {
         if (!(uuid in downingInfo)) downingInfo[uuid] = item
-        win.webContents.send('download-manage:process', {
+        const processData: IDownloadProcessIpcData = {
           uuid,
           progress,
           downInfo,
-          status: downInfo.state, // 状态
+          status: (downInfo.state as DOWN_STATE.PROGRESSING | DOWN_STATE.INTERRUPTED), // 状态
           canResume: item.canResume()
-        })
+        }
+        win.webContents.send('download-manage:process', processData)
       }
     }
     DownloadManager.download(newDownloadConfig, (error, downInfo) => {

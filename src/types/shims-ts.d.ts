@@ -10,7 +10,9 @@ declare module 'axios' {
 
 import type { App } from 'vue'
 
+import type { IpcRenderer } from 'electron'
 declare global {
+  
   const __APP_INFO__: {
     pkg: {
       name: string
@@ -29,7 +31,8 @@ declare global {
     BUILD_TIME: any
     _: any
     __APP__: App
-    ElectronIpcRenderer?: any
+    ElectronIpcRenderer?: IpcRenderer
+    OriginalFs?: any
   }
 
   namespace _ {

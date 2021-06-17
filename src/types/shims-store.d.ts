@@ -1,4 +1,5 @@
 import { RouteRecordRaw } from 'vue-router'
+import type { IDownItem } from '~/main/downModule/index'
 
 interface IUserStore {
   id: string | number
@@ -6,6 +7,10 @@ interface IUserStore {
   nickname: string
   avatarImg: string
   permissions: string[]
+}
+
+interface IDownLoadedList {
+  downloadList: IDownItem[]
 }
 
 interface ISettingStore {

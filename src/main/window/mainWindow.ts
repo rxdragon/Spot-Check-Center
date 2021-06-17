@@ -5,6 +5,8 @@ import path from 'path'
 import { windows } from './base'
 import WindowsModel from '../window/WindowModel'
 
+console.log(path.join(__dirname, 'preload.js'))
+
 export async function createWindow (): Promise<BrowserWindow> {
   let win: BrowserWindow | null = new BrowserWindow({
     width: 1440,
@@ -13,11 +15,12 @@ export async function createWindow (): Promise<BrowserWindow> {
     minWidth: 1440,
     minHeight: 900,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
       nodeIntegrationInSubFrames: false,
       scrollBounce: true,
-      backgroundThrottling: true
+      backgroundThrottling: true,
+      preload: path.join(__dirname, 'preload.js')
     },
     titleBarStyle: 'hiddenInset',
     icon: path.join(global.launcherStaticDir, "icon.png"),
