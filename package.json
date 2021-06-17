@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode development",
+    "serve-release": "vue-cli-service serve --mode release",
     "build": "vue-cli-service build --dest=dist_vue",
     "lint": "vue-tsc --noEmit --skipLibCheck && eslint \"src/render/**/*.{vue,ts,tsx}\" --fix",
     "build-asar": "yarn build && yarn build-background",
