@@ -117,7 +117,6 @@ import * as StaffApi from '@/api/staffApi'
 import StaffModel from '@/model/StaffModel'
 import EditAccount, { EDIT_TYPE } from './components/EditAccount.vue'
 
-
 export default defineComponent({
   name: 'AccountConfig',
   components: { RoleSelect, EditAccount },

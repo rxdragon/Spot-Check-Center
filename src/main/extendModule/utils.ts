@@ -1,10 +1,10 @@
 import type { BrowserWindow, IpcMain, IpcMainEvent } from "electron"
 
-const path = require('path')
-const fs = require('fs')
+import path from 'path'
+import fs from 'fs'
 const userDir = global.userDir
 const imageCachePath = path.join(userDir, 'imageCache')
-const { shell } = require('electron')
+import { shell } from 'electron'
 
 function hasImageCache (imagePath: string) {
   return fs.existsSync(imagePath)
