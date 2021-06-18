@@ -104,7 +104,8 @@ export default defineComponent({
         }
         const res = await GradeConfigurationApi.getScoreConfigByEdit(req)
         tabList.value = res
-        activeName.value = res[0].stringId
+        const firstId = _.get(res[0], 'stringId') || ''
+        if (firstId) activeName.value = firstId
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
