@@ -68,7 +68,7 @@ export default defineComponent({
       overflow: hidden;
       border-radius: 4px;
 
-      & /deep/ .el-image__inner {
+      :deep(.el-image__inner) {
         width: auto;
         max-width: 120px;
         height: auto;

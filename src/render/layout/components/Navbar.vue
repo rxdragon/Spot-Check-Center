@@ -19,10 +19,11 @@
         />
       </div>
       <span class="nav-main">
-        缦图云端 修图中心
+        缦图云端 质量检测中心
       </span>
       <div class="nav-right">
-        <!-- <download-management /> -->
+        <!-- 下载管理 -->
+        <DownloadManagement class="mr-6" />
         <!-- 修图师在线功能 -->
         <el-avatar :src="userInfo.avatarImg" />
         <div class="user-name">{{ userInfo.nickname || userInfo.name }}</div>
@@ -34,7 +35,7 @@
 </template>
 
 <script lang="ts">
-// import DownloadManagement from '@/components/DownloadManagement'
+import DownloadManagement from '@/components/DownloadManagement/index.vue'
 import { computed, defineComponent } from 'vue'
 
 import * as UserApi from '@/api/userApi'
@@ -45,7 +46,7 @@ import { mapGetters } from 'vuex'
 
 export default defineComponent({
   name: 'Navbar',
-  // components: { DownloadManagement, InformationSwitch },
+  components: { DownloadManagement },
   data () {
     return {
       throttleRefresh: throttle(this.refresh, 1000),
@@ -72,15 +73,6 @@ export default defineComponent({
     return {
       collapse, switchCollapse
     }
-  },
-  mounted () {
-    // TODO:cf
-    // this.$ipcRenderer.on('enter-full', (e, item) => {
-    //   document.body.style.setProperty('--navbarMainLeft', '30px')
-    // })
-    // this.$ipcRenderer.on('leave-full', (e, item) => {
-    //   document.body.style.setProperty('--navbarMainLeft', '95px')
-    // })
   },
   methods: {
     /**
@@ -183,10 +175,6 @@ export default defineComponent({
       align-items: center;
       -webkit-user-select: none;
       -webkit-app-region: no-drag;
-
-      .download-management {
-        margin-right: 20px;
-      }
 
       .el-avatar {
         width: 24px;

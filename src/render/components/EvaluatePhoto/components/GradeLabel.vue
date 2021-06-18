@@ -117,7 +117,7 @@ export default defineComponent({
     }
   }
 
-  & /deep/ .el-collapse {
+  :deep(.el-collapse) {
     border-top: @border-color;
     border-bottom: none;
 

@@ -34,3 +34,47 @@
 .breadcrumb-leave-active {
   position: absolute;
 }
+
+// 列表过度
+.list-complete-item {
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.list-complete-enter-from,
+.list-complete-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.list-complete-leave-active {
+  position: absolute;
+}
+
+// 下载动画
+.down-complete-item {
+  display: block;
+  width: 100%;
+  max-height: 48px;
+  overflow: hidden;
+  opacity: 1;
+  transition: all 0.3s;
+}
+
+.loop(@counter) when (@counter<=50) {
+  .loop(@counter+1);
+  .down-complete-item:nth-of-type(@{counter}) {
+    transition-delay: calc(0.1s * @counter);
+  }
+}
+.loop(1);
+
+.down-complete-enter-from,
+.down-complete-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.down-complete-leave-active {
+  position: relative;
+}

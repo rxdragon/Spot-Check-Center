@@ -3,7 +3,8 @@ import type {
   IPermissionStore,
   ISettingStore,
   ITagsViewStore,
-  IUserStore
+  IUserStore,
+  IDownLoadedList
 } from '~/types/shims-store'
 
 import { createStore, Store, useStore as baseUseStore } from 'vuex'
@@ -15,6 +16,7 @@ export interface State {
   settingStore: ISettingStore
   tagsViewStore: ITagsViewStore
   permissionStore: IPermissionStore
+  downLoadedListStore: IDownLoadedList
 }
 
 
