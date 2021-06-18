@@ -1,4 +1,4 @@
-# 0.1.0 (2021-06-16)
+# 0.1.0 (2021-06-18)
 
 ### 🌟 新功能
 范围|描述|commitId
@@ -25,6 +25,7 @@
 范围|描述|commitId
 --|--|--
  - | 历史记录模型 | [7c2fd99](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/7c2fd99)
+ - | 完善了修改评分功能模块 | [a43f4a9](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/a43f4a9)
 
 
 范围|描述|commitId

@@ -66,7 +66,7 @@
     <div class="module-panel mt-6">
       <div class="arraignment-record-list">
         <EvaluateHistoryModule
-          v-for="item in arraignmentRecordList"
+          v-for="item in evaluateRecordList"
           :key="item.id"
           class="mt-6"
           :record-info="item"
@@ -162,7 +162,7 @@ export default defineComponent({
       pageSize: 10,
       total: 10
     })
-    const arraignmentRecordList = ref<any>([])
+    const evaluateRecordList = ref<any>([])
     const poolList = ref<PoolRecordModel[]>([])
     /** 
      * @description 查询历史记录相关数据 
@@ -170,6 +170,7 @@ export default defineComponent({
     const getHistoryRecords = async () => {
       const req = {
         type,
+        organizationType,
         startAt: '',
         endAt: '',
         cloudOrderNum: '',
@@ -193,7 +194,7 @@ export default defineComponent({
       const res = await EvaluateHistoryApi.getHistoryRecords(req)
       poolList.value = res.list
       pager.total = res.total
-      arraignmentRecordList.value = res.list
+      evaluateRecordList.value = res.list
     }
     
     /** 
@@ -221,7 +222,6 @@ export default defineComponent({
       previewPhotos.value = photoData
       showPreview.value = true
     }
-
     /**
      * 评分
      */
@@ -229,15 +229,6 @@ export default defineComponent({
     const evaluateIndex = ref(0)
     const showEvaluate = ref(false)
     const evaluatePoolRecordId = ref('') // 正在打分id
-    /** 
-     * @description 监听修改评分
-     */
-    const onEvaluatePhoto = ({ photoIndex, photoData }: { photoIndex: number, photoData: any }) => {
-      evaluatePhotos.value = photoData
-      evaluateIndex.value = photoIndex
-      showEvaluate.value = true
-    }
-
     /**
      * @description 显示打分数据
      */
@@ -265,6 +256,13 @@ export default defineComponent({
       evaluateIndex.value = photoIndex
       evaluatePhotos.value = photoData
       showEvaluate.value = true
+    }
+
+    /** 
+     * @description 监听修改评分
+     */
+    const onEvaluatePhoto = ({ photoIndex, poolItemId }: { photoIndex: number, poolItemId: string }) => {
+      evaluatePhoto(poolItemId, photoIndex)
     }
 
     /**
@@ -370,7 +368,7 @@ export default defineComponent({
       scopeData,
       evaluateIds,
       pager,
-      arraignmentRecordList,
+      evaluateRecordList,
       searchData,
       handlePage,
       showPreview,

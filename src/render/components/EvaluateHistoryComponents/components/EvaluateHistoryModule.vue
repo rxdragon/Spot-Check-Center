@@ -147,24 +147,10 @@ export default defineComponent({
      * @description 修改评分
      */
     const onEvaluatePhoto = (photoIndex: string | number | symbol) => {
-      const photoData = props.recordInfo.photoList?.map((photoItem: any, index: number) => {
-        const { streamInfo } = props.recordInfo
-        const photoInfo = {
-          ...streamInfo,
-          aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
-        }
-        return {
-          // todo photoModel 增加完成src
-          title: `原片（${index + 1}/${props.recordInfo.photoList?.length}）`,
-          src: photoItem.path,
-          photoInfo,
-          markPath: '',
-          markJson: '',
-          markBase: ''
-        }
-      })
+      const poolItemId = props.recordInfo.id
+
       const data = {
-        photoData,
+        poolItemId,
         photoIndex
       }
       emit('evaluatePhoto', data)
