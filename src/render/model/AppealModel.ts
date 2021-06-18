@@ -21,7 +21,9 @@ export enum APPEAL_STATUS {
   FIRST_APPEAL_REJECTED = 'first_appeal_rejected', // 第一次审核拒绝
   WAIT_SECOND_APPEAL = 'wait_second_appeal', // 等待第二次审核
   SECOND_APPEAL = 'second_appeal', // 第二次审核
-  SECOND_APPEAL_REJECTED = 'second_appeal_rejected' // 第二次审核拒绝
+  SECOND_APPEAL_REJECTED = 'second_appeal_rejected', // 第二次审核拒绝
+  FINISH = 'finish', // 审核通过
+  EXPIRED = 'expired' // 过期未处理
 }
 
 // 修图标准映射中文
@@ -31,7 +33,9 @@ export const appealStatusToCN = {
   [APPEAL_STATUS.FIRST_APPEAL_REJECTED]: '初审拒绝',
   [APPEAL_STATUS.WAIT_SECOND_APPEAL]: '待复审',
   [APPEAL_STATUS.SECOND_APPEAL]: '复审中',
-  [APPEAL_STATUS.SECOND_APPEAL_REJECTED]: '复审拒绝'
+  [APPEAL_STATUS.SECOND_APPEAL_REJECTED]: '复审拒绝',
+  [APPEAL_STATUS.FINISH]: '审核通过',
+  [APPEAL_STATUS.EXPIRED]: '过期未处理'
 }
 
 /** 获取用户信息 */
