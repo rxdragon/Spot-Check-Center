@@ -70,7 +70,7 @@ export function handleCommitInfo (issueLabel: any) {
   issueLabel.forEach((issueItem: any) => {
     const className = _.get(issueItem, 'parent.score_type.name') || '异常'
     const gradeName = _.get(issueItem, 'parent.name') || '异常'
-    const createData:ITags = {
+    const createData: ITags = {
       id: issueItem.id,
       name: `${className}-${gradeName}-${issueItem.name}`,
       type: CNLevelToType['小']

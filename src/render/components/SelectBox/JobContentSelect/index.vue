@@ -1,17 +1,17 @@
 <template>
-  <div class="evaluate-select">
+  <div class="jobContent-select">
     <el-cascader
       v-bind="$attrs"
       :options="options"
       :props="deafultProps"
       :disabled="loading"
       collapse-tags
-      placeholder="请选择评价"
+      placeholder="请选择职能"
       filterable
       clearable
     >
       <template #default="{ node, data }">
-        <span>{{ data.name }}</span>
+        <span>{{ data.label }}</span>
         <span v-if="!node.isLeaf"> ({{ data.children.length }}) </span>
       </template>
     </el-cascader>
@@ -19,46 +19,40 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, inject, reactive, ref } from 'vue'
 import * as SelectDataApi from '@/api/selectDataApi'
 
 export default defineComponent({
-  name: 'EvaluateSelect',
-  props: {
-    type: { type: String, default: '' }
-  },
-  setup (props) {
+  name: 'JobContentSelect',
+  setup () {
+    const type = inject('type', '')
+
     /** 组件基本属性 */
     const deafultProps = reactive({
       multiple: true,
-      emitPath: false,
-      value: 'id',
-      label: 'name'
+      emitPath: false
     })
 
 
-    /** 获取评价标签 */
+    /** 获取全部职能 */
     const options: any = ref([])
     const loading = ref(true)
-    const getAllLabel = async () => {
-      try {
-        loading.value = true
-        const req = {
-          type: props.type
-        }
-        const res: any[] = await SelectDataApi.getEvaluateSelectList(req)
-        options.value = res
-      } finally {
-        loading.value = false
+    async function getAllJob () {
+      // TODO lj
+      const req = {
+        type: type
       }
+      const list = await SelectDataApi.getJobContentSelectList(req)
+      options.value = list
+      loading.value = false
     }
-    getAllLabel()
+    getAllJob()
 
 
     return {
       deafultProps,
-      loading,
-      options
+      type,
+      loading, options
     }
   },
 })
@@ -66,7 +60,7 @@ export default defineComponent({
 
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .jobContent-select {
   width: 100%;
 

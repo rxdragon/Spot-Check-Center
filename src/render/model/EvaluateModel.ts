@@ -1,20 +1,6 @@
 import StreamOrderModel from '@/model/StreamOrderModel'
-import PoolPhotoModel from '@/model/PoolPhotoModel'
+import AuditSpotPhotoModel from '@/model/AuditSpotPhotoModel'
 import EvaluateTagsModel from '@/model/EvaluateTagsModel'
-// interface ITagParent {
-//   id: number
-//   name: string
-//   scoreType: string
-//   scoreTypeId: number
-// }
-
-// interface ITag {
-//   id: number
-//   name: string
-//   parent: ITagParent
-//   score: number | string
-//   type: string
-// }
 
 interface IScoreConfigs {
   id: number
@@ -35,14 +21,14 @@ interface ICommitInfo {
  * @description 抽片记录
  */
 export default class EvaluateModel {
-  // TODO: cf
+  // TODO: lj
   base: any
   id: number
   businessId: number | string
-  tagInfo?: EvaluateTagsModel
   commitInfo?: ICommitInfo
   streamInfo?: StreamOrderModel
-  photoList?: PoolPhotoModel[]
+  photoList?: AuditSpotPhotoModel[]
+  tagInfo?: EvaluateTagsModel
 
   constructor (data: any) {
     this.base = data
@@ -65,7 +51,7 @@ export default class EvaluateModel {
     this.getTags()
   }
 
-  // 获取流水信息
+  // 获取订单信息
   getStreamInfo () {
     const streamData = _.get(this.base, 'streamData') || _.get(this.base, 'streamOrder') || {}
     this.streamInfo = new StreamOrderModel(streamData)
@@ -74,10 +60,10 @@ export default class EvaluateModel {
   // 获取照片相关数据
   getPoolPhotoList () {
     const photoList = _.get(this.base, 'photo') || _.get(this.base, 'photos') || []
-    this.photoList = photoList.map((photoItem: any) => new PoolPhotoModel(photoItem))
+    this.photoList = photoList.map((photoItem: any) => new AuditSpotPhotoModel(photoItem.photo_quality))
   }
 
-  // 获取评价信息
+  // 评价信息
   getTags () {
     this.tagInfo = new EvaluateTagsModel(this.base)
   }

@@ -20,6 +20,20 @@ const familyAppealCenter = {
       // eslint-disable-next-line max-len
       component: () => import(/* webpackChunkName: "FamilyPhotographyAppeal" */ '@/views/family-appeal-center/family-photography-appeal.vue'),
       meta: { title: '摄影申述', icon: '', breadcrumb: true }
+    },
+    {
+      path: 'family-appeal-history',
+      name: 'FamilyAppealHistory',
+      // eslint-disable-next-line max-len
+      component: () => import(/* webpackChunkName: "FamilyAppealHistory" */ '@/views/family-appeal-center/family-appeal-history.vue'),
+      meta: { title: '申诉历史记录', icon: '', breadcrumb: true }
+    },
+    {
+      path: 'family-appeal-detail',
+      name: 'FamilyAppealDetail',
+      // eslint-disable-next-line max-len
+      component: () => import(/* webpackChunkName: "FamilyAppealDetail" */ '@/views/family-appeal-center/family-appeal-detail.vue'),
+      meta: { title: '申诉详情', icon: '', breadcrumb: true, hidden: true }
     }
   ]
 }

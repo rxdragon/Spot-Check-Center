@@ -137,9 +137,10 @@
     border-radius: 6px 6px 0 0;
 
     &::before {
+      bottom: 1px;
       left: -@radius;
       z-index: 2;
-      background: #f2f6fc;
+      background: #f0f2f5;
       border-radius: 0 0 @radius 0;
     }
 
@@ -157,8 +158,9 @@
     }
 
     &::after {
+      bottom: 1px;
       left: 0;
-      background: #f2f6fc;
+      background: #f0f2f5;
       border-radius: 0 0 0 @radius;
     }
   }
