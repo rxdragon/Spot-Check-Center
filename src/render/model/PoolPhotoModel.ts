@@ -10,7 +10,7 @@ export default class PoolPhotoModel {
 
   constructor (data: any) {
     this.id = _.get(data, 'id') || ''
-    this.path = _.get(data, 'path') || ''
+    this.path = _.get(data, 'path') || _.get(data, 'photo_quality.path') || ''
     // TODO: cf
     this.makePath = ''
 

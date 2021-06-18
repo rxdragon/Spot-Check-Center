@@ -87,9 +87,16 @@ export const QualityReportRangeToCN = {
   [QUALITY_REPORT_RANGE.ALL]: '全员',
 }
 
-/* 
- * 质检报告分类
-*/
+export const CNLevelToType = {
+  '小': 'small',
+  '中': 'middle',
+  '拔草': 'pull',
+  '种草': 'plant'
+}
+
+/**
+ * @description 质检报告分类
+ */
 export const QUALITY_TYPE = {
   HIMO_MAKEUP: 'himoMakeupPool', // 海马体化妆
   HIMO_PHOTOGRAPHY: 'himoPhotographyPool', // 海马体摄影

@@ -1,5 +1,5 @@
 <template>
-  <div class="himo-makeup-evaluate-history">
+  <div class="himo-photography-evaluate-history">
     <EvaluateHistoryComponents />
   </div>
 </template>
@@ -10,7 +10,7 @@ import EvaluateHistoryComponents from '@/components/EvaluateHistoryComponents/in
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
-  name: 'HimoMakeupEvaluateHistory',
+  name: 'HimoPhotographyEvaluateHistory',
   components: { EvaluateHistoryComponents },
   setup () {
     provide('type', SPOT_TYPE.PHOTOGRAPHY)

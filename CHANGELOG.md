@@ -34,6 +34,7 @@
  - | 修改请求接口组合参数的写法 | [014d247](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/014d247)
  - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)
  - | 增加评价信息洁面 | [f778aef](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f778aef)
+ - | 增加审核状态 | [f5f087f](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f5f087f)
  - | 质检报告 | [1b23561](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1b23561)
  - | 质检报告模块 | [00b196f](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/00b196f)
  - | 组件提交 | [bac422c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bac422c)

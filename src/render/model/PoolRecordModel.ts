@@ -1,6 +1,7 @@
 import StreamOrderModel, { IPagerInfo } from '@/model/StreamOrderModel'
 import PoolPhotoModel from '@/model/PoolPhotoModel'
 import PoolAppealsModel from '@/model/PoolAppealsModel'
+import EvaluateTagsModel from '@/model/EvaluateTagsModel'
 import { v4 as uuid } from 'uuid'
 
 interface IScoreConfigs {
@@ -30,6 +31,7 @@ export default class PoolRecordModel {
   streamInfo?: StreamOrderModel
   photoList?: PoolPhotoModel[]
   appealInfo?: PoolAppealsModel
+  tagInfo?: EvaluateTagsModel
 
   constructor (data: any) {
     this.base = data
@@ -56,5 +58,11 @@ export default class PoolRecordModel {
   getPoolAppealsModel (externalAppealInfo?: any) {
     const appealInfo = externalAppealInfo || _.get(this.base, 'appeal') || {}
     this.appealInfo = new PoolAppealsModel(appealInfo)
+  }
+
+  // 获取评价信息
+  getTags (externalTagInfo?: any) {
+    const tagInfo = externalTagInfo || _.get(this.base, 'tags') || {}
+    this.tagInfo = new EvaluateTagsModel(tagInfo)
   }
 }
