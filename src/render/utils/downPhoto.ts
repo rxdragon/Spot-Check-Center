@@ -1,19 +1,22 @@
-import Zip from './jszip.js'
+import type { IFileDownloadConfig } from '~/main/downModule/index.js'
 
+import Zip from './jszip.js'
 import { store } from '@/store/index'
 import { newMessage } from '@/utils/message'
+import ElectronDown from '@/utils/electronDown'
 
 const domain = store.getters.imgDomain
 
-export function downOnePicture (src: string, savePath = '', rename = '') {
+export function downOnePicture (src: string, savePath?: string, rename?: string) {
   const url = src.includes('http') ? src : domain + src
-  if (__APP__.config.globalProperties.$DownIpc) {
-    const data: { url: string, path: string, rename?: string } = {
+  if (__APP__.config.globalProperties.$isElectron) {
+    const ElectronDownInstance = ElectronDown.getInstance()
+    const data: IFileDownloadConfig = {
       url: url,
-      path: savePath
+      path: savePath || ''
     }
     if (rename) data.rename = rename
-    __APP__.config.globalProperties.$DownIpc.addDownloadFile(data)
+    ElectronDownInstance.addDownloadFile(data)
     return
   }
 

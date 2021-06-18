@@ -10,8 +10,8 @@ import { setGlobalShortcut } from './extendModule/globalShortcut'
 
 import Upgrade from "./extendModule/upgrade"
 
-// import initDownloadManager from './downTool'
 
+import initDownloadManager from './downModule/DownTool'
 import initDialog from './extendModule/dialog'
 import initUtils from './extendModule/utils'
 import registerIpc from './ipc/registerIpc'
@@ -52,10 +52,8 @@ function initPlugins (win: BrowserWindow) {
   try {
     // 初始化监听弹框
     initDialog(win, ipcMain)
-
-    // 初始化下载管理器 TODO
-    // initDownloadManager(win, ipcMain)
-
+    // 初始化下载管理器
+    initDownloadManager(win, ipcMain)
     // 注册工具类信息
     initUtils(win, ipcMain)
     // 初始化ipc通道信息

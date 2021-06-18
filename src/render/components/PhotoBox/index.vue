@@ -40,7 +40,7 @@ import { newMessage } from '@/utils/message'
 
 import PreviewCanvasImg from '@/components/PreviewCanvasImg/index.vue'
 
-import * as DownPhoto from '@/utils/DownPhoto'
+import * as DownPhoto from '@/utils/downPhoto'
 
 export default defineComponent({
   name: 'PhotoBox',
