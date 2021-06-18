@@ -67,6 +67,8 @@
 import { defineComponent, getCurrentInstance, ref, Ref, toRefs, reactive, watch, computed } from 'vue'
 
 import type { IOptionObj } from './composables/useCanvasTool'
+import type { IPhotoItemData, ISubmitData } from './index'
+
 import { TOOL_TYPE } from './components/ToolEnumerate'
 
 import usePhotoIndex from '@/components/PreviewPhoto/composables/usePhotoIndex'
@@ -98,7 +100,7 @@ export default defineComponent({
     const canvasLoading = ref(false)
     const loading = computed(() => imgLoading.value || canvasLoading.value)
       
-    const photoArray: Ref<any[]> = ref([])
+    const photoArray: Ref<IPhotoItemData[]> = ref([])
 
     /** 上下图片 */
     const { photoIndex, prePhoto, nextPhoto, showPhoto } = usePhotoIndex({
@@ -208,7 +210,7 @@ export default defineComponent({
         const blobData = CanvasTool.convertBase64ToBlob(photoItem.markBase)
         const fileData = CanvasTool.structureFile(blobData)
         const fileDataUploadUrl = await CanvasTool.uploadTagPhoto(fileData, qNConfig.value)
-        photoItem.markPath = fileDataUploadUrl
+        photoItem.markPath = fileDataUploadUrl as string
       }
     }
 
@@ -227,7 +229,7 @@ export default defineComponent({
         }
       })
       const gradeLabelVm = gradeLabel.value
-      const data = {
+      const data: ISubmitData = {
         tags: gradeLabelVm.getAllSelectLabel(),
         photos
       }
