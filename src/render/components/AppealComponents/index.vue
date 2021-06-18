@@ -53,7 +53,7 @@
               <ReviewStatusSelect v-model="appealStatus" :review-type="''" />
             </div>
           </el-col>
-          <el-col v-bind="{ ...colConfig }" class="text-right">
+          <el-col v-bind="{lg: 2, md: 2}">
             <div class="search-item">
               <el-button type="primary" @click="searchData(1)">查询</el-button>
             </div>
@@ -164,10 +164,10 @@ export default defineComponent({
     const organizationType = inject('organizationType', ORGANIZATION_TYPE.HIMO)
     const colConfig = reactive({
       span: 24,
-      xl: 6,
-      lg: 8,
-      md: 10,
-      sm: 10,
+      xl: 5,
+      lg: 7,
+      md: 9,
+      sm: 9,
       xs: 24
     })
 

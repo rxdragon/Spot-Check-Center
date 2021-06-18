@@ -53,7 +53,7 @@
         </div>
       </el-col>
       <!-- 分数 -->
-      <el-col :span="8" :xl="6">
+      <el-col v-bind="{...colConfig}">
         <div class="grade-search search-item">
           <span>分数</span>
           <ScopeSearch v-model="scopeData" />
@@ -65,10 +65,8 @@
           <AiTagSelect v-model="aiTag" />
         </div>
       </el-col>
-    </el-row>
-    <el-row class="text-right">
-      <el-col :span="24" class="text-right">
-        <div class="text-right">
+      <el-col v-bind="{...colConfig}" class="text-right">
+        <div class="search-item">
           <el-checkbox v-model="onlyNew" @change="changeOnlyNew">只看新人</el-checkbox>
           <el-checkbox v-model="onlyOld" @change="changeOnlyOld">只看正式伙伴</el-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <el-button type="primary" @click="searchData(1)">查询</el-button>
