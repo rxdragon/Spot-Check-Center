@@ -30,15 +30,14 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>伙伴</span>
-            <StaffSelect v-model="staffs" />
+            <StoreStaffSelect v-model="staffs" />
           </div>
         </el-col>
         <!-- 职能查询 -->
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>职能</span>
-            <!-- TODO -->
-            <!-- <JobContentSelect v-model="jobContentIds" /> -->
+            <PositionStaffSelect v-model="positionStaffIds" />
           </div>
         </el-col>
         <!-- 评价标签查询 -->
@@ -115,7 +114,8 @@ import { newMessage } from '@/utils/message'
 import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
-import StaffSelect from '@/components/SelectBox/StaffSelect/index.vue'
+import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
+import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import EvaluateHistoryModule from './components/EvaluateHistoryModule.vue'
@@ -129,7 +129,7 @@ import PoolRecordModel from '@/model/PoolRecordModel'
 
 export default defineComponent({
   name: 'EvaluateHistoryComponents',
-  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto },
+  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StoreStaffSelect, PositionStaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto },
   data () {
     return {
       colConfig: {
@@ -158,7 +158,7 @@ export default defineComponent({
     /** 查询历史记录相关数据 */
     const productIds = ref([])
     const staffs = ref([])
-    const jobContentIds = ref([])
+    const positionStaffIds = ref([])
     const scopeData = ref([])
     const evaluateIds = ref([])
     const evaluateRecordList = ref<PoolRecordModel[]>([])
@@ -177,12 +177,13 @@ export default defineComponent({
           cloudOrderNum: '',
           productIds: productIds.value,
           staffIds: staffs.value,
-          supervisorArr: jobContentIds.value,
+          supervisorArr: positionStaffIds.value,
           score: scopeData.value,
           problemTagsIds: evaluateIds.value,
           page: pager.page,
           pageSize: pager.pageSize
         }
+
         if (timeSpan.value) {
           req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
           req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
@@ -268,7 +269,7 @@ export default defineComponent({
 
     return {
       type, organizationType,
-      timeSpan, orderNum, productIds, staffs, jobContentIds, scopeData, evaluateIds,
+      timeSpan, orderNum, productIds, staffs, positionStaffIds, scopeData, evaluateIds,
       pager, evaluateRecordList, handlePage, getHistoryRecords,
       showPreview, previewPhotos, previewIndex, onPreviewPhotoList,
       onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate, onSubmitData
