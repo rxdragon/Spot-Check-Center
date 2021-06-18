@@ -86,3 +86,13 @@ export const QualityReportRangeToCN = {
   [QUALITY_REPORT_RANGE.REGION]: '区域',
   [QUALITY_REPORT_RANGE.ALL]: '全员',
 }
+
+/* 
+ * 质检报告分类
+*/
+export const QUALITY_TYPE = {
+  HIMO_MAKEUP: 'himoMakeupPool', // 海马体化妆
+  HIMO_PHOTOGRAPHY: 'himoPhotographyPool', // 海马体摄影
+  FAMILY_MAKEUP: 'familyMakeupPool', // family化妆
+  FAMILY_PHOTOGRAPHY: 'familyPhotographyPool' // family摄影
+}

@@ -1,5 +1,4 @@
 import axios from '@/plugins/axios'
-
 interface IImageInfo {
   width: number
   height: number

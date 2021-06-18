@@ -1,0 +1,269 @@
+<template>
+  <div class="appeal-detail">
+    {{ organizationType }}
+    {{ type }}
+    <div class="module-panel mb-6">
+      <div class="panel-title mb-6">订单信息</div>
+      <div class="panel-content mb-6">
+        <el-table
+          border
+          stripe
+          :data="orderTableData"
+          style="width: 100%;"
+        >
+          <el-table-column align="center" prop="num" label="订单号" />
+          <el-table-column align="center" prop="productName" label="产品名称" />
+          <el-table-column align="center" prop="storeName" label="所属门店" />
+          <el-table-column align="center" prop="dresser" label="化妆师" />
+          <el-table-column align="center" prop="supervisor" label="化妆督导" />
+          <el-table-column align="center" prop="experts" label="化妆专家" />
+        </el-table>
+      </div>
+      <div class="panel-title mb-6">申诉信息</div>
+      <div class="grid grid-cols-4 mb-6">
+        <div>
+          申诉标签：<el-tag size="medium">
+            {{ '速度快-暗暗' }}
+          </el-tag>
+        </div>
+      </div>
+      <div class="flex items-start mb-6">
+        <span class="flex-none">申诉原因：</span>
+        <span>{{ appealNote }}</span>
+      </div>
+      <div class="flex items-center mb-6">
+        <span class="mr-10">处理状态：审核中</span>
+        <span class="mr-10">初审人：{{ firstExamineInfo.examineName }}</span>
+        <span class="mr-10">初审时间：{{ firstExamineInfo.date }}</span>
+        <span class="mr-10">复审人 {{ secondExamineInfo.examineName }}</span>
+        <span>复审时间：{{ secondExamineInfo.date }}</span>
+      </div>
+      <div class="flex items-start">
+        <span class="flex-none">拒绝原因：</span>
+        <span>原因各种打算看高科技啊是高科技撒谎高科技萨科大概很快就撒个花开多久速度赶回家看撒的工行卡上速度快回归到卡上师大反攻倒算可就撒开的工行卡上更好阿克苏的工行卡时间原因好多原因</span>
+      </div>
+    </div>
+    <div class="module-panel mb-6">
+      <div class="panel-title mb-6">照片信息</div>
+      <div class="photo-list grade-photo-list overflow-x-auto overscroll-x-contain">
+        <div v-for="(photoItem, photoIndex) in photoList" :key="photoItem.id" class="photo-box">
+          <PhotoBox
+            :src="photoItem.path"
+            version=""
+            class="mr-4"
+            @click="onSelectPhoto(photoIndex)"
+          >
+            <!-- <template #otherInfo>
+              <div class="audio-ino">
+                AI审核结果：
+                <span
+                  v-if="type === SPOT_TYPE.MAKEUP"
+
+                  :class="photoItem.makeupDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
+                >
+                  {{ photoItem.makeupDegree }}
+                </span>
+                <span
+                  v-if="type === SPOT_TYPE.PHOTOGRAPHY"
+                  :class="photoItem.photographyDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
+                >
+                  {{ photoItem.photographyDegree }}
+                </span>
+              </div>
+            </template> -->
+          </PhotoBox>
+        </div>
+      </div>
+    </div>
+    <div v-if="type !== 'all'" class="text-center mb-6">
+      <el-button class="mr-14" type="danger">
+        审核拒绝
+      </el-button>
+      <el-button type="primary">
+        审核通过
+      </el-button>
+    </div>
+    <PreviewPhoto
+      v-if="showPreview"
+      v-model:showPreview="showPreview"
+      :imgarray="previewPhoto"
+      :index="previewIndex"
+    />
+    <el-dialog
+      v-model="dialogVisible"
+      title="审核拒绝原因"
+      width="500px"
+      :show-close="false"
+      :center="true"
+    >
+      <el-input
+        v-model="refuseResult"
+        type="textarea"
+        placeholder="最多200个字符"
+        maxlength="200"
+        show-word-limit
+        rows="4"
+        resize="none"
+      />
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="submitRefuse">确 定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, inject, reactive, ref, Ref } from 'vue'
+import PhotoBox from '@/components/PhotoBox/index.vue'
+import * as AppealApi from '@/api/appealApi'
+import { useRoute } from 'vue-router'
+import { useStore } from '@/store/index'
+import { ORGANIZATION_TYPE } from '@/model/Enumerate'
+import { IAppealOrder } from '@/model/AppealDetailModel'
+import { newMessage } from '@/utils/message'
+import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
+
+export default defineComponent({
+  name: 'AppealDetail',
+  components: {
+    PhotoBox,
+    PreviewPhoto
+  },
+  setup () {
+    const route = useRoute()
+    const store = useStore()
+    const type = _.get(route,'query.type') || 'all'
+    const organizationType = inject('organizationType', ORGANIZATION_TYPE.HIMO)
+    const orderTableData: Ref<undefined | IAppealOrder[]> = ref([])
+    const photoList: Ref<any[] | undefined> = ref([])
+    const firstExamineInfo = reactive({
+      date: '',
+      examineName: ''
+    })
+    const secondExamineInfo = reactive({
+      date: '',
+      examineName: ''
+    })
+    const appealNote = ref('')
+
+    /**
+     * @description 审核弹窗相关
+    */
+    const dialogVisible = ref(false)
+    const refuseResult = ref('')
+
+    /** 监听预览图片 */
+    const showPreview = ref(false)
+    const previewIndex = ref(0)
+    const previewPhoto = ref([])
+    let orderInfo = {}
+
+    const onPreviewPhotoList = ({ photoIndex, photoData }: { photoIndex: number, photoData: any }) => {
+      previewPhoto.value = photoData
+      previewIndex.value = photoIndex
+      showPreview.value = true
+    }
+
+    
+    
+    const onSelectPhoto = (photoIndex: number) => {
+      const photos = photoList.value || []
+      const photoData = photos.map((photoItem: any, index: number) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        return {
+          title: `第${index + 1}张图`,
+          ...photoItem,
+          orderInfo
+        }
+      })
+      
+      const data = {
+        photoData,
+        photoIndex
+      }
+      onPreviewPhotoList(data)
+    }
+
+    /** 获取初审申诉绩效 */
+    const getDetail = async () => {
+      const req = {
+        id: _.get(route,'query.id') || ''
+      }
+      const res = await AppealApi.getAppealDetail(req, organizationType)
+      orderTableData.value = res.orderInfo
+      photoList.value = res.photoList
+      firstExamineInfo.date = _.get(res, 'firstExamineInfo.date')
+      firstExamineInfo.examineName = _.get(res, 'firstExamineInfo.examineName')
+      secondExamineInfo.date = _.get(res, 'secondExamineInfo.date')
+      secondExamineInfo.examineName = _.get(res, 'secondExamineInfo.examineName')
+      appealNote.value = _.get(res, 'appealNote')
+      orderInfo = { ..._.get(res, 'streamInfo') }
+    }
+    getDetail()
+
+    /** 初审拒绝 */
+    const examineFirst = async () => {
+      const req = {
+        id: _.get(route,'query.id') || '',
+        result: 'refuse',
+        note: refuseResult.value
+      }
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        await AppealApi.examineFirst(req, organizationType)
+        newMessage.success('提交成功')
+        dialogVisible.value = false
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
+      }
+    }
+
+    const submitRefuse = async () => {
+      examineFirst()
+    }
+
+    return {
+      type,
+      organizationType,
+      orderTableData,
+      photoList,
+      firstExamineInfo,
+      secondExamineInfo,
+      appealNote,
+      showPreview,
+      previewIndex,
+      previewPhoto,
+      dialogVisible,
+      refuseResult,
+      onSelectPhoto,
+      submitRefuse
+    }
+  }
+})
+</script>
+
+<style lang="less" scoped>
+.module-panel {
+  font-size: 14px;
+  color: #303133;
+
+  .photo-list {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .photo-box {
+    width: 253px;
+    margin-right: 24px;
+    margin-bottom: 0;
+  }
+
+  .photo-main {
+    display: flex;
+  }
+}
+</style>
