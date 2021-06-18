@@ -3,6 +3,7 @@
 ### 🌟 新功能
 范围|描述|commitId
 --|--|--
+ - | 查询按钮改成同一行 | [6a88afe](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/6a88afe)
  - | 初始化角色组编辑和列表页面 | [4cd065e](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/4cd065e)
  - | 代码分模块 | [2514f83](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/2514f83)
  - | 代码格式修改 | [5716de4](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/5716de4)

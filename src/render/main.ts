@@ -6,6 +6,7 @@ import router, { setupRouter } from './router/index'
 import { setupElementUi } from '@/plugins/element'
 import { setupRouterGuard } from '@/router/guard/index'
 import { setupGlobalProperties } from '@/setting/globalPropertiesSetting'
+import { setupElectronSetting } from '@/setting/electronSetting'
 import { setupLodashPlugin } from '@/plugins/lodashPlugin'
 import { setupDirective } from '@/directive/index'
 
@@ -34,6 +35,9 @@ import '@/assets/styles/index.less'
 
   // 注册自定义指令
   setupDirective(app)
+
+  // 注册electron相关渲染进程事件
+  setupElectronSetting()
 
   // 当路由加载完渲染页面
   // https://next.router.vuejs.org/api/#isready
