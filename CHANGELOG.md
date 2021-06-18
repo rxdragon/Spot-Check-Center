@@ -1,5 +1,4 @@
 # 0.1.0 (2021-06-18)
-# 0.1.0 (2021-06-17)
 
 ### 🌟 新功能
 范围|描述|commitId
@@ -17,12 +16,12 @@
  - | 更新接口部分联跳 | [970f46c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/970f46c)
  - | 更新评价历史记录根组件 | [9384490](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9384490)
  - | 更新评价配置和历史相关组件 | [49697eb](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/49697eb)
- - | 历史记录相关的数据模块以及接口查询 | [c4114c5](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4114c5)
- - | 完成评分配置组件 | [c4bc9cf](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4bc9cf)
- - | 完成评价历史记录组件 | [dfbc706](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dfbc706)
  - | 更新用户信息修改后列表页面的操作 | [b40abb0](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/b40abb0)
+ - | 历史记录相关的数据模块以及接口查询 | [c4114c5](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4114c5)
  - | 联动完成角色组相关功能，完成保存账号部分功能 | [bc44cde](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bc44cde)
  - | 完成评分配置组件 | [c4bc9cf](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4bc9cf)
+ - | 完成评价历史记录组件 | [dfbc706](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dfbc706)
+ - | 完成下载管理器 | [2cbb4c0](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/2cbb4c0)
  - | 完成下载管理器ts化 | [1ea6319](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1ea6319)
  - | 完成预览组件相关信息 | [1426bc7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1426bc7)
  - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
@@ -41,6 +40,7 @@
 --|--|--
  - | 历史记录模型 | [7c2fd99](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/7c2fd99)
  - | 完善了修改评分功能模块 | [a43f4a9](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/a43f4a9)
+ - | 修复了修改评分组件的一些问题 | [99d9c4c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/99d9c4c)
 
 
 范围|描述|commitId

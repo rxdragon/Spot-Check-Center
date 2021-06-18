@@ -37,7 +37,8 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>职能</span>
-            <JobContentSelect v-model="jobContentIds" />
+            <!-- TODO -->
+            <!-- <JobContentSelect v-model="jobContentIds" /> -->
           </div>
         </el-col>
         <!-- 评价标签查询 -->
@@ -57,7 +58,7 @@
         <!-- 查询按钮 -->
         <el-col v-bind="{...colConfig, sm: 4, md: 4}">
           <div class="search-item">
-            <el-button type="primary" @click="searchData(1)">查询</el-button>
+            <el-button type="primary" @click="getHistoryRecords(1)">查询</el-button>
           </div>
         </el-col>
       </el-row>
@@ -99,8 +100,6 @@
       v-model:showEvaluate="showEvaluate"
       :imgarray="evaluatePhotos"
       :index="evaluateIndex"
-      @changePool="onChangePool"
-      @skipStaff="onSkipStaff"
       @submitData="onSubmitData"
     />
   </div>
@@ -117,7 +116,6 @@ import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
 import StaffSelect from '@/components/SelectBox/StaffSelect/index.vue'
-import JobContentSelect from '@/components/SelectBox/JobContentSelect/index.vue'
 import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import EvaluateHistoryModule from './components/EvaluateHistoryModule.vue'
@@ -131,7 +129,7 @@ import PoolRecordModel from '@/model/PoolRecordModel'
 
 export default defineComponent({
   name: 'EvaluateHistoryComponents',
-  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StaffSelect, JobContentSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto },
+  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto },
   data () {
     return {
       colConfig: {
@@ -150,90 +148,82 @@ export default defineComponent({
     const type = inject('type') as SPOT_TYPE
     const organizationType = inject('organizationType') as ORGANIZATION_TYPE
 
-    const productIds = ref([])
-    const staffs = ref([])
-    const jobContentIds = ref([])
-    const scopeData = ref([])
-    const evaluateIds = ref([])
     const timeSpan: Ref<string | never | any[]> = ref('')
-    const orderNum = ref('')
     const pager = reactive({
       page: 1,
       pageSize: 10,
       total: 10
     })
-    const evaluateRecordList = ref<any>([])
-    const poolList = ref<PoolRecordModel[]>([])
-    /** 
-     * @description 查询历史记录相关数据 
-     */
-    const getHistoryRecords = async () => {
-      const req = {
-        type,
-        organizationType,
-        startAt: '',
-        endAt: '',
-        cloudOrderNum: '',
-        productIds: productIds.value,
-        staffIds: staffs.value,
-        supervisorArr: jobContentIds.value,
-        score: scopeData.value,
-        problemTagsIds: evaluateIds.value,
-        page: pager.page,
-        pageSize: pager.pageSize
-      }
-      if (timeSpan.value) {
-        req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
-        req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
-      }
-      if (orderNum.value) {
-        req.cloudOrderNum = orderNum.value
-        // delete req.startAt
-        // delete req.endAt
-      }
-      const res = await EvaluateHistoryApi.getHistoryRecords(req)
-      poolList.value = res.list
-      pager.total = res.total
-      evaluateRecordList.value = res.list
-    }
-    
-    /** 
-     * @description 获取全部数据
-     */
-    const searchData = async (page?: number) => {
+
+    /** 查询历史记录相关数据 */
+    const productIds = ref([])
+    const staffs = ref([])
+    const jobContentIds = ref([])
+    const scopeData = ref([])
+    const evaluateIds = ref([])
+    const evaluateRecordList = ref<PoolRecordModel[]>([])
+    const orderNum = ref('')
+
+    const getHistoryRecords = async (page?: number) => {
       pager.page = page ? page : pager.page
       if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
       try {
         store.dispatch('settingStore/showLoading', route.name)
-        Promise.all([getHistoryRecords()])
+        const req = {
+          type,
+          organizationType,
+          startAt: '',
+          endAt: '',
+          cloudOrderNum: '',
+          productIds: productIds.value,
+          staffIds: staffs.value,
+          supervisorArr: jobContentIds.value,
+          score: scopeData.value,
+          problemTagsIds: evaluateIds.value,
+          page: pager.page,
+          pageSize: pager.pageSize
+        }
+        if (timeSpan.value) {
+          req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
+          req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
+        }
+        if (orderNum.value) {
+          req.cloudOrderNum = orderNum.value
+          // delete req.startAt
+          // delete req.endAt
+        }
+        const res = await EvaluateHistoryApi.getHistoryRecords(req)
+        pager.total = res.total
+        evaluateRecordList.value = res.list
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
+      
+    }
+    // 分页逻辑
+    const handlePage = () => {
+      getHistoryRecords()
     }
 
+
+    /** 监听预览图片 */
     const showPreview = ref(false)
     const previewIndex = ref(0)
     const previewPhotos = ref([])
-    /** 
-     * @description 监听预览图片
-     */
     const onPreviewPhotoList = ({ photoIndex, photoData }: { photoIndex: number, photoData: any }) => {
       previewIndex.value = photoIndex
       previewPhotos.value = photoData
       showPreview.value = true
     }
-    /**
-     * 评分
-     */
+
+    /** 显示打分数据 */
     const evaluatePhotos = ref<any>([])
     const evaluateIndex = ref(0)
     const showEvaluate = ref(false)
     const evaluatePoolRecordId = ref('') // 正在打分id
-    /**
-     * @description 显示打分数据
-     */
+    // 点击重评事件
     const evaluatePhoto = (poolItemId: string, photoIndex: number) => {
-      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === poolItemId)
+      const findPoolItemData = evaluateRecordList.value.find(poolItem => poolItem.id === poolItemId)
       if (!findPoolItemData) return newMessage.warning('未找到对应照片')
       evaluatePoolRecordId.value = poolItemId
       const photoData = findPoolItemData.photoList?.map((photoItem, index: number) => {
@@ -257,87 +247,13 @@ export default defineComponent({
       evaluatePhotos.value = photoData
       showEvaluate.value = true
     }
-
-    /** 
-     * @description 监听修改评分
-     */
+    // 监听修改评分
     const onEvaluatePhoto = ({ photoIndex, poolItemId }: { photoIndex: number, poolItemId: string }) => {
       evaluatePhoto(poolItemId, photoIndex)
     }
-
-    /**
-     * @description 跳转下一个评分内容
-     */
-    const goNextEvaluatePhoto = async () => {
-      // 获取下一个数据的uuid
-      const findPoolItemIndex = poolList.value.findIndex(poolItem => poolItem.id === evaluatePoolRecordId.value)
-      if (findPoolItemIndex < 0) return newMessage.warning('获取当前uuid失败，goNextEvaluatePhoto')
-      const nextIndex = findPoolItemIndex + 1
-      let nextPoolItemId = poolList.value[nextIndex].id
-      const isPageLastPhoto = (findPoolItemIndex + 1) === poolList.value.length
-      const isAllLast = pager.total === 1
-      if (isAllLast) {
-        newMessage.success('你已经打完全部照片')
-      } else if (isPageLastPhoto && pager.page > 1 && findPoolItemIndex === 0 ) {
-        // 向前翻页
-        pager.page--
-        await getHistoryRecords()
-        nextPoolItemId = poolList.value[0].id
-      } else if (isPageLastPhoto) {
-        // 取上一个值
-        nextPoolItemId = poolList.value[findPoolItemIndex - 1].id
-        await getHistoryRecords()
-      } else {
-        // 更新数据列表
-        await getHistoryRecords()
-      }
-      // 显示打分数据
-      evaluatePhoto(nextPoolItemId, 0)
-    }
-
-    /**
-     * @description 跳过伙伴
-     */
-    const onSkipStaff = async () => {
-      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
-      if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSkipStaff')
-      const staffIds = type === SPOT_TYPE.MAKEUP ? findPoolItemData.streamInfo?.dresserInfo.staffIds : findPoolItemData.streamInfo?.photographyerInfo.staffIds
-      if (!staffIds) return newMessage.warning('未找到对应的伙伴id')
-      const poolItemId = findPoolItemData.id
-      const req = {
-        staffIds,
-        poolItemId,
-        type,
-        organizationType
-      }
-      await EvaluateApi.skipStaff(req)
-      newMessage.success('跳过伙伴成功，今日将不会再抽取')
-      await goNextEvaluatePhoto()
-    }
-
-    /**
-     * @description 换一单
-     */
-    const onChangePool = async () => {
-      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
-      if (!findPoolItemData) return newMessage.warning('onChangePool')
-      const poolItemId = findPoolItemData.id
-      const req = {
-        poolItemId,
-        type,
-        organizationType
-      }
-      await EvaluateApi.changePool(req)
-      // TODO: 待定
-      newMessage.success('换取照片成功')
-      await goNextEvaluatePhoto()
-    }
-
-    /** 
-     * @description 提交评分 
-     */
+    // 提交评分
     const onSubmitData = async (data: any) => {
-      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
+      const findPoolItemData = evaluateRecordList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
       if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSubmitData')
       const req = {
         poolItemId: findPoolItemData.id,
@@ -346,38 +262,16 @@ export default defineComponent({
         type,
         organizationType
       }
+      // TODO:Cf
       await EvaluateApi.emptyPoolByStaffId(req)
-      await goNextEvaluatePhoto()
-    }
-
-    /** 
-     * @description 分页逻辑 
-     */
-    const handlePage = () => {
-      searchData()
     }
 
     return {
-      type,
-      organizationType,
-      timeSpan,
-      orderNum,
-      productIds,
-      staffs,
-      jobContentIds,
-      scopeData,
-      evaluateIds,
-      pager,
-      evaluateRecordList,
-      searchData,
-      handlePage,
-      showPreview,
-      previewPhotos,
-      previewIndex,
-      onPreviewPhotoList,
-      onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate,
-      onSubmitData,
-      onSkipStaff, onChangePool
+      type, organizationType,
+      timeSpan, orderNum, productIds, staffs, jobContentIds, scopeData, evaluateIds,
+      pager, evaluateRecordList, handlePage, getHistoryRecords,
+      showPreview, previewPhotos, previewIndex, onPreviewPhotoList,
+      onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate, onSubmitData
     }
   }
 })
