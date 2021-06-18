@@ -30,7 +30,7 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>伙伴</span>
-            <StaffSelect v-model="staffs" />
+            <StoreStaffSelect v-model="staffs" />
           </div>
         </el-col>
         <!-- 职能查询 -->
@@ -115,7 +115,7 @@ import { newMessage } from '@/utils/message'
 import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
-import StaffSelect from '@/components/SelectBox/StaffSelect/index.vue'
+import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
 import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import EvaluateHistoryModule from './components/EvaluateHistoryModule.vue'
@@ -129,7 +129,7 @@ import PoolRecordModel from '@/model/PoolRecordModel'
 
 export default defineComponent({
   name: 'EvaluateHistoryComponents',
-  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto },
+  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StoreStaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto },
   data () {
     return {
       colConfig: {
