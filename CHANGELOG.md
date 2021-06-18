@@ -3,6 +3,7 @@
 ### 🌟 新功能
 范围|描述|commitId
 --|--|--
+ - | 测试cz | [896821f](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/896821f)
  - | 查询按钮改成同一行 | [6a88afe](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/6a88afe)
  - | 初始化角色组编辑和列表页面 | [4cd065e](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/4cd065e)
  - | 代码分模块 | [2514f83](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/2514f83)
@@ -20,6 +21,8 @@
  - | 联动完成角色组相关功能，完成保存账号部分功能 | [bc44cde](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bc44cde)
  - | 申诉中心 | [7a8d241](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/7a8d241)
  - | 完成评分配置组件 | [c4bc9cf](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4bc9cf)
+ - | 完成下载管理器 | [2cbb4c0](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/2cbb4c0)
+ - | 完成下载管理器ts化 | [1ea6319](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1ea6319)
  - | 完成预览组件相关信息 | [1426bc7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/1426bc7)
  - | 新功能代码 | [aff650d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/aff650d)
  - | 新功能开发 | [729606c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/729606c)
@@ -27,6 +30,7 @@
  - | 新增角色组功能 | [9109ea7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9109ea7)
  - | 新增添加评分项目动效 | [08d1da6](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/08d1da6)
  - | 新增添加账号功能 | [4b15860](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/4b15860)
+ - | 新增electron下载模块内容 | [f96ccff](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f96ccff)
  - | 修改请求接口组合参数的写法 | [014d247](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/014d247)
  - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)
  - | 增加评价信息洁面 | [f778aef](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f778aef)
