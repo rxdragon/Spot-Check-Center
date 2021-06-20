@@ -22,6 +22,7 @@ export interface IPhotoItemData {
   id: idType
   title: string
   src: string
+  compressSrc: string
   photoInfo: IphotoInfo
   markPath: string,
   markJson: string,

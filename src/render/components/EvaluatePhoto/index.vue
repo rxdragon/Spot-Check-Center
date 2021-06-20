@@ -74,6 +74,7 @@ import { TOOL_TYPE } from './components/ToolEnumerate'
 
 import usePhotoIndex from '@/components/PreviewPhoto/composables/usePhotoIndex'
 import usePhotoZoom from '@/components/PreviewPhoto/composables/usePhotoZoom'
+import useKeydown from './composables/useKeydown'
 
 import PhotoMap from '@/components/PreviewPhoto/components/PhotoMap.vue'
 import PhotoInfo from '@/components/PreviewPhoto/components/PhotoInfo.vue'
@@ -97,7 +98,7 @@ export default defineComponent({
   setup (props, { emit }) {
     const vm: any = getCurrentInstance()
     const fabricCanvas = ref<any>(null)
-    const imgLoading = ref(false)
+    const imgLoading = ref(true)
     const canvasLoading = ref(false)
     const loading = computed(() => imgLoading.value || canvasLoading.value)
       
@@ -260,6 +261,9 @@ export default defineComponent({
       }
       emit('submitData', data)
     }
+
+    /** 快捷键 */
+    useKeydown({ prePhoto, nextPhoto, closePreview, scaleNum, judgeHasZoom, changeDrawType })
 
     return {
       loading,

@@ -104,6 +104,7 @@ import { newMessage } from '@/utils/message'
 import { ElMessageBox } from 'element-plus'
 import * as EvaluateApi from '@/api/evaluateApi'
 import * as Setting from '@/indexDB/getSetting'
+import * as PhotoTool from '@/utils/photoTool'
 
 export default defineComponent({
   name: 'EvaluateComponents',
@@ -188,9 +189,15 @@ export default defineComponent({
       const res = await EvaluateApi.getSpotCheckResultList(req)
       poolList.value = res.list
       pager.total = res.total
+      
     }
-    const handlePage = () => {
-      getSpotCheckResultList()
+    const handlePage = async () => {
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        await getSpotCheckResultList()
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
+      }
     }
 
     /** 获取今日抽片指标 */
@@ -218,7 +225,12 @@ export default defineComponent({
       const res = await EvaluateApi.getHaveSpotCheckResult(req)
       if (res) {
         uuid.value = res
-        await getSpotCheckResultList()
+        try {
+          store.dispatch('settingStore/showLoading', route.name)
+          await getSpotCheckResultList()
+        } finally {
+          store.dispatch('settingStore/hiddenLoading', route.name)
+        }
       }
       return res
     }
@@ -233,6 +245,8 @@ export default defineComponent({
       if (!fullMember.value && !newMember.value) return newMessage.warning('请选择伙伴抽片量')
 
       if (await getHaveSpotCheckResult()) return false
+
+      // todo: cf loading
       const req = {
         productIds: productIds.value,
         formalStaffCount: fullMember.value ? fullMember.value : 0,
@@ -263,11 +277,12 @@ export default defineComponent({
           ...streamInfo,
           aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
         }
+
         return {
-          // todo photoModel 增加完成src
           id: photoItem.id,
           title: `原片（${index + 1}/${findPoolItemData.photoList?.length}）`,
-          src: photoItem.path,
+          src: PhotoTool.compleImagePath(photoItem.path),
+          compressSrc: PhotoTool.compleCompressImagePath(photoItem.path),
           photoInfo,
           markPath: '',
           markJson: '',

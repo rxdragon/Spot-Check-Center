@@ -109,6 +109,7 @@ export default defineComponent({
   min-height: 400px;
   font-size: 12px;
   color: #eee;
+  user-select: none;
 
   .label-header {
     padding: 14px 12px;

@@ -1,4 +1,5 @@
 import axios from '@/plugins/axios'
+import { store } from '@/store/index'
 import { CNLevelToType } from '@/model/Enumerate'
 
 export interface ITags {
@@ -80,4 +81,26 @@ export function handleCommitInfo (issueLabel: any) {
   return {
     parentData
   }
+}
+
+/**
+ * @description 补全图片地址
+ * @param path 
+ * @returns 
+ */
+export function compleImagePath (path: string) {
+  if (path.includes('http')) return path
+  if (path.includes('blob')) return path
+  return `${store.getters.imgDomain}${path}`
+}
+
+/**
+ * @description 补全图片地址
+ * @param path 
+ * @returns 
+ */
+export function compleCompressImagePath (path: string) {
+  if (path.includes('http')) return path
+  if (path.includes('blob')) return path
+  return `${store.getters.imgCompressDomain}${path}`
 }
