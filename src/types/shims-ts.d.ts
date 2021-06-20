@@ -31,6 +31,7 @@ declare global {
     BUILD_TIME: any
     _: any
     __APP__: App
+    CloudDb: any
     ElectronIpcRenderer?: IpcRenderer
     ElectronShell?: Shell
     ElectronIpcRendererAddListener?: {

@@ -28,15 +28,26 @@
 
   <!-- 今日数据 -->
   <div class="module-panel taday-info">
-    <div class="panel-title mb-5">今日完成数据</div>
+    <div class="panel-title mb-5">
+      今日完成数据
+      <div class="panel-slot">
+        开启预加载
+        <el-switch
+          :model-value="isPreLoad"
+          active-color="#4669FB"
+          class="ml-4"
+          @change="onSetPreload"
+        />
+      </div>
+    </div>
     <div class="panel-content">
       <div class="list-table">
         <div class="title">今日已评价</div>
-        <div class="content">0单</div>
+        <div class="content">{{ tadayInfo.evaluationStreamNum }}单</div>
       </div>
       <div class="list-table">
         <div class="title">今日已评价</div>
-        <div class="content">0张</div>
+        <div class="content">{{ tadayInfo.evaluationPhotoNum }}张</div>
       </div>
     </div>
   </div>
@@ -80,7 +91,9 @@
 import type PoolRecordModel from '@/model/PoolRecordModel'
 import type { ISubmitData } from '@/components/EvaluatePhoto/index'
 
-import { defineComponent, inject, reactive, ref, h, onMounted } from 'vue'
+import { defineComponent, inject, reactive, ref, h, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from '@/store/index'
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
 import PeopleNumber from './components/PeopleNumber.vue'
@@ -90,6 +103,7 @@ import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
 import { newMessage } from '@/utils/message'
 import { ElMessageBox } from 'element-plus'
 import * as EvaluateApi from '@/api/evaluateApi'
+import * as Setting from '@/indexDB/getSetting'
 
 export default defineComponent({
   name: 'EvaluateComponents',
@@ -107,6 +121,9 @@ export default defineComponent({
     }
   },
   setup () {
+    const store = useStore()
+    const route = useRoute()
+
     const type = inject('type') as SPOT_TYPE
     const organizationType = inject('organizationType') as ORGANIZATION_TYPE
 
@@ -155,7 +172,7 @@ export default defineComponent({
     const pager = reactive({
       page: 1,
       pageSize: 10,
-      total: 100
+      total: 10
     })
     const poolList = ref<PoolRecordModel[]>([])
     const getSpotCheckResultList = async () => {
@@ -212,6 +229,9 @@ export default defineComponent({
     const newMember = ref('')
     const productIds = ref<Array<string | number>>([])
     const spotPhoto = async () => {
+      if (!productIds.value) return newMessage.warning('请选择产品')
+      if (!fullMember.value && !newMember.value) return newMessage.warning('请选择伙伴抽片量')
+
       if (await getHaveSpotCheckResult()) return false
       const req = {
         productIds: productIds.value,
@@ -330,18 +350,53 @@ export default defineComponent({
 
     /** 换一单 */
     const onChangePool = async () => {
-      const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
-      if (!findPoolItemData) return newMessage.warning('onChangePool')
-      const poolItemId = findPoolItemData.id
-      const req = {
-        poolItemId,
-        type,
-        organizationType
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
+        const willChangeIndex = poolList.value.findIndex(poolItem => poolItem.id === evaluatePoolRecordId.value)
+        if (!findPoolItemData) return newMessage.warning('没有找到对应id')
+        const poolItemId = findPoolItemData.id
+        const req = {
+          poolItemId,
+          type,
+          organizationType
+        }
+        const res = await EvaluateApi.changePool(req)
+        // TODO cf
+        if (res) {
+          // 替换原来有的id未知
+          poolList.value.splice(willChangeIndex, 1, res as PoolRecordModel)
+          newMessage.success('换取照片成功')
+        } else {
+          // 没有更换的产品
+          try {
+            await ElMessageBox({
+              title: '改伙伴没有可以替换的订单',
+              message: h('div', null, '是否不评价改订单'),
+              center: true,
+              showClose: false,
+              showCancelButton: true,
+              confirmButtonText: '确定'
+            })
+            // 删除订单
+            await goNextEvaluatePhoto()
+            const willDeleteIndex = poolList.value.findIndex(poolItem => poolItem.id === evaluatePoolRecordId.value)
+            poolList.value.splice(willDeleteIndex, 1)
+          } catch {
+            console.warn('取消更换')
+          }
+        }
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
       }
-      await EvaluateApi.changePool(req)
-      // TODO: 待定
-      newMessage.success('换取照片成功')
-      await goNextEvaluatePhoto()
+    }
+
+    /** 设置缓存 */
+    const isPreLoad = computed(() => store.state.settingStore.cacheImageSwitch)
+    const onSetPreload = async (data: boolean) => {
+      store.dispatch('settingStore/setImageCacheSwitch', data)
+      const settingData = data ? 1 : 0
+      await Setting.updateSetting('imageCacheSwitch', settingData)
     }
 
     return {
@@ -350,12 +405,13 @@ export default defineComponent({
       fullMember, newMember, spotPhoto,
       showHimoProduct,
       showFamilyProduct,
-      poolList,
+      poolList, tadayInfo,
       pager,
       handlePage,
       onEvaluatePhoto, imgarray, evaluateIndex, showEvaluate, onShowEvaluteChange,
       onSubmitData,
-      onSkipStaff, onChangePool
+      onSkipStaff, onChangePool,
+      isPreLoad, onSetPreload
     }
   }
 })
@@ -363,6 +419,12 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .taday-info {
+  .panel-slot {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+  }
+
   .panel-content {
     display: flex;
     font-size: 14px;

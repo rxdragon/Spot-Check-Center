@@ -51,7 +51,8 @@ export default defineComponent({
     const getAllLabel = async () => {
       try {
         loading.value = true
-        const res = await EvaluateApi.getScoreConfigList()
+        const req = { type, organizationType }
+        const res = await EvaluateApi.getScoreConfigList(req)
         labelClass.value = res.labelClass
         chainLine.value = res.chainLine
       } finally {

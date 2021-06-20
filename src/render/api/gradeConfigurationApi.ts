@@ -75,12 +75,11 @@ interface IEditScoreConfigParams extends IEvaluateAPi {
   }[]
 }
 export async function editScoreConfig (params: IEditScoreConfigParams) {
-  const url = '/project_cloud/checkPool/editScoreConfig'
-  // const url = `${getApiUrl(params.type, params.organizationType)}/editScoreConfig`
+  const url = `${getApiUrl(params.type, params.organizationType)}/editScoreConfig`
 
   const res: any = axios({
     url,
-    method: 'PUT',
+    method: 'POST',
     data: params
   })
   return res
@@ -100,8 +99,7 @@ export async function editScoreConfig (params: IEditScoreConfigParams) {
   }[]
 }
 export async function addScoreConfig (params: IAddScoreConfigParams): Promise<number> {
-  const url = '/project_cloud/checkPool/addScoreConfig'
-  // const url = `${getApiUrl(params.type, params.organizationType)}/addScoreConfig`
+  const url = `${getApiUrl(params.type, params.organizationType)}/addScoreConfig`
 
   const res: any = axios({
     url,
@@ -118,11 +116,10 @@ interface IDelScoreConfigParams extends IEvaluateAPi {
   id: number
 }
 export async function delScoreConfig (params: IDelScoreConfigParams) {
-  const url = '/project_cloud/checkPool/delScoreConfig'
-  // const url = `${getApiUrl(params.type, params.organizationType)}/delScoreConfig`
+  const url = `${getApiUrl(params.type, params.organizationType)}/delScoreConfig`
   const res: any = await axios({
     url,
-    method: 'PUT',
+    method: 'POST',
     data: params
   })
   return res

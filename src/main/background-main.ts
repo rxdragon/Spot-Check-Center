@@ -2,6 +2,7 @@
 
 import { app } from "electron"
 import { initApp } from "./app"
+import './localServe/index'
 
 // Exit cleanly on request from parent process in development mode.
 if (global.isDevelopment) {

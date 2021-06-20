@@ -5,3 +5,4 @@ src/plugins
 src/electronMain/DownloadManager.js
 dist
 dist_vue
+idb-js

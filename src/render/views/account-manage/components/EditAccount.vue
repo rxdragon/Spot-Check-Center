@@ -199,6 +199,7 @@ export default defineComponent({
     const positionId = ref<idType>()
     const administerStaffIds = ref<number[]>([])
     const defaultCheckedKeys = ref([]) // 默认选中门店
+    const configStaffIds = ref<idType[]>([])
 
     // 搜素用户信息
     const seachStaffData = async () => {
@@ -215,9 +216,11 @@ export default defineComponent({
         activeRoleId.value = staffInfo.value.rolesId
         staffPermission.value = staffInfo.value.permissions.map(item => item.id)
         defaultCheckedKeys.value = staffInfo.value.configStore
-        // todo:cf 添加门店相关信息
+        configStaffIds.value = staffInfo.value.configStaffIds
 
-        await getRoleInfo(activeRoleId.value)
+        if (activeRoleId.value) {
+          await getRoleInfo(activeRoleId.value)
+        }
         resetPermission()
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
@@ -233,7 +236,6 @@ export default defineComponent({
 
     /** 用户权限相关 */
     const activeName = ref(ACTIVE_TYPE.BASE)
-    const configStaffIds = ref<idType[]>([])
     const selectStore = ref<StaffApi.IStoreInfo[]>([])
 
 
