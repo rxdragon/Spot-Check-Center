@@ -78,6 +78,8 @@
 
 <script lang="ts">
 import type PoolRecordModel from '@/model/PoolRecordModel'
+import type { ISubmitData } from '@/components/EvaluatePhoto/index'
+
 import { defineComponent, inject, reactive, ref, h, onMounted } from 'vue'
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
@@ -294,7 +296,7 @@ export default defineComponent({
     }
 
     /** 提交评分 */
-    const onSubmitData = async (data: any) => {
+    const onSubmitData = async (data: ISubmitData) => {
       const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
       if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSubmitData')
       const req = {

@@ -500,11 +500,11 @@ export async function changePool (params: IChangePoolParams): Promise<boolean> {
 interface IEmptyPoolByStaffIdParams extends IEvaluateAPi {
   photos: {
     markPath: string
-    photoId: number
+    photoId: idType
   }[]
-  poolItemId: string
+  poolItemId: idType
   tags: {
-    id: number
+    id: idType
     score: number
   }[]
 }
