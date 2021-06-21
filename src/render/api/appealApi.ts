@@ -364,16 +364,9 @@ export async function getAppealCount (params: IGetAppealCountParams, axiosType: 
     method: 'POST',
     data: params
   })
-  // const res = {
-  //   "msg": {
-  //     "firstCount": 1,
-  //     "secondCount": 2
-  //   },
-  //   "success": true
-  // }
   const createData = {
-    firstCount: _.get(res, 'msg.firstCount') || 0,
-    secondCount: _.get(res, 'msg.secondCount') || 0,
+    firstCount: _.get(res, 'firstCount') || 0,
+    secondCount: _.get(res, 'secondCount') || 0,
   }
   
   return createData

@@ -37,7 +37,7 @@
           </el-col>
           <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
             <div class="search-item">
-              <span>职能</span>{{ jobContentIds }}
+              <span>职能</span>
               <PositionStaffSelect v-model="jobContentIds" />
             </div>
           </el-col>
@@ -64,7 +64,7 @@
         </el-row>
         <div v-if="type !== 'all'" class="top-msg flex items-center mb-6">
           <span class="mr-6">申诉总单量:{{ appealCount }}单</span>
-          <span>初审拒绝率:{{ (appealRefuseCount / appealCount * 100).toFixed() }}%</span>
+          <span>初审拒绝率:{{ (appealRefuseCount / (appealCount === 0 ? 1 : appealCount) * 100).toFixed() }}%</span>
         </div>
         <div class="table-module-box">
           <el-table

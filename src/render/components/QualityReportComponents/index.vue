@@ -1,9 +1,5 @@
 <template>
   <div class="quality-report-components pb-0">
-    质检报告 -
-    {{ type }} -
-    {{ organizationType }} -
-    {{ rangeType }}
     <el-row class="search-box" :gutter="20">
       <!-- 评分时间 -->
       <el-col v-if="activeName === QUALITY_COMPONENT.GRADE_BOX" v-bind="{ ...colConfig }">

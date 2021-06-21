@@ -29,11 +29,13 @@ export default class EvaluateModel {
   streamInfo?: StreamOrderModel
   photoList?: AuditSpotPhotoModel[]
   tagInfo?: EvaluateTagsModel
+  showAppealBtn: boolean
 
   constructor (data: any) {
     this.base = data
-    this.id = _.get(data, 'id') || 112
+    this.id = _.get(data, '_id') || '-'
     this.businessId = 'C202012345678'
+    this.showAppealBtn = _.get(data, 'streamOrder.process_appeal') ? false : true
     this.commitInfo = {
       status: 'xxx',
       totalScore: 90,
@@ -60,7 +62,7 @@ export default class EvaluateModel {
   // 获取照片相关数据
   getPoolPhotoList () {
     const photoList = _.get(this.base, 'photo') || _.get(this.base, 'photos') || []
-    this.photoList = photoList.map((photoItem: any) => new AuditSpotPhotoModel(photoItem.photo_quality))
+    this.photoList = photoList.map((photoItem: any) => new AuditSpotPhotoModel(photoItem))
   }
 
   // 评价信息

@@ -20,14 +20,9 @@
     </el-row>
     <el-row class="mb-2">
       <el-checkbox-group v-model="appealContent">
-        <el-col
-          v-for="item in tagInfo.tags"
-          :key="item.id"
-          class="mr-4"
-          :span="8"
-        >
-          <el-checkbox :label="item.id">{{ item.name }}</el-checkbox>
-        </el-col>
+        <el-checkbox v-for="item in tagInfo.tags" :key="item.id" :label="item.id">
+          {{ item.name }}
+        </el-checkbox>
       </el-checkbox-group>
     </el-row>
     <el-row class="mb-2">

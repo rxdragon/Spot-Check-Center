@@ -48,6 +48,7 @@ function getStaffInfo (staffInfo: { staffs: any[], experts: any[], group_leader:
  * @description 流水信息模型
  */
 export default class StreamOrderModel {
+  id: number
   spotNum?: string
   orderNum: string
   dresserInfo: IStaffInfo
@@ -64,6 +65,7 @@ export default class StreamOrderModel {
   }
 
   constructor (data: any, pager?: IPagerInfo) {
+    this.id = _.get(data, 'id') || 1
     this.orderNum = _.get(data, 'order_num') || '异常'
     this.dresserInfo = getStaffInfo(_.get(data, 'dressers') || {})
     this.photographyerInfo = getStaffInfo(_.get(data, 'photographers') || {})
