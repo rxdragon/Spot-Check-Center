@@ -261,6 +261,16 @@ export default defineComponent({
       emit('submitData', data)
     }
 
+    // 更换照片清空label信息和map信息
+    watch(
+      photoArray,
+      () => {
+        const gradeLabelVm = gradeLabel.value
+        gradeLabelVm.resetSelectLabel()
+        fabricCanvas.value.clearCanvas()
+      }
+    )
+
     /** 快捷键 */
     useKeydown({ prePhoto, nextPhoto, closePreview, scaleNum, judgeHasZoom, changeDrawType })
 

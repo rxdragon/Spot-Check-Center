@@ -51,6 +51,13 @@ export default function ({
     return photoArray.value[photoIndex.value] || {}
   })
 
+  watch(
+    () => showPhoto.value.src,
+    () => {
+      loading.value = true
+    }
+  )
+
   const { imgarray } = toRefs(props)
   watch(
     imgarray,
