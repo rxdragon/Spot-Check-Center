@@ -51,7 +51,8 @@ export default defineComponent({
     const getAllLabel = async () => {
       try {
         loading.value = true
-        const res = await EvaluateApi.getScoreConfigList()
+        const req = { type, organizationType }
+        const res = await EvaluateApi.getScoreConfigList(req)
         labelClass.value = res.labelClass
         chainLine.value = res.chainLine
       } finally {
@@ -108,6 +109,7 @@ export default defineComponent({
   min-height: 400px;
   font-size: 12px;
   color: #eee;
+  user-select: none;
 
   .label-header {
     padding: 14px 12px;

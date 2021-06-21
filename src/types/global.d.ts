@@ -22,6 +22,7 @@ declare namespace NodeJS {
         launcherStaticDir: string
         config: configType | Record<string, string>
         hasLocalConfig: boolean
+        localServePort: number
     }
 
     interface process {

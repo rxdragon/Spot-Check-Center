@@ -17,6 +17,12 @@ axios.defaults.retryDelay = 500
 
 const WHITE_REQUEST: string[] = []
 
+// 不报错提示代码
+const noHintMessage: Record<string, string> = {
+  0xA25004009: '正在抽片中'
+}
+
+
 /**
  * @description 抛出信息
  * @param message 信息
@@ -118,7 +124,6 @@ axios.interceptors.response.use(
     const isPermissionsError = data.error_code === 403
 
     // 服务器抛错
-
     if (noData || serverError) {
       let message = '系统繁忙，请稍后再试：' + data.error_msg
       if (isPermissionsError) {
@@ -128,8 +133,11 @@ axios.interceptors.response.use(
       return Promise.reject(new ApiError(message))
     }
 
+    // 其他错误
     const message = errorCode.getMsg(data)
-    errorMessage(message)
+    if (!noHintMessage[data.error_code]) {
+      errorMessage(message)
+    }
     return Promise.reject(new ApiError(message))
   }
 )

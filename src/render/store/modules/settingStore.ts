@@ -11,6 +11,7 @@ const state: ISettingStore = {
   updateDomain: process.env.VUE_APP_UPDATE_DOMAIN,
   collapse: SessionTool.getCollapseStorage(),
   loadRoutes: [],
+  cacheImageSwitch: false,
   // TODO: cf
   savePath: '/Users/yzend/Desktop/'
 }
@@ -34,6 +35,13 @@ const mutations: MutationTree<ISettingStore> = {
   SET_SAVE_PATH: (state, data) => {
     state.savePath = data
   },
+  SET_IMAGE_CACHE_PATH: (state, data) => {
+    state.cacheImageSwitch = data
+    const isTurnOn = Boolean(Number(data))
+    if (!window.ElectronIpcRenderer) return
+    const localServePort = window.ElectronIpcRenderer.sendSync('getServePort')
+    state.imgDomain = isTurnOn ? `http://localhost:${localServePort}/image/` : process.env.VUE_APP_DOMAIN
+  }
 }
 
 const actions: ActionTree<ISettingStore, State> = {
@@ -50,6 +58,10 @@ const actions: ActionTree<ISettingStore, State> = {
   setSavePath ({ commit }, path) {
     commit('SET_SAVE_PATH', path)
   },
+  // 设置缓存开关
+  setImageCacheSwitch ({ commit }, data) {
+    commit('SET_IMAGE_CACHE_PATH', data)
+  }
 }
 
 export default {

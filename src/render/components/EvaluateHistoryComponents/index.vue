@@ -1,8 +1,5 @@
 <template>
   <div class="evaluate-history-components">
-    评价历史组件 -
-    {{ type }} -
-    {{ organizationType }}
     <div class="module-panel pb-0">
       <el-row class="search-box" :gutter="20">
         <!-- 时间查询 -->
@@ -62,30 +59,36 @@
         </el-col>
       </el-row>
     </div>
+
     <!-- 历史记录详情组件 -->
     <div class="module-panel mt-6">
-      <div class="arraignment-record-list">
-        <EvaluateHistoryModule
-          v-for="item in evaluateRecordList"
-          :key="item.id"
-          class="mt-6"
-          :record-info="item"
-          @preview-photo="onPreviewPhotoList"
-          @evaluate-photo="onEvaluatePhoto"
-        />
-      </div>
-      <!-- 分页 -->
-      <div class="page-box">
-        <el-pagination
-          v-model:current-page="pager.page"
-          :hide-on-single-page="true"
-          :page-size="pager.pageSize"
-          layout="prev, pager, next"
-          :total="pager.total"
-          @current-change="handlePage"
-        />
-      </div>
+      <transition name="el-fade-in-linear">
+        <div v-if="evaluateRecordList.length" class="arraignment-record-list">
+          <EvaluateHistoryModule
+            v-for="item in evaluateRecordList"
+            :key="item.id"
+            class="mt-6"
+            :record-info="item"
+            @preview-photo="onPreviewPhotoList"
+            @evaluate-photo="onEvaluatePhoto"
+          />
+          <!-- 分页 -->
+          <div class="page-box">
+            <el-pagination
+              v-model:current-page="pager.page"
+              :hide-on-single-page="true"
+              :page-size="pager.pageSize"
+              layout="prev, pager, next"
+              :total="pager.total"
+              @current-change="handlePage"
+            />
+          </div>
+        </div>
+
+        <NoData v-else />
+      </transition>
     </div>
+
     <!-- 照片预览组件 -->
     <PreviewPhoto
       v-if="showPreview"
@@ -110,7 +113,6 @@ import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
 import { newMessage } from '@/utils/message'
-
 import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
@@ -121,6 +123,7 @@ import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import EvaluateHistoryModule from './components/EvaluateHistoryModule.vue'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
 import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
+import NoData from '@/components/NoData/index.vue'
 
 import * as EvaluateApi from '@/api/evaluateApi'
 import * as EvaluateHistoryApi from '@/api/evaluateHistoryApi'
@@ -129,7 +132,7 @@ import PoolRecordModel from '@/model/PoolRecordModel'
 
 export default defineComponent({
   name: 'EvaluateHistoryComponents',
-  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StoreStaffSelect, PositionStaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto },
+  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StoreStaffSelect, PositionStaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto, NoData },
   data () {
     return {
       colConfig: {

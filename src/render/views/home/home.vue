@@ -6,33 +6,15 @@
         <span class="black">欢迎来到</span>
         <span class="desc">质量检测系统</span>
       </div>
-      <!-- 下载测试 -->
-      <div class="test-down">
-        <el-button @click="downPhoto">下载</el-button>
-      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import * as DownPhoto from '@/utils/downPhoto'
 
 export default defineComponent({
-  name: 'Home',
-  setup () {
-    const downPhoto = () => {
-      const imagePath = 'https://cloud.cdn-qn.hzmantu.com/upload/2021/06/17/Fv60TLWvjUTlUfUkWkfxufCS8BYu.jpg'
-      // const imagePath = 'https://a63ffe63a0d7431fa49dad343bfa6219.dlied1.cdntips.net/dlied1.qq.com/qqweb/PCQQ/PCQQ_EXE/PCQQ2021.exe?mkey=60cb03123cb0231f&f=560f&cip=60.176.5.234&proto=https&access_type='
-      const savePath = 'C123456'
-      const rename = 'testDown.jpg'
-      DownPhoto.downOnePicture(imagePath, savePath, rename)
-    }
-
-    return {
-      downPhoto,
-    }
-  }
+  name: 'Home'
 })
 </script>
 

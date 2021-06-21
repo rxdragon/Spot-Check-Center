@@ -7,7 +7,7 @@
       :class="photoIndex === listIndex && 'active'"
       @click="activePhotoItem(listIndex)"
     >
-      <el-image :src="photoItem.src">
+      <el-image :src="photoItem.compressSrc">
         <template #error>
           <div class="image-slot">
             <i class="el-icon-picture-outline" />

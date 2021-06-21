@@ -15,7 +15,7 @@
         <PhotoInfo :order-info="showPhoto.photoInfo" />
         <div class="button-box">
           <el-button type="primary" @click="skipStaff">跳过伙伴</el-button>
-          <el-button class="change-btn" @click="closePreview">换一单</el-button>
+          <el-button class="change-btn" @click="changePool">换一单</el-button>
         </div>
       </div>
       <div class="content-column flex-grow">
@@ -64,15 +64,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, ref, Ref, toRefs, reactive, watch, computed } from 'vue'
+import { defineComponent, getCurrentInstance, ref, Ref, toRefs, reactive, watch, computed, h } from 'vue'
 
 import type { IOptionObj } from './composables/useCanvasTool'
 import type { IPhotoItemData, ISubmitData } from './index'
+import { ElMessageBox } from 'element-plus'
 
 import { TOOL_TYPE } from './components/ToolEnumerate'
 
 import usePhotoIndex from '@/components/PreviewPhoto/composables/usePhotoIndex'
 import usePhotoZoom from '@/components/PreviewPhoto/composables/usePhotoZoom'
+import useKeydown from './composables/useKeydown'
 
 import PhotoMap from '@/components/PreviewPhoto/components/PhotoMap.vue'
 import PhotoInfo from '@/components/PreviewPhoto/components/PhotoInfo.vue'
@@ -96,7 +98,7 @@ export default defineComponent({
   setup (props, { emit }) {
     const vm: any = getCurrentInstance()
     const fabricCanvas = ref<any>(null)
-    const imgLoading = ref(false)
+    const imgLoading = ref(true)
     const canvasLoading = ref(false)
     const loading = computed(() => imgLoading.value || canvasLoading.value)
       
@@ -117,13 +119,37 @@ export default defineComponent({
     }
 
     /** 跳过伙伴 */
-    const skipStaff = () => {
-      emit('skipStaff')
+    const skipStaff = async () => {
+      try {
+        await ElMessageBox({
+          title: '确认跳过伙伴?',
+          message: h('div', null, '当天不会再抽取到该伙伴任何订单'),
+          center: true,
+          showClose: false,
+          showCancelButton: true,
+          confirmButtonText: '确定'
+        })
+        emit('skipStaff')
+      } catch {
+        console.warn('取消跳过')
+      }
     }
 
     /** 换一单 */
-    const changePool = () => {
-      emit('changePool')
+    const changePool = async () => {
+      try {
+        await ElMessageBox({
+          title: '确认换单么?',
+          message: h('div', null, '将替换现有订单'),
+          center: true,
+          showClose: false,
+          showCancelButton: true,
+          confirmButtonText: '确定'
+        })
+        emit('changePool')
+      } catch {
+        console.warn('取消更换')
+      }
     }
 
     /** 绘图相关 */
@@ -235,6 +261,9 @@ export default defineComponent({
       }
       emit('submitData', data)
     }
+
+    /** 快捷键 */
+    useKeydown({ prePhoto, nextPhoto, closePreview, scaleNum, judgeHasZoom, changeDrawType })
 
     return {
       loading,
