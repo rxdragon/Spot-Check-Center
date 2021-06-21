@@ -78,6 +78,8 @@
     "less": "^3.0.4",
     "less-loader": "^5.0.0",
     "lint-staged": "^11.0.0",
+    "md5-file": "^5.0.0",
+    "node-rsa": "^1.1.1",
     "node-sass": "^6.0.0",
     "postcss": "^8.3.0",
     "right-pad": "^1.0.1",
