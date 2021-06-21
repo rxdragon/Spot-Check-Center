@@ -1,8 +1,8 @@
 'use strict'
 
 import { app } from "electron"
-import { initApp } from "~/main/app"
-import '~/main/localServe/index'
+import { initApp } from "./app"
+import './localServe/index'
 
 // Exit cleanly on request from parent process in development mode.
 if (global.isDevelopment) {
