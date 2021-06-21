@@ -27,6 +27,10 @@ declare module '*.gif' {
   export const gif: any
 }
 
+declare module "*.json" {
+  export const json: any
+}
+
 declare module '*.less' {
   export const less: any
 }

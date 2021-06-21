@@ -1,8 +1,12 @@
 type ErrorType = [number, string]
 
-const CardException: ErrorType[] = [[0xa11010001, '此类卡片已使用']]
+const CheckPoolException: ErrorType[] = [
+  [0xA25004009, '正在抽片中']
+]
 
-export const errText: ErrorType[] = [...CardException]
+export const errText: ErrorType[] = [
+  ...CheckPoolException
+]
 
 type ErrType = {
   error_code?: number | string

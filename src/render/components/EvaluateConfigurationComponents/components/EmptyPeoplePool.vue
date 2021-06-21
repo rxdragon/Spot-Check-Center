@@ -10,7 +10,7 @@
     >
       <div class="flex items-center">
         <span class="empty-title">选择清空对象:</span>
-        <ScorerSelect v-model="emptyPeople" />
+        <ScorerSelect v-model="emptyPeople" :spot-type="type" :organization-type="organizationType" />
         <span v-if="!emptyPeople.length" class="all-empty-warning">默认清空全部人员评分</span>
       </div>
       <template #footer>
@@ -71,7 +71,8 @@ export default defineComponent({
     return {
       emptyDig,
       closeDig,
-      emptyPeople, emptyCheckPool
+      emptyPeople, emptyCheckPool,
+      type, organizationType
     }
   }
 })

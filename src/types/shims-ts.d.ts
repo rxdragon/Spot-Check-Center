@@ -31,6 +31,7 @@ declare global {
     BUILD_TIME: any
     _: any
     __APP__: App
+    CloudDb: any
     ElectronIpcRenderer?: IpcRenderer
     ElectronShell?: Shell
     ElectronIpcRendererAddListener?: {
@@ -85,3 +86,4 @@ declare module '@vue/runtime-core' {
 declare module 'path-to-regexp'
 
 declare module 'js-base64'
+

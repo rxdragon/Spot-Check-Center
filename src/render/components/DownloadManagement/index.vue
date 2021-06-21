@@ -53,7 +53,7 @@ import type { IDownItem } from '~/main/downModule'
 import { computed, defineComponent, ref } from 'vue'
 import { useStore } from '@/store/index'
 import DownListItem from './components/DownListItem.vue'
-
+import * as Setting from '@/indexDB/getSetting'
 import ElectronDown from '@/utils/electronDown'
 
 export default defineComponent({
@@ -93,8 +93,7 @@ export default defineComponent({
       const savePath = window.ElectronIpcRenderer.sendSync('change-savePath')[0]
       if (savePath) {
         await store.dispatch('settingStore/setSavePath', savePath)
-        // TODO: cf
-        // Setting.updateSavePath(savePath)
+        Setting.updateSavePath(savePath)
       }
     }
 

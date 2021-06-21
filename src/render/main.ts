@@ -9,6 +9,7 @@ import { setupGlobalProperties } from '@/setting/globalPropertiesSetting'
 import { setupElectronSetting } from '@/setting/electronSetting'
 import { setupLodashPlugin } from '@/plugins/lodashPlugin'
 import { setupDirective } from '@/directive/index'
+import initIndexDb from '@/indexDB/index'
 
 import '@/assets/styles/index.less'
 
@@ -42,6 +43,7 @@ import '@/assets/styles/index.less'
   // 当路由加载完渲染页面
   // https://next.router.vuejs.org/api/#isready
   await router.isReady()
+  await initIndexDb(true)
 
   app.mount('#app')
 

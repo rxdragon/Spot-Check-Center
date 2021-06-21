@@ -1,8 +1,5 @@
 <template>
   <div class="evaluate-history-components">
-    评价历史组件 -
-    {{ type }} -
-    {{ organizationType }}
     <div class="module-panel pb-0">
       <el-row class="search-box" :gutter="20">
         <!-- 时间查询 -->
@@ -37,8 +34,7 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>职能</span>
-            <!-- TODO -->
-            <PositionStaffSelect v-model="jobContentIds" />
+            <PositionStaffSelect v-model="positionStaffIds" />
           </div>
         </el-col>
         <!-- 评价标签查询 -->
@@ -63,30 +59,36 @@
         </el-col>
       </el-row>
     </div>
+
     <!-- 历史记录详情组件 -->
     <div class="module-panel mt-6">
-      <div class="arraignment-record-list">
-        <EvaluateHistoryModule
-          v-for="item in evaluateRecordList"
-          :key="item.id"
-          class="mt-6"
-          :record-info="item"
-          @preview-photo="onPreviewPhotoList"
-          @evaluate-photo="onEvaluatePhoto"
-        />
-      </div>
-      <!-- 分页 -->
-      <div class="page-box">
-        <el-pagination
-          v-model:current-page="pager.page"
-          :hide-on-single-page="true"
-          :page-size="pager.pageSize"
-          layout="prev, pager, next"
-          :total="pager.total"
-          @current-change="handlePage"
-        />
-      </div>
+      <transition name="el-fade-in-linear">
+        <div v-if="evaluateRecordList.length" class="arraignment-record-list">
+          <EvaluateHistoryModule
+            v-for="item in evaluateRecordList"
+            :key="item.id"
+            class="mt-6"
+            :record-info="item"
+            @preview-photo="onPreviewPhotoList"
+            @evaluate-photo="onEvaluatePhoto"
+          />
+          <!-- 分页 -->
+          <div class="page-box">
+            <el-pagination
+              v-model:current-page="pager.page"
+              :hide-on-single-page="true"
+              :page-size="pager.pageSize"
+              layout="prev, pager, next"
+              :total="pager.total"
+              @current-change="handlePage"
+            />
+          </div>
+        </div>
+
+        <NoData v-else />
+      </transition>
     </div>
+
     <!-- 照片预览组件 -->
     <PreviewPhoto
       v-if="showPreview"
@@ -111,7 +113,6 @@ import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
 import { newMessage } from '@/utils/message'
-
 import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
@@ -122,6 +123,7 @@ import EvaluateHistoryModule from './components/EvaluateHistoryModule.vue'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
 import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
+import NoData from '@/components/NoData/index.vue'
 
 import * as EvaluateApi from '@/api/evaluateApi'
 import * as EvaluateHistoryApi from '@/api/evaluateHistoryApi'
@@ -130,7 +132,7 @@ import PoolRecordModel from '@/model/PoolRecordModel'
 
 export default defineComponent({
   name: 'EvaluateHistoryComponents',
-  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StoreStaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto, PositionStaffSelect },
+  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StoreStaffSelect, PositionStaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto, NoData },
   data () {
     return {
       colConfig: {
@@ -159,7 +161,7 @@ export default defineComponent({
     /** 查询历史记录相关数据 */
     const productIds = ref([])
     const staffs = ref([])
-    const jobContentIds = ref([])
+    const positionStaffIds = ref([])
     const scopeData = ref([])
     const evaluateIds = ref([])
     const evaluateRecordList = ref<PoolRecordModel[]>([])
@@ -175,16 +177,23 @@ export default defineComponent({
           organizationType,
           startTime: '',
           endTime: '',
+          cloudOrderNum: '',
+          productIds: productIds.value,
+          staffIds: staffs.value,
+          supervisorArr: positionStaffIds.value,
+          score: scopeData.value,
+          problemTagsIds: evaluateIds.value,
           page: pager.page,
           pageSize: pager.pageSize
         }
+
         if (timeSpan.value) {
           req.startTime = TimeUtil.searchStartTime(timeSpan.value[0])
           req.endTime = TimeUtil.searchEndTime(timeSpan.value[1])
         }
         if (productIds.value.length > 0) req.productIds = productIds.value
         if (staffs.value.length > 0) req.staffIds = staffs.value
-        if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value
+        if (positionStaffIds.value.length > 0) req.supervisorArr = positionStaffIds.value
         if (scopeData.value.length > 0) req.score = scopeData.value
         if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
         if (orderNum.value) {
@@ -262,13 +271,12 @@ export default defineComponent({
         type,
         organizationType
       }
-      // TODO:Cf
-      await EvaluateApi.emptyPoolByStaffId(req)
+      await EvaluateApi.updateCommitHistory(req)
     }
 
     return {
       type, organizationType,
-      timeSpan, orderNum, productIds, staffs, jobContentIds, scopeData, evaluateIds,
+      timeSpan, orderNum, productIds, staffs, positionStaffIds, scopeData, evaluateIds,
       pager, evaluateRecordList, handlePage, getHistoryRecords,
       showPreview, previewPhotos, previewIndex, onPreviewPhotoList,
       onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate, onSubmitData

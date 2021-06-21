@@ -17,21 +17,23 @@ export default class StaffModel {
     title: string
   }[]
   configStore: [] // 管辖门店
+  configStaffIds: [] // 管辖伙伴
 
   constructor (staffData: any) {
     this.id = staffData.id || ''
     this.name = staffData.name || '异常'
     this.nickName = staffData.nickname || '异常'
     this.rolesName = _.get(staffData, 'roles.title') || '异常'
-    this.rolesId = _.get(staffData, 'roles.role_id') || '异常'
+    this.rolesId = _.get(staffData, 'staffInfo.role_id') || ''
     this.positionText = _.get(staffData, 'position_text') || '异常'
     this.positionName = _.get(staffData, 'position.name') || '异常'
     this.positionType = _.get(staffData, 'position.type') || '异常'
-    this.positionId = _.get(staffData, 'position.id') || ''
+    this.positionId = _.get(staffData, 'staffInfo.position_id') || ''
     this.available = Boolean(staffData.account_available)
     this.availableCN = this.available ? '启用' : '禁用'
     this.departmentName = _.get(staffData, 'department.name') || '-'
     this.permissions = _.get(staffData, 'permissions') || []
-    this.configStore = _.get(staffData, 'config_store_ids') || []
+    this.configStore = _.get(staffData, 'staffInfo.config_store_ids') || []
+    this.configStaffIds = _.get(staffData, 'staffInfo.config_staff_ids') || []
   }
 }

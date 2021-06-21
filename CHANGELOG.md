@@ -20,6 +20,7 @@
  - | 更新评价配置和历史相关组件 | [49697eb](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/49697eb)
  - | 更新相关带啊么 | [a2321a1](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/a2321a1)
  - | 更新用户信息修改后列表页面的操作 | [b40abb0](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/b40abb0)
+ - | 接口对接 | [d5daefe](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/d5daefe)
  - | 历史记录相关的数据模块以及接口查询 | [c4114c5](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4114c5)
  - | 联动完成角色组相关功能，完成保存账号部分功能 | [bc44cde](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bc44cde)
  - | 申诉中心 | [7a8d241](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/7a8d241)
