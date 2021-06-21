@@ -106,41 +106,6 @@ export async function takePhoto (params: ITakePhotoParams): Promise<string> {
 }
 
 /**
- * @description 获取抽片结果
- */
-interface IGetSpotCheckResultParams extends IEvaluateAPi {
-  uuid: string
-}
-interface IGetSpotCheckResultRes {
-  formalStaffNum: number
-  formalStaffStreamNum: number
-  spotAllPeople: number
-  newStaffNum: number
-  newStaffStreamNum: number
-  streamOrderNum: number
-}
-
-export async function getSpotCheckResult (params: IGetSpotCheckResultParams): Promise<IGetSpotCheckResultRes> {
-  const url = `${getApiUrl(params.type, params.organizationType)}/getSpotCheckResult`
-  const res: any = await axios({
-    url,
-    method: 'GET',
-    params
-  })
-
-  const createData = {
-    formalStaffNum: res.formalStaffNum,
-    formalStaffStreamNum: res.formalStaffStreamNum,
-    spotAllPeople: res.makeupNum || res.photographerNum || 0,
-    newStaffNum: res.newStaffNum,
-    newStaffStreamNum: res.newStaffStreamNum,
-    streamOrderNum: res.streamOrderNum,
-  }
-
-  return createData
-}
-
-/**
  * @description 获取抽片结果列表
  */
 interface IGetSpotCheckResultListParams extends IEvaluateAPi {
@@ -150,9 +115,19 @@ interface IGetSpotCheckResultListParams extends IEvaluateAPi {
   skip: number
   limit: number
 }
+
+interface IGetSpotCheckResultRes {
+  formalStaffNum: number
+  formalStaffStreamNum: number
+  spotAllPeople: number
+  newStaffNum: number
+  newStaffStreamNum: number
+  streamOrderNum: number
+}
 interface IGetSpotCheckResultListRes {
   total: number
   list: PoolRecordModel[]
+  processInfo: IGetSpotCheckResultRes
 }
 // eslint-disable-next-line max-len
 export async function getSpotCheckResultList (params: IGetSpotCheckResultListParams): Promise<IGetSpotCheckResultListRes> {
@@ -163,7 +138,7 @@ export async function getSpotCheckResultList (params: IGetSpotCheckResultListPar
     params
   })
   const spotTotal = _.get(res, 'extend.processInfo[0].currentGroup')
-
+  const processInfo = _.get(res, 'extend.processInfo') || {}
   const createData: PoolRecordModel[] = res.data.map((poolRecordItem: any, poolRecordIndex: number) => {
     const poolRecordModel = new PoolRecordModel(poolRecordItem)
     const pagerInfo = {
@@ -178,7 +153,15 @@ export async function getSpotCheckResultList (params: IGetSpotCheckResultListPar
   })
   return {
     list: createData,
-    total: spotTotal
+    total: spotTotal,
+    processInfo: {
+      formalStaffNum: processInfo.formalStaffNum,
+      formalStaffStreamNum: processInfo.formalStaffStreamNum,
+      spotAllPeople: processInfo.makeupNum || processInfo.photographerNum || 0,
+      newStaffNum: processInfo.newStaffNum,
+      newStaffStreamNum: processInfo.newStaffStreamNum,
+      streamOrderNum: processInfo.streamOrderNum
+    }
   }
 }
 

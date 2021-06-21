@@ -30,7 +30,7 @@
   <div class="module-panel taday-info">
     <div class="panel-title mb-5">
       今日完成数据
-      <div class="panel-slot">
+      <div v-if="$isElectron" class="panel-slot">
         开启预加载
         <el-switch
           :model-value="isPreLoad"
@@ -100,6 +100,7 @@ import PeopleNumber from './components/PeopleNumber.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
 import PoolModule from './components/PoolModule.vue'
 import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
+
 import { newMessage } from '@/utils/message'
 import { ElMessageBox } from 'element-plus'
 import * as EvaluateApi from '@/api/evaluateApi'
@@ -141,24 +142,18 @@ export default defineComponent({
     }
 
     /** 获取抽片结果 */
-    const getSpotCheckResult = async () => {
-      const req = {
-        uuid: uuid.value,
-        type,
-        organizationType
-      }
-      const res = await EvaluateApi.getSpotCheckResult(req)
+    const showCheckResult = async (data: any) => {
       try {
         const peopleType = type === SPOT_TYPE.MAKEUP ? '化妆师' : '摄影师'
         await ElMessageBox({
           title: '抽取结果',
           message: h('div', { style: 'display: grid; grid-template-columns: 4fr 5fr 5fr;' }, [
-            h('span', null, `${peopleType}：${res.spotAllPeople}人`),
-            h('span', null, `正式伙伴：${res.formalStaffNum}人`),
-            h('span', null, `新人伙伴：${res.newStaffNum}人`),
-            h('span', null, `总单量：${res.streamOrderNum}单`),
-            h('span', null, `正式伙伴单量：${res.formalStaffStreamNum}单`),
-            h('span', null, `新人伙伴单量：${res.newStaffStreamNum}单`),
+            h('span', null, `${peopleType}：${data.spotAllPeople}人`),
+            h('span', null, `正式伙伴：${data.formalStaffNum}人`),
+            h('span', null, `新人伙伴：${data.newStaffNum}人`),
+            h('span', null, `总单量：${data.streamOrderNum}单`),
+            h('span', null, `正式伙伴单量：${data.formalStaffStreamNum}单`),
+            h('span', null, `新人伙伴单量：${data.newStaffStreamNum}单`),
           ]),
           center: true,
           showClose: false,
@@ -170,13 +165,17 @@ export default defineComponent({
     }
 
     /** 获取抽片结果列表 */
+    let intervalGetSpotCheckTimer: any = null
     const pager = reactive({
       page: 1,
       pageSize: 10,
       total: 10
     })
     const poolList = ref<PoolRecordModel[]>([])
-    const getSpotCheckResultList = async () => {
+    const isTakePhoto = ref(false)
+
+    const getSpotCheckResultList = async (page?: number) => {
+      pager.page = page ? page : pager.page
       const req = {
         uuid: uuid.value,
         page: pager.page,
@@ -186,11 +185,41 @@ export default defineComponent({
         type,
         organizationType
       }
-      const res = await EvaluateApi.getSpotCheckResultList(req)
-      poolList.value = res.list
-      pager.total = res.total
-      
+      try {
+        const res = await EvaluateApi.getSpotCheckResultList(req)
+        poolList.value = res.list
+        pager.total = res.total
+
+        // 第一次点击抽片
+        if (isTakePhoto.value) {
+          // 展示数据
+          store.dispatch('settingStore/hiddenLoading', route.name)
+          await showCheckResult(res.processInfo)
+          isTakePhoto.value = false
+        }
+
+        // 如果有数据结果清空相关信息
+        if (intervalGetSpotCheckTimer) {
+          clearTimeout(intervalGetSpotCheckTimer)
+          intervalGetSpotCheckTimer = null
+        }
+
+      } catch (error) {
+        if (error.message === '正在抽片中') {
+          intervalGetSpotCheck()
+        } else {
+          throw new Error(error)
+        }
+      }
     }
+
+    function intervalGetSpotCheck () {
+      clearTimeout(intervalGetSpotCheckTimer)
+      intervalGetSpotCheckTimer = setTimeout(() => {
+        getSpotCheckResultList(1)
+      }, 500)
+    }
+
     const handlePage = async () => {
       try {
         store.dispatch('settingStore/showLoading', route.name)
@@ -199,6 +228,7 @@ export default defineComponent({
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
+
 
     /** 获取今日抽片指标 */
     const tadayInfo = reactive({
@@ -246,19 +276,23 @@ export default defineComponent({
 
       if (await getHaveSpotCheckResult()) return false
 
-      // todo: cf loading
-      const req = {
-        productIds: productIds.value,
-        formalStaffCount: fullMember.value ? fullMember.value : 0,
-        newStaffCount: fullMember.value ? fullMember.value : 0,
-        type,
-        organizationType
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        const req = {
+          productIds: productIds.value,
+          formalStaffCount: fullMember.value ? fullMember.value : 0,
+          newStaffCount: fullMember.value ? fullMember.value : 0,
+          type,
+          organizationType
+        }
+        const res = await EvaluateApi.takePhoto(req)
+        uuid.value = res
+        isTakePhoto.value = true
+        // 获取抽片数据
+        await getSpotCheckResultList()
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
       }
-      const res = await EvaluateApi.takePhoto(req)
-      uuid.value = res
-      await getSpotCheckResult()
-      // 获取抽片数据
-      await getSpotCheckResultList()
     }
 
     /** 评分 */
