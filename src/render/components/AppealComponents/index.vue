@@ -38,7 +38,7 @@
           <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
             <div class="search-item">
               <span>职能</span>
-              <JobContentSelect v-model="jobContentIds" />
+              <PositionStaffSelect v-model="jobContentIds" />
             </div>
           </el-col>
           <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
@@ -49,8 +49,10 @@
           </el-col>
           <el-col v-bind="{ ...colConfig }">
             <div class="search-item">
-              <span>初审状态</span>
-              <ReviewStatusSelect v-model="appealStatus" :review-type="''" />
+              <span v-if="appealType === 'first' && type !== 'all'">初审状态</span>
+              <span v-if="appealType === 'second' && type !== 'all'">复审状态</span>
+              <span v-if="appealType === 'all' || type === 'all'">审核状态</span>
+              <ReviewStatusSelect v-model="appealStatus" :review-type="type === 'all' ? type : appealType" />
             </div>
           </el-col>
           <el-col v-bind="{lg: 2, md: 2}">
@@ -62,7 +64,7 @@
         </el-row>
         <div v-if="type !== 'all'" class="top-msg flex items-center mb-6">
           <span class="mr-6">申诉总单量:{{ appealCount }}单</span>
-          <span>初审拒绝率:{{ (appealRefuseCount / appealCount * 100).toFixed() }}%</span>
+          <span>初审拒绝率:{{ (appealRefuseCount / (appealCount === 0 ? 1 : appealCount) * 100).toFixed() }}%</span>
         </div>
         <div class="table-module-box">
           <el-table
@@ -100,7 +102,7 @@
             >
               <!-- TODO lj -->
               <!-- <template #default="{ row }">
-                {{ appealStatusToCN[row.status] }}
+                {{ getStatus(row.status) }}
               </template> -->
             </el-table-column>
             <el-table-column width="243" prop="updatedAt" label="初审信息">
@@ -145,16 +147,17 @@ import { useRouter, useRoute } from 'vue-router'
 import { defineComponent, inject, reactive, Ref, ref, watch } from 'vue'
 import DatePicker from '@/components/DatePicker/index.vue'
 import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
-import JobContentSelect from '@/components/SelectBox/JobContentSelect/index.vue'
+import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import ReviewStatusSelect from '@/components/SelectBox/ReviewStatusSelect/index.vue'
 import { ORGANIZATION_TYPE } from '@/model/Enumerate'
 import * as TimeUtil from '@/utils/TimeUtil'
 import * as AppealApi from '@/api/appealApi'
 import { AppealListModel, appealStatusToCN, APPEAL_STATUS } from '@/model/AppealModel'
+import dayjs from 'dayjs'
  
 export default defineComponent({
   name: 'AppealComponents',
-  components: { DatePicker, StoreStaffSelect, JobContentSelect, ReviewStatusSelect },
+  components: { DatePicker, StoreStaffSelect, ReviewStatusSelect, PositionStaffSelect },
   setup () {
     const router = useRouter()
     const route = useRoute()
@@ -213,9 +216,12 @@ export default defineComponent({
     const orderNum = ref('')
     const staffs = ref([])
     const jobContentIds = ref([])
-    const appealStatus = ref('')
+    const appealStatus = ref()
     const inputStaffIds = ref('')
     const timeSpan: Ref<string | never | any[]> = ref('')
+    const startAt = dayjs().subtract(36, 'hour').format('YYYY-MM-DD 00:00:00')
+    const endAt = dayjs().format('YYYY-MM-DD 00:00:00')
+    timeSpan.value = [startAt, endAt]
     const getAppealData = () => {
       const req: AppealApi.IGetAppealParams = {
         page: pager.page,
@@ -226,11 +232,13 @@ export default defineComponent({
         req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
         req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
       }
+      if ( appealType.value === 'first' ) { req.appealStatus = [APPEAL_STATUS.WAIT_FIRST_APPEAL, APPEAL_STATUS.FIRST_APPEAL] }
+      if ( appealType.value === 'second' ) { req.appealStatus = [APPEAL_STATUS.WAIT_SECOND_APPEAL, APPEAL_STATUS.SECOND_APPEAL] }
       if (orderNum.value) req.cloudOrderNum = orderNum.value
       if (inputStaffIds.value) req.inputStaffIds = inputStaffIds.value
       if (staffs.value.length > 0) req.staffId = staffs.value
-      if (appealStatus.value) req.appealStatus = appealStatus.value
-
+      if (appealStatus.value) req.appealStatus = appealStatus.value.split(',')
+      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value
       getAppealByPage(req)
       getAppealQuota(req)
     }
@@ -267,9 +275,23 @@ export default defineComponent({
     /**
      * @description 监听tab切换
     */
+    const initParams = () => {
+      orderNum.value = ''
+      staffs.value = []
+      jobContentIds.value = []
+      appealStatus.value = ''
+      inputStaffIds.value = ''
+      timeSpan.value = [startAt, endAt]
+    }
     watch(appealType, (val) => {
-      if (val === 'first') getAppealData()
-      if (val === 'second') getAppealData()
+      initParams()
+      // if (val === 'first') {
+      //   appealStatus.value = APPEAL_STATUS.WAIT_FIRST_APPEAL + ',' + APPEAL_STATUS.FIRST_APPEAL
+      // }
+      // if (val === 'second') {
+      //   appealStatus.value = APPEAL_STATUS.WAIT_SECOND_APPEAL + ',' + APPEAL_STATUS.SECOND_APPEAL
+      // }
+      searchData(1)
     })
 
     const routerGo = (id: string) => {
@@ -292,7 +314,7 @@ export default defineComponent({
         await AppealApi.bindFirst(req, organizationType)
         routerGo(id)
       } finally {
-        store.dispatch('settingStore/showLoading', route.name)
+        store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
 
@@ -308,12 +330,12 @@ export default defineComponent({
         await AppealApi.bindSecond(req, organizationType)
         routerGo(id)
       } finally {
-        store.dispatch('settingStore/showLoading', route.name)
+        store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
 
     const goDetail = (id: string, status: string) => {
-      if (status === APPEAL_STATUS.WAIT_FIRST_APPEAL || status === APPEAL_STATUS.FIRST_APPEAL) {
+      if (status === APPEAL_STATUS.WAIT_FIRST_APPEAL) {
         bindFirst(id)
       } else if (status === APPEAL_STATUS.WAIT_SECOND_APPEAL) {
         bindSecond(id)
@@ -343,7 +365,7 @@ export default defineComponent({
       goDetail,
       appealStatusToCN,
       getBtnText,
-      searchData
+      searchData,
     }
   }
 })

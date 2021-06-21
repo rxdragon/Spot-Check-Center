@@ -33,11 +33,11 @@ export function getApiUrl (organizationType: ORGANIZATION_TYPE) {
 export async function createAppeal (params: ICreateAppealParams, axiosType: ORGANIZATION_TYPE) {
   // eslint-disable-next-line no-unused-vars
   const url = `${getApiUrl(axiosType)}/createAppeal`
-  // await axios({
-  //   url,
-  //   method: 'POST',
-  //   params
-  // })
+  await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
 }
 
 export interface IGetAppealParams {
@@ -45,7 +45,7 @@ export interface IGetAppealParams {
   endAt?: string
   cloudOrderNum?: string
   serviceType?: string
-  appealStatus?: string
+  appealStatus?: string[]
   inputStaffIds?: string,
   staffId?: string[],
   supervisorArr?: string[],
@@ -59,12 +59,12 @@ export interface IGetAppealParams {
  */
 export async function getAppealByPage (params: IGetAppealParams, axiosType: ORGANIZATION_TYPE) {
   // eslint-disable-next-line no-unused-vars
-  // const url = `${getApiUrl(axiosType)}/getAppealByPage`
-  // const res = await axios({
-  //   url,
-  //   method: 'POST',
-  //   data: params
-  // })
+  const url = `${getApiUrl(axiosType)}/getAppealByPage`
+  const res: any = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
   // const res = {
   //   "msg": [
   //     {
@@ -133,13 +133,13 @@ export async function getAppealByPage (params: IGetAppealParams, axiosType: ORGA
   //   "success": true
   // }
 
-  // const createData: AppealListModel[] = res.msg.map((appealItem: any) => {
-  //   const appealListModel = new AppealListModel(appealItem)
-  //   return appealListModel
-  // })
+  const createData: AppealListModel[] = res.items.map((appealItem: any) => {
+    const appealListModel = new AppealListModel(appealItem)
+    return appealListModel
+  })
   return {
-    list: [],
-    total: 10
+    list: createData,
+    total: res.count
   }
 }
 /**
@@ -235,22 +235,16 @@ export async function getSecondAppealByPage (params: IGetAppealParams, axiosType
 * @description 获取申诉绩效
 */
 export async function getAppealQuota (params: IGetAppealParams, axiosType: ORGANIZATION_TYPE) {
-  // eslint-disable-next-line no-unused-vars
   const url = `${getApiUrl(axiosType)}/getAppealQuota`
-  // await axios({
-  //   url,
-  //   method: 'POST',
-  //   params
-  // })
-  const res = {
-    "msg": {
-      "count": 1,
-      "refuseCount": 1
-    },
-    "success": true
+  const res = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
+  return {
+    count: _.get(res, 'count') || 0,
+    refuseCount: _.get(res, 'refuseCount') || 0
   }
-
-  return res.msg
 }
 
 /**
@@ -262,98 +256,97 @@ interface IGetAppealDetailParams {
 export async function getAppealDetail (params: IGetAppealDetailParams, axiosType: ORGANIZATION_TYPE) {
   // eslint-disable-next-line no-unused-vars
   const url = `${getApiUrl(axiosType)}/appealDetail`
-  // await axios({
-  //   url,
-  //   method: 'POST',
-  //   params
-  // })
-  const res = {
-    "msg": {
-      "appeal": {
-        "applicant": 605268,
-        "first_pass_at": "2021-01-01 00:00:00",
-        "first_reviewer_id": 605268,
-        "id": 1,
-        "note": "xxx",
-        "result": "refusal",
-        "second_pass_at": "2021-01-01 00:00:00",
-        "second_reviewer_id": 605268,
-        "status": "wait_review",
-        "type": "makeup"
-      },
-      "dresser_note": "dresser_note",
-      "dressers": {
-        "experts": [
-          {
-            "id": 1,
-            "name": "化妆组长",
-            "nickname": "化妆组长"
-          }
-        ],
-        "group_leader": [
-          {
-            "id": 1,
-            "name": "化妆组长",
-            "nickname": "化妆组长"
-          }
-        ],
-        "supervisor": [
-          {
-            "id": 1,
-            "name": "化妆组长",
-            "nickname": "化妆组长"
-          }
-        ]
-      },
-      "first_reviewer": {
-        "id": 605268,
-        "name": "aa"
-      },
-      "order_note": "order_note",
-      "order_num": "T2021060710222011",
-      "photoNum": 8,
-      "photography_note": "photography_note",
-      "photos": [
-        {
-          "id": 1,
-          "path": "path",
-          "photo_quality": {
-            "_id": "60b33237317fd376e7403cb3",
-            "ai_state": "success",
-            "audit_record_id": "60b33237317fd376e7403cb2",
-            "extend": {
-              "info_makeup": {
-                "degree": 5,
-                "label": []
-              },
-              "info_phtghy": {
-                "degree": 5,
-                "label": []
-              }
-            },
-            "finish_time": "2021-05-30 14:35:36",
-            "path": "2021/05/30/lgn0C2Z2vjdwaQ2xIJ-uhqjMeANH.jpg"
-          }
-        }
-      ],
-      "product": {
-        "id": 8,
-        "name": "精致证件照 - 侧身"
-      },
-      "second_reviewer": {
-        "id": 605268,
-        "name": "aa"
-      },
-      "store": {
-        "id": 1006,
-        "name": "宁波天一广场店",
-        "store_type": "blue"
-      }
-    },
-    "success": true
-  }
-
-  const createData: AppealDetailModel = new AppealDetailModel(res.msg)
+  const res: any = await axios({
+    url,
+    method: 'GET',
+    params
+  })
+  // const res = {
+  //   "msg": {
+  //     "appeal": {
+  //       "applicant": 605268,
+  //       "first_pass_at": "2021-01-01 00:00:00",
+  //       "first_reviewer_id": 605268,
+  //       "id": 1,
+  //       "note": "xxx",
+  //       "result": "refusal",
+  //       "second_pass_at": "2021-01-01 00:00:00",
+  //       "second_reviewer_id": 605268,
+  //       "status": "wait_review",
+  //       "type": "makeup"
+  //     },
+  //     "dresser_note": "dresser_note",
+  //     "dressers": {
+  //       "experts": [
+  //         {
+  //           "id": 1,
+  //           "name": "化妆组长",
+  //           "nickname": "化妆组长"
+  //         }
+  //       ],
+  //       "group_leader": [
+  //         {
+  //           "id": 1,
+  //           "name": "化妆组长",
+  //           "nickname": "化妆组长"
+  //         }
+  //       ],
+  //       "supervisor": [
+  //         {
+  //           "id": 1,
+  //           "name": "化妆组长",
+  //           "nickname": "化妆组长"
+  //         }
+  //       ]
+  //     },
+  //     "first_reviewer": {
+  //       "id": 605268,
+  //       "name": "aa"
+  //     },
+  //     "order_note": "order_note",
+  //     "order_num": "T2021060710222011",
+  //     "photoNum": 8,
+  //     "photography_note": "photography_note",
+  //     "photos": [
+  //       {
+  //         "id": 1,
+  //         "path": "path",
+  //         "photo_quality": {
+  //           "_id": "60b33237317fd376e7403cb3",
+  //           "ai_state": "success",
+  //           "audit_record_id": "60b33237317fd376e7403cb2",
+  //           "extend": {
+  //             "info_makeup": {
+  //               "degree": 5,
+  //               "label": []
+  //             },
+  //             "info_phtghy": {
+  //               "degree": 5,
+  //               "label": []
+  //             }
+  //           },
+  //           "finish_time": "2021-05-30 14:35:36",
+  //           "path": "2021/05/30/lgn0C2Z2vjdwaQ2xIJ-uhqjMeANH.jpg"
+  //         }
+  //       }
+  //     ],
+  //     "product": {
+  //       "id": 8,
+  //       "name": "精致证件照 - 侧身"
+  //     },
+  //     "second_reviewer": {
+  //       "id": 605268,
+  //       "name": "aa"
+  //     },
+  //     "store": {
+  //       "id": 1006,
+  //       "name": "宁波天一广场店",
+  //       "store_type": "blue"
+  //     }
+  //   },
+  //   "success": true
+  // }
+  const createData: AppealDetailModel = new AppealDetailModel(res)
   return createData
 }
 
@@ -371,43 +364,32 @@ export async function getAppealCount (params: IGetAppealCountParams, axiosType: 
     method: 'POST',
     data: params
   })
-  // const res = {
-  //   "msg": {
-  //     "firstCount": 1,
-  //     "secondCount": 2
-  //   },
-  //   "success": true
-  // }
   const createData = {
-    firstCount: _.get(res, 'msg.firstCount') || 0,
-    secondCount: _.get(res, 'msg.secondCount') || 0,
+    firstCount: _.get(res, 'firstCount') || 0,
+    secondCount: _.get(res, 'secondCount') || 0,
   }
   
   return createData
 }
 
 
-interface IExamineParams {
+export interface IExamineParams {
   id: number
   result: string
-  note: string
+  note?: string
 }
 /**
 * @description 初审审核
 */
 export async function examineFirst (params: IExamineParams, axiosType: ORGANIZATION_TYPE) {
   // eslint-disable-next-line no-unused-vars
-  // const url = `${getApiUrl(axiosType)}/examineFirst`
-  // await axios({
-  //   url,
-  //   method: 'POST',
-  //   params
-  // })
-  const createData = {
-
-  }
-  
-  return createData
+  const url = `${getApiUrl(axiosType)}/examineFirst`
+  const res = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
+  return res
 }
 
 /**
@@ -415,43 +397,27 @@ export async function examineFirst (params: IExamineParams, axiosType: ORGANIZAT
 */
 export async function examineSecond (params: IExamineParams, axiosType: ORGANIZATION_TYPE) {
   // eslint-disable-next-line no-unused-vars
-  // const url = `${getApiUrl(axiosType)}/examineSecond`
-  // await axios({
-  //   url,
-  //   method: 'POST',
-  //   params
-  // })
-  // const res = {
-  //   "msg": true,
-  //   "success": true
-  // }
-  const createData = {
-
-  }
-  
-  return createData
+  const url = `${getApiUrl(axiosType)}/examineSecond`
+  const res = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
+  return res
 }
 
 /**
 * @description 初审绑定
 */
 export async function bindFirst (params: IGetAppealDetailParams, axiosType: ORGANIZATION_TYPE) {
-  // eslint-disable-next-line no-unused-vars
-  // const url = `${getApiUrl(axiosType)}/bindFirst`
-  // await axios({
-  //   url,
-  //   method: 'POST',
-  //   params
-  // })
-  // const res = {
-  //   "msg": true,
-  //   "success": true
-  // }
-  const createData = {
+  const url = `${getApiUrl(axiosType)}/bindFirst`
+  const res = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
 
-  }
-  
-  return createData
+  return res
 }
 
 /**
@@ -459,19 +425,12 @@ export async function bindFirst (params: IGetAppealDetailParams, axiosType: ORGA
 */
 export async function bindSecond (params: IGetAppealDetailParams, axiosType: ORGANIZATION_TYPE) {
   // eslint-disable-next-line no-unused-vars
-  // const url = `${getApiUrl(axiosType)}/bindSecond`
-  // await axios({
-  //   url,
-  //   method: 'POST',
-  //   params
-  // })
-  // const res = {
-  //   "msg": true,
-  //   "success": true
-  // }
-  const createData = {
-
-  }
+  const url = `${getApiUrl(axiosType)}/bindSecond`
+  const res = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
   
-  return createData
+  return res
 }

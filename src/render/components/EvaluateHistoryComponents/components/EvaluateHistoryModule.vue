@@ -211,6 +211,30 @@ export default defineComponent({
     }
   }
 
+  .type-tag {
+    margin-right: 10px;
+    margin-bottom: 10px;
+
+    &.plant {
+      color: #38bc7f;
+      background-color: #ecf7f2;
+      border-color: #7fd9af;
+    }
+
+    &.pull {
+      color: #ff3974;
+      background-color: #fff0f0;
+      border-color: #f99ab7;
+    }
+
+    &.middle,
+    &.small {
+      color: #ff8f00;
+      background-color: #fff7ed;
+      border-color: #ffce90;
+    }
+  }
+
   .photo-list {
     width: 100%;
     white-space: nowrap;

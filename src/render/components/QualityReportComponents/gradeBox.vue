@@ -57,7 +57,7 @@
           <div class="base-info panel-row">
             <span class="order-info w-52"><span class="order-info-title">流水号：</span>{{ item.streamInfo.orderNum }}</span>
             <span class="order-info w-56"><span class="order-info-title">产品名称：</span>{{ item.streamInfo.productName }}</span>
-            <span class="order-info w-28"><span class="order-info-title">照片张数：</span>{{ item.streamInfo.photoCount }}</span>
+            <span class="order-info w-28"><span class="order-info-title">照片张数：</span>{{ item.photoList.length }}</span>
             <span class="order-info w-44">
               <span class="order-info-title">门店类型：</span>{{ item.streamInfo.storeTypeCN }}
               <div class="standard-icon">
@@ -67,7 +67,7 @@
             <span class="order-info w-40"><span class="order-info-title">门店：</span>{{ item.streamInfo.storeName }}</span>
           </div>
           <div class="base-info panel-row">
-            <span class="order-info w-52"><span class="order-info-title">化妆师：</span>{{ item.streamInfo.dresserName }}</span>
+            <span class="order-info w-52"><span class="order-info-title">化妆师：</span>{{ item.streamInfo.dresserInfo.name }}</span>
             <span class="order-info w-56"><span class="order-info-title">化妆督导：</span>{{ item.streamInfo.dresserInfo.supervisorName }}</span>
             <span class="order-info w-44"><span class="order-info-title">化妆专家：</span>{{ item.streamInfo.dresserInfo.expertsName }}</span>
           </div>
@@ -75,10 +75,10 @@
             <span class="order-info"><span class="order-info-title">订单备注：</span>{{ item.streamInfo.note.orderNote }}</span>
           </div>
           <div class="base-info panel-row">
-            <span class="order-info"><span class="order-info-title">摄影备注：</span>{{ item.streamInfo.note.dresserNote }}</span>
+            <span class="order-info"><span class="order-info-title">摄影备注：</span>{{ item.streamInfo.note.photographyNote }}</span>
           </div>
           <div class="base-info panel-row">
-            <span class="order-info"><span class="order-info-title">化妆备注：</span>{{ item.streamInfo.note.photographyNote }}</span>
+            <span class="order-info"><span class="order-info-title">化妆备注：</span>{{ item.streamInfo.note.dresserNote }}</span>
           </div>
         </div>
       </div>
@@ -88,24 +88,24 @@
         <div class="evaluate-title-info grid grid-cols-3 col-end-13 col-span-4">
           <div>总评分：{{ item.tagInfo.totalScore }}</div>
           <div>评分人：{{ item.tagInfo.RaterName }}</div>
-          <div>
+          <div v-if="item.showAppealBtn">
             <el-button
               size="small"
               class="change-evaluate-btn"
               type="primary"
-              @click="goAppeal(item.tagInfo, item.id)"
+              @click="goAppeal(item.tagInfo, item.streamInfo.id)"
             >
               我要申诉
             </el-button>
           </div>
         </div>
       </div>
-      <div class="order-info grid grid-cols-4 mb-4">
+      <div class="order-info mb-4">
         <div class="info-item">
           问题标签：<el-tag
             v-for="tagItem in item.tagInfo.tags"
             :key="tagItem.id"
-            class="text-center"
+            class="text-center mr-6"
             :class="['type-tag', tagItem.type]"
             size="medium"
           >
@@ -192,6 +192,30 @@ export default defineComponent({
   color: #303133;
 }
 
+.type-tag {
+  margin-right: 10px;
+  margin-bottom: 10px;
+
+  &.plant {
+    color: #38bc7f;
+    background-color: #ecf7f2;
+    border-color: #7fd9af;
+  }
+
+  &.pull {
+    color: #ff3974;
+    background-color: #fff0f0;
+    border-color: #f99ab7;
+  }
+
+  &.middle,
+  &.small {
+    color: #ff8f00;
+    background-color: #fff7ed;
+    border-color: #ffce90;
+  }
+}
+
 .grade-box {
   .grid-list {
     display: flex;
@@ -272,30 +296,6 @@ export default defineComponent({
           font-weight: 600;
           line-height: 28px;
           color: #303133;
-        }
-
-        .type-tag {
-          margin-right: 10px;
-          margin-bottom: 10px;
-
-          &.plant {
-            color: #38bc7f;
-            background-color: #ecf7f2;
-            border-color: #7fd9af;
-          }
-
-          &.pull {
-            color: #ff3974;
-            background-color: #fff0f0;
-            border-color: #f99ab7;
-          }
-
-          &.middle,
-          &.small {
-            color: #ff8f00;
-            background-color: #fff7ed;
-            border-color: #ffce90;
-          }
         }
 
         .label-box {

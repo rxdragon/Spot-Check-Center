@@ -1,6 +1,7 @@
 import AuditSpotPhotoModel from '@/model/AuditSpotPhotoModel'
 import { APPEAL_STATUS, appealStatusToCN } from '@/model/AppealModel'
 import StreamOrderModel from '@/model/StreamOrderModel'
+import * as GetTags from '@/utils/getTags'
 
 
 export interface IAppealOrder {
@@ -19,8 +20,9 @@ interface IExamineInfo {
 
 /** 获取用户信息 */
 // eslint-disable-next-line max-len
-function getDresserName (list: any[]) {
-  const nameList: string[] = list.map(item => item.nickname || item.name || '异常')
+function getName (list: any[]) {
+  const realList = (list instanceof Array) ? list : []
+  const nameList: string[] = realList.map(item => item.nickname || item.name || '-')
   const name = nameList.join(',')
   return {
     name
@@ -37,32 +39,38 @@ export default class AppealListModel {
   appealNote: string
   orderInfo?: IAppealOrder[]
   status: string
+  statusCN: string
+  rejectedNote: string
   firstExamineInfo?: IExamineInfo
   secondExamineInfo?: IExamineInfo
   photoList?: AuditSpotPhotoModel[]
   streamInfo?: StreamOrderModel
+  tagsList?: GetTags.ITags[]
 
   constructor (data: any) {
     this.base = data
     this.id = _.get(data, 'id') || ''
     const status: APPEAL_STATUS = _.get(data, 'status') || 'wait_first_appeal'
-    this.status = appealStatusToCN[status]
+    this.statusCN = appealStatusToCN[status]
+    this.status = status
     this.appealNote = _.get(data, 'appeal.note') || ''
+    this.rejectedNote = _.get(data, 'rejected_note') || ''
     this.getOrderInfo()
     this.getFirstExamineInfo()
     this.getSecondExamineInfo()
     this.getPoolPhotoList()
     this.getStreamInfo()
+    this.getTags()
   }
 
   // 获取订单table信息
   getOrderInfo () {
     const info = {
-      num: _.get(this.base, 'order_num') || '',
-      productName: _.get(this.base, 'product.name') || '',
-      dresser: _.get(this.base, 'streamOrder.dressers.nickname') || '二二',
-      supervisor: getDresserName(_.get(this.base, 'dressers.supervisor') || []).name,
-      experts: getDresserName(_.get(this.base, 'dressers.experts') || []).name,
+      num: _.get(this.base, 'stream_order.order_num') || '',
+      productName: _.get(this.base, 'stream_order.product.name') || '',
+      dresser: '11', // TODO lj
+      supervisor: getName(_.get(this.base, 'stream_order.dressers.supervisor') || []).name,
+      experts: getName(_.get(this.base, 'stream_order.dressers.experts') || []).name,
       storeName: _.get(this.base, 'store.name') || '门店',
     }
     this.orderInfo = [info]
@@ -77,8 +85,8 @@ export default class AppealListModel {
   // 获取初审相关信息
   getFirstExamineInfo () {
     const info = {
-      examineName: _.get(this.base, 'first_reviewer.name') || '五五',
-      date: _.get(this.base, 'first_pass_at') || '2019-11-11'
+      examineName: getName(_.get(this.base, 'firstReviewerInfo')).name || '-',
+      date: _.get(this.base, 'first_pass_at') || '-'
     }
     this.firstExamineInfo = Object.assign(info)
   }
@@ -86,8 +94,8 @@ export default class AppealListModel {
   // 获取复审相关信息
   getSecondExamineInfo () {
     const info = {
-      examineName: _.get(this.base, 'second_reviewer.name') || '六六',
-      date: _.get(this.base, 'second_pass_at') || '2019-11-11'
+      examineName: getName(_.get(this.base, 'secondReviewerInfo')).name || '-',
+      date: _.get(this.base, 'second_pass_at') || '-'
     }
     this.secondExamineInfo = Object.assign(info)
   }
@@ -96,5 +104,11 @@ export default class AppealListModel {
   getPoolPhotoList () {
     const photoList = _.get(this.base, 'photos') || []
     this.photoList = photoList.map((photoItem: any) => new AuditSpotPhotoModel(photoItem.photo_quality))
+  }
+
+  // 获取申诉标签
+  getTags () {
+    const tagsList = _.get(this.base, 'appeal_content') || []
+    this.tagsList = GetTags.getTagInfo(tagsList).parentData
   }
 }

@@ -117,11 +117,11 @@ import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
 import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
-import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import EvaluateHistoryModule from './components/EvaluateHistoryModule.vue'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
+import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
 import NoData from '@/components/NoData/index.vue'
 
@@ -172,11 +172,11 @@ export default defineComponent({
       if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
       try {
         store.dispatch('settingStore/showLoading', route.name)
-        const req = {
+        const req: EvaluateHistoryApi.IgetHistoryRecordsParams = {
           type,
           organizationType,
-          startAt: '',
-          endAt: '',
+          startTime: '',
+          endTime: '',
           cloudOrderNum: '',
           productIds: productIds.value,
           staffIds: staffs.value,
@@ -188,9 +188,14 @@ export default defineComponent({
         }
 
         if (timeSpan.value) {
-          req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
-          req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
+          req.startTime = TimeUtil.searchStartTime(timeSpan.value[0])
+          req.endTime = TimeUtil.searchEndTime(timeSpan.value[1])
         }
+        if (productIds.value.length > 0) req.productIds = productIds.value
+        if (staffs.value.length > 0) req.staffIds = staffs.value
+        if (positionStaffIds.value.length > 0) req.supervisorArr = positionStaffIds.value
+        if (scopeData.value.length > 0) req.score = scopeData.value
+        if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
         if (orderNum.value) {
           req.cloudOrderNum = orderNum.value
           // delete req.startAt

@@ -18,26 +18,29 @@ interface IExamineInfo {
 export enum APPEAL_STATUS {
   WAIT_FIRST_APPEAL = 'wait_first_appeal', // 等待第一次审核
   FIRST_APPEAL = 'first_appeal', // 第一次审核
-  FIRST_APPEAL_REJECTED = 'first_appeal_rejected', // 第一次审核拒绝
   WAIT_SECOND_APPEAL = 'wait_second_appeal', // 等待第二次审核
   SECOND_APPEAL = 'second_appeal', // 第二次审核
-  SECOND_APPEAL_REJECTED = 'second_appeal_rejected' // 第二次审核拒绝
+  APPEAL_REJECTED = 'first_appeal_rejected,second_appeal_rejected', // 第二次审核拒绝
+  FINISH = 'finish', // 审核通过
+  EXPIRED = 'expired' // 过期未处理
 }
 
 // 修图标准映射中文
 export const appealStatusToCN = {
   [APPEAL_STATUS.WAIT_FIRST_APPEAL]: '待初审',
   [APPEAL_STATUS.FIRST_APPEAL]: '初审中',
-  [APPEAL_STATUS.FIRST_APPEAL_REJECTED]: '初审拒绝',
   [APPEAL_STATUS.WAIT_SECOND_APPEAL]: '待复审',
   [APPEAL_STATUS.SECOND_APPEAL]: '复审中',
-  [APPEAL_STATUS.SECOND_APPEAL_REJECTED]: '复审拒绝'
+  [APPEAL_STATUS.APPEAL_REJECTED]: '审核拒绝',
+  [APPEAL_STATUS.FINISH]: '审核通过',
+  [APPEAL_STATUS.EXPIRED]: '过期未处理'
 }
 
 /** 获取用户信息 */
 // eslint-disable-next-line max-len
-function getDresserName (list: any[]) {
-  const nameList: string[] = list.map(item => item.nickname || item.name || '异常')
+function getName (list: any[]) {
+  const realList = (list instanceof Array) ? list : []
+  const nameList: string[] = realList.map(item => item.nickname || item.name || '-')
   const name = nameList.join(',')
   return {
     name
@@ -73,10 +76,10 @@ export class AppealListModel {
   // 获取订单信息
   getOrderInfo () {
     const info = {
-      num: _.get(this.base, 'order_num') || '',
+      num: _.get(this.base, 'stream_order.order_num') || '-',
       dresser: _.get(this.base, 'streamOrder.dressers.nickname') || '二二',
-      supervisor: getDresserName(_.get(this.base, 'streamOrder.dressers.supervisor') || []).name,
-      experts: getDresserName(_.get(this.base, 'streamOrder.dressers.experts') || []).name,
+      supervisor: getName(_.get(this.base, 'stream_order.dressers.supervisor') || []).name,
+      experts: getName(_.get(this.base, 'stream_order.dressers.experts') || []).name,
       storeName: _.get(this.base, 'store.name') || '门店',
     }
     this.orderInfo = Object.assign(info)
@@ -85,8 +88,8 @@ export class AppealListModel {
   // 获取初审相关信息
   getFirstExamineInfo () {
     const info = {
-      examineName: _.get(this.base, 'first_reviewer.name') || '五五',
-      date: _.get(this.base, 'first_pass_at') || '2019-11-11'
+      examineName: getName(_.get(this.base, 'firstReviewerInfo')).name || '-',
+      date: _.get(this.base, 'first_pass_at') || '-'
     }
     this.firstExamineInfo = Object.assign(info)
   }
@@ -94,8 +97,8 @@ export class AppealListModel {
   // 获取复审相关信息
   getSecondExamineInfo () {
     const info = {
-      examineName: _.get(this.base, 'second_reviewer.name') || '六六',
-      date: _.get(this.base, 'second_pass_at') || '2019-11-11'
+      examineName: getName(_.get(this.base, 'secondReviewerInfo')).name || '-',
+      date: _.get(this.base, 'second_pass_at') || '-'
     }
     this.secondExamineInfo = Object.assign(info)
   }

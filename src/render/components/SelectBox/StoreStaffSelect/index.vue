@@ -42,7 +42,8 @@ export default defineComponent({
       try {
         staffStoreLoading.value = true
         const req = {}
-        options.value = await CommonalityApi.getStoreStaffTree(req)
+        const list = await CommonalityApi.getStoreStaffTree(req)
+        options.value = list
         staffStoreLoading.value = false
       } catch (error) {
         newMessage.error(String(error))

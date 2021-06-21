@@ -1,9 +1,5 @@
 <template>
   <div class="quality-report-components pb-0">
-    质检报告 -
-    {{ type }} -
-    {{ organizationType }} -
-    {{ rangeType }}
     <el-row class="search-box" :gutter="20">
       <!-- 评分时间 -->
       <el-col v-if="activeName === QUALITY_COMPONENT.GRADE_BOX" v-bind="{ ...colConfig }">
@@ -42,7 +38,7 @@
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>职能</span>
-          <JobContentSelect v-model="jobContentIds" />
+          <PositionStaffSelect v-model="jobContentIds" />
         </div>
       </el-col>
       <!-- 职能 -->
@@ -59,7 +55,10 @@
           <ScopeSearch v-model="scopeData" />
         </div>
       </el-col>
-      <el-col v-bind="{...colConfig}">
+      <el-col
+        v-if="activeName === QUALITY_COMPONENT.ARRAIGNMENT_RECORD_MODULE"
+        v-bind="{...colConfig}"
+      >
         <div class="search-item">
           <span>AI标签</span>
           <AiTagSelect v-model="aiTag" />
@@ -126,7 +125,7 @@ import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
 import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
 import AiTagSelect from '@/components/SelectBox/AiTagSelect/index.vue'
 import ScopeSearch from '@/components/ScopeSearch/index.vue'
-import JobContentSelect from '@/components/SelectBox/JobContentSelect/index.vue'
+import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import GradeBox from './gradeBox.vue'
 import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
@@ -140,13 +139,13 @@ import dayjs from 'dayjs'
  * @description 页面组件
  */
 const QUALITY_COMPONENT = {
-  GRADE_BOX: 'gradeBox', // 评价明细
+  GRADE_BOX: 'GradeBox', // 评价明细
   ARRAIGNMENT_RECORD_MODULE: 'ArraignmentRecordModule' // AI报告
 }
 
 export default defineComponent({
   name: 'QualityReportComponents',
-  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StoreStaffSelect, AiTagSelect, GradeBox, ScopeSearch, JobContentSelect, EvaluateSelect },
+  components: { DatePicker, ArraignmentRecordModule, PreviewPhoto, ProductSelect, StoreStaffSelect, AiTagSelect, GradeBox, ScopeSearch, PositionStaffSelect, EvaluateSelect },
   setup () {
     const route = useRoute()
     const store = useStore()
@@ -285,10 +284,10 @@ export default defineComponent({
       }
       if (orderNum.value) req.orderNum = orderNum.value
       if (scopeData.value.length > 0) req.score = scopeData.value
-      if (productIds.value.length > 0) req.productIds = scopeData.value
+      if (productIds.value.length > 0) req.productIds = productIds.value
       if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
-      if (jobContentIds.value) req.supervisorArr = jobContentIds.value
-      if (staffs.value) req.staffIds = staffs.value
+      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value
+      if (staffs.value.length > 0) req.staffIds = staffs.value
       if (onlyNew.value) req.onlyNew = onlyNew.value
       if (onlyOld.value) req.onlyOld = onlyOld.value
 
@@ -315,9 +314,9 @@ export default defineComponent({
         req.endAt = TimeUtil.searchEndTime(aiTimeSpan.value[1])
       }
       if (orderNum.value) req.cloudOrderNum = orderNum.value
-      if (aiTag.value) req.auditState = aiTag.value
-      if (jobContentIds.value) req.supervisorArr = jobContentIds.value
-      if (staffs.value) req.staffIds = staffs.value
+      if (aiTag.value.length > 0) req.auditState = aiTag.value
+      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value
+      if (staffs.value.length > 0) req.staffIds = staffs.value
       if (onlyNew.value) req.onlyNew = onlyNew.value
       if (onlyOld.value) req.onlyOld = onlyOld.value
       let res

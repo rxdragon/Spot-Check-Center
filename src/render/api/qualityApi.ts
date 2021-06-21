@@ -427,71 +427,71 @@ export async function getAreaQualityReport (params: IgetQualityParams): Promise<
  */
 export async function getAllQuota (params: IgetQualityParams) {
   // TODO lj
-  // const url = `${getApiUrl(params.type, params.organizationType)}/getAllQuota`
-  // const res = await axios({
-  //   url,
-  //   method: 'POST',
-  //   params
-  // })
-  const res = {
-    "msg": {
-      "avg": {
-        "commitInfo.star": 4.5
-      },
-      "avg_group": {
-        "store_id-commitInfo.total": [
-          {
-            "_id": 1,
-            "result": 2
-          },
-          {
-            "_id": 2,
-            "result": 4
-          }
-        ]
-      },
-      "count": {
-        "all": 2
-      },
-      "count_distinct": {
-        "staff_id": 1,
-        "store_id": 1
-      },
-      "count_unwind": {
-        "problem_tags": [
-          {
-            "_id": 4,
-            "value": 2
-          },
-          {
-            "_id": 3,
-            "value": 2
-          },
-          {
-            "_id": 2,
-            "value": 2
-          },
-          {
-            "_id": 1,
-            "value": 2
-          }
-        ]
-      },
-      "max": {
-        "commitInfo.star": 5
-      },
-      "min": {
-        "commitInfo.star": 4
-      },
-      "sum": {
-        "businessId": 238,
-        "commitInfo.total": 9
-      }
-    },
-    "success": true
-  }
+  const url = `${getApiUrl(params.type, params.organizationType)}/getAllQuota`
+  const res = await axios({
+    url,
+    method: 'POST',
+    params
+  })
+  // const res = {
+  //   "msg": {
+  //     "avg": {
+  //       "commitInfo.star": 4.5
+  //     },
+  //     "avg_group": {
+  //       "store_id-commitInfo.total": [
+  //         {
+  //           "_id": 1,
+  //           "result": 2
+  //         },
+  //         {
+  //           "_id": 2,
+  //           "result": 4
+  //         }
+  //       ]
+  //     },
+  //     "count": {
+  //       "all": 2
+  //     },
+  //     "count_distinct": {
+  //       "staff_id": 1,
+  //       "store_id": 1
+  //     },
+  //     "count_unwind": {
+  //       "problem_tags": [
+  //         {
+  //           "_id": 4,
+  //           "value": 2
+  //         },
+  //         {
+  //           "_id": 3,
+  //           "value": 2
+  //         },
+  //         {
+  //           "_id": 2,
+  //           "value": 2
+  //         },
+  //         {
+  //           "_id": 1,
+  //           "value": 2
+  //         }
+  //       ]
+  //     },
+  //     "max": {
+  //       "commitInfo.star": 5
+  //     },
+  //     "min": {
+  //       "commitInfo.star": 4
+  //     },
+  //     "sum": {
+  //       "businessId": 238,
+  //       "commitInfo.total": 9
+  //     }
+  //   },
+  //   "success": true
+  // }
 
-  const data = new SpotQuotaModel(res.msg)
+  const data = new SpotQuotaModel(res)
   // if (!data.length) {
   //   return {
   //     list: [],
@@ -511,7 +511,7 @@ export async function getAllQuota (params: IgetQualityParams) {
  * @description 质检报告绩效(区域)
  * @param {*} params
  */
-export async function getAreaQuota (params: IgetQualityParams): Promise<IGetReportRes> {
+export async function getAreaQuota (params: IgetQualityParams) {
   // TODO lj
   const url = `${getApiUrl(params.type, params.organizationType)}/getAreaQuota`
   const res = await axios({
@@ -520,21 +520,9 @@ export async function getAreaQuota (params: IgetQualityParams): Promise<IGetRepo
     data: params
   })
 
-  const data = res.data
-  // if (!data.length) {
-  //   return {
-  //     list: [],
-  //     allPhotoPath,
-  //     // total: data.extend.processInfo[0].totalCount,
-  //     pageTotal: data.total || null
-  //   }
-  // }
-  const list: EvaluateModel[] = data.map((item: any) => {
-    return new EvaluateModel(item)
-  })
-  const createData: IGetReportRes = {
-    list: list,
-    total: 10
+  const data = new SpotQuotaModel(res.data)
+  const createData = {
+    data: data
   }
   return createData
 }
