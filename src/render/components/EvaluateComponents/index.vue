@@ -207,6 +207,8 @@ export default defineComponent({
       } catch (error) {
         if (error.message === '正在抽片中') {
           intervalGetSpotCheck()
+        } else if (error.message === '暂无数据') {
+          poolList.value = []
         } else {
           throw new Error(error)
         }
@@ -338,12 +340,24 @@ export default defineComponent({
       const findPoolItemIndex = poolList.value.findIndex(poolItem => poolItem.id === evaluatePoolRecordId.value)
       if (findPoolItemIndex < 0) return newMessage.warning('获取当前uuid失败，goNextEvaluatePhoto')
       const nextIndex = findPoolItemIndex + 1
-      let nextPoolItemId = poolList.value[nextIndex].id
       const isPageLastPhoto = (findPoolItemIndex + 1) === poolList.value.length
       const isAllLast = pager.total === 1
+
       if (isAllLast) {
         newMessage.success('你已经打完全部照片')
-      } else if (isPageLastPhoto && pager.page > 1 && findPoolItemIndex === 0 ) {
+        showEvaluate.value = false
+        try {
+          store.dispatch('settingStore/showLoading', route.name)
+          await getSpotCheckResultList()
+        } finally {
+          store.dispatch('settingStore/hiddenLoading', route.name)
+        }
+        return
+      }
+
+      // 显示打分数据
+      let nextPoolItemId = isPageLastPhoto ? '' : poolList.value[nextIndex].id
+      if (isPageLastPhoto && pager.page > 1 && findPoolItemIndex === 0 ) {
         // 向前翻页
         pager.page--
         await getSpotCheckResultList()
@@ -356,7 +370,6 @@ export default defineComponent({
         // 更新数据列表
         await getSpotCheckResultList()
       }
-      // 显示打分数据
       evaluatePhoto(nextPoolItemId, 0)
     }
 
@@ -428,8 +441,13 @@ export default defineComponent({
               showCancelButton: true,
               confirmButtonText: '确定'
             })
-            // TODO:cf 删除订单接口
-            // 删除订单
+            const req = {
+              poolItemId: findPoolItemData.id,
+              uuid: uuid.value,
+              type,
+              organizationType
+            }
+            await EvaluateApi.deleteHistory(req)
             await goNextEvaluatePhoto()
             const willDeleteIndex = poolList.value.findIndex(poolItem => poolItem.id === evaluatePoolRecordId.value)
             poolList.value.splice(willDeleteIndex, 1)

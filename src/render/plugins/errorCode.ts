@@ -1,7 +1,8 @@
 type ErrorType = [number, string]
 
 const CheckPoolException: ErrorType[] = [
-  [0xA25004009, '正在抽片中']
+  [0xA25004009, '正在抽片中'],
+  [0xA25004010, '暂无数据']
 ]
 
 export const errText: ErrorType[] = [
