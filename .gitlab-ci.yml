@@ -1,0 +1,120 @@
+stages:
+  - install
+  - build
+  - deploy
+  - uploadConfig
+
+variables:
+  ELECTRON_MIRROR: "https://npm.taobao.org/mirrors/electron/"
+  PHANTOMJS_CDNURL: "https://npm.taobao.org/dist/phantomjs"
+
+# 下载依赖
+install:
+  stage: install
+  image: registry.hzmantu.com/common/environment-node:12-deploy
+  tags:
+    - nodejs
+  cache:
+    key: cache
+    paths:
+      - node_modules/
+  script:
+    - yarn
+  only:
+    - master
+    - dev
+    - /^release-([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/
+
+# 打包
+.build:
+  stage: build
+  image: registry.hzmantu.com/common/environment-node:12-deploy
+  tags:
+    - nodejs
+  cache:
+    key: cache
+    paths:
+      - node_modules/
+  artifacts:
+    paths:
+      - dist_electron/
+    expire_in: 1 day
+
+build-master:
+  extends: .build
+  script:
+    - yarn build-asar
+    - node /deploy-scripts/cloudDeployUpyun.js
+    - yarn pack-vue
+    - rm -rf dist_vue
+    - node print_version.js production
+    - mv ./dist_electron/dist_vue.asar ./dist_electron/app_$CI_COMMIT_SHA.asar
+  environment:
+    name: master
+  only:
+    - master
+
+build-dev:
+  extends: .build
+  script:
+    - yarn build-asar-dev
+    - node print_version.js development
+    - mv ./dist_electron/dist_vue.asar ./dist_electron/app_$CI_COMMIT_SHA.asar
+  environment:
+    name: staging/dev
+  only:
+    - dev
+
+build-release:
+  extends: .build
+  script:
+    - yarn build-asar-release
+    - node print_version.js release
+    - mv ./dist_electron/dist_vue.asar ./dist_electron/app_$CI_COMMIT_SHA.asar
+  environment:
+    name: staging/release
+  only:
+    - /^release-([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/
+
+# 上传又拍云
+.deploy:
+  stage: deploy
+  image: registry.hzmantu.com/common/environment-node:10-deploy
+  script:
+    - node /deploy-scripts/cloudUploadWebAndElectron.js
+
+deploy-master:
+  extends: .deploy
+  when: manual
+  environment:
+    name: master
+  only:
+    - master
+
+deploy-dev:
+  extends: .deploy
+  environment:
+    name: staging/dev
+  only:
+    - dev
+
+deploy-release:
+  extends: .deploy
+  environment:
+    name: staging/release
+  only:
+    - /^release-([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/
+
+uploadConfig:
+  image: registry.hzmantu.com/common/service-minio-client
+  stage: uploadConfig
+  variables:
+    DOCKER_DRIVER: overlay2
+  script:
+    - mc config host add mainto $S3_HOST $S3_KEY $S3_SECRET
+    - cd ./dist_electron
+    - mc cp version-$CI_COMMIT_REF_NAME.json mainto/electron-release/spot-launcher/
+  only:
+    - master
+    - dev
+    - /^release-([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/
