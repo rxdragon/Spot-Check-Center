@@ -4,6 +4,7 @@
       v-bind="$attrs"
       multiple
       clearable
+      filterable
       placeholder="请选择评分人"
     >
       <el-option

@@ -86,3 +86,4 @@ declare module '@vue/runtime-core' {
 declare module 'path-to-regexp'
 
 declare module 'js-base64'
+

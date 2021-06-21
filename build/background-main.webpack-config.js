@@ -10,6 +10,12 @@ module.exports = {
     filename: 'background-main.js',
     path: path.join(__dirname, '../dist_vue')
   },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js'],
+    alias: {
+      "~": path.resolve(__dirname, '../src/'),
+    }
+  },
   module: {
     rules: [
       {

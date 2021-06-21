@@ -81,7 +81,7 @@ export default defineComponent({
       const selectTags = Object.values(selectAllData.value)
       const tags = selectTags.map(item => {
         return {
-          id: item.id,
+          id: item.levelId,
           score: item.score
         }
       })

@@ -243,7 +243,6 @@ export default defineComponent({
     /** 提交分数 */
     const gradeLabel = ref<any>(null)
     const submitData = async () => {
-      // TODO: cf 提交分数
       // 储存当前批注照片
       const markBase64 = fabricCanvas.value.exportBase64()
       photoArray.value[photoIndex.value].markBase = markBase64
