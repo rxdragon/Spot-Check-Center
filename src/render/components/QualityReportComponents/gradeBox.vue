@@ -100,12 +100,12 @@
           </div>
         </div>
       </div>
-      <div class="order-info grid grid-cols-4 mb-4">
+      <div class="order-info mb-4">
         <div class="info-item">
           问题标签：<el-tag
             v-for="tagItem in item.tagInfo.tags"
             :key="tagItem.id"
-            class="text-center"
+            class="text-center mr-6"
             :class="['type-tag', tagItem.type]"
             size="medium"
           >
@@ -192,6 +192,30 @@ export default defineComponent({
   color: #303133;
 }
 
+.type-tag {
+  margin-right: 10px;
+  margin-bottom: 10px;
+
+  &.plant {
+    color: #38bc7f;
+    background-color: #ecf7f2;
+    border-color: #7fd9af;
+  }
+
+  &.pull {
+    color: #ff3974;
+    background-color: #fff0f0;
+    border-color: #f99ab7;
+  }
+
+  &.middle,
+  &.small {
+    color: #ff8f00;
+    background-color: #fff7ed;
+    border-color: #ffce90;
+  }
+}
+
 .grade-box {
   .grid-list {
     display: flex;
@@ -272,30 +296,6 @@ export default defineComponent({
           font-weight: 600;
           line-height: 28px;
           color: #303133;
-        }
-
-        .type-tag {
-          margin-right: 10px;
-          margin-bottom: 10px;
-
-          &.plant {
-            color: #38bc7f;
-            background-color: #ecf7f2;
-            border-color: #7fd9af;
-          }
-
-          &.pull {
-            color: #ff3974;
-            background-color: #fff0f0;
-            border-color: #f99ab7;
-          }
-
-          &.middle,
-          &.small {
-            color: #ff8f00;
-            background-color: #fff7ed;
-            border-color: #ffce90;
-          }
         }
 
         .label-box {

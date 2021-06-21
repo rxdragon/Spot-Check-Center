@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
-import * as SelectDataApi from '@/api/selectDataApi'
+import { getEvaluateSelectList } from '@/api/evaluateHistoryApi'
 
 export default defineComponent({
   name: 'EvaluateSelect',
@@ -46,7 +46,7 @@ export default defineComponent({
         const req = {
           type: props.type
         }
-        const res: any[] = await SelectDataApi.getEvaluateSelectList(req)
+        const res: any[] = await getEvaluateSelectList(req)
         options.value = res
       } finally {
         loading.value = false

@@ -41,7 +41,7 @@ export async function getStoreStaffTree (params: IGetStoreStaffTreeParams) {
     const storeChildren: ICascaderSelect[] = storeItem.children.map((staffItem: any) => {
       return {
         label: staffItem.name,
-        id: staffItem.id,
+        value: staffItem.id,
       }
     })
     const storeData = {
@@ -67,16 +67,16 @@ export async function getPositionStaffs () {
   })
 
   const createData: ICascaderSelect[] = res.map((storeItem: any) => {
-    // const storeChildren: ICascaderSelect[] = storeItem.children.map((staffItem: any) => {
-    //   return {
-    //     label: staffItem.name,
-    //     id: staffItem.id,
-    //   }
-    // })
+    const storeChildren: ICascaderSelect[] = storeItem.children.map((staffItem: any) => {
+      return {
+        label: staffItem.name,
+        value: staffItem.id,
+      }
+    })
     const storeData = {
       label: storeItem.name,
       value: storeItem.id,
-      children: []
+      children: storeChildren
     }
     return storeData
   })

@@ -1,5 +1,5 @@
 import { userBaseInfo, authorityInfo } from '@/api/userApi'
-import { IFilterSelectData } from '@/api/selectDataApi'
+import { IFilterSelectData } from '@/api/evaluateHistoryApi'
 
 const isMicroSPA = Boolean(window.__POWERED_BY_QIANKUN__)
 

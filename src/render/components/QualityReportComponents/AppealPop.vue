@@ -20,8 +20,13 @@
     </el-row>
     <el-row class="mb-2">
       <el-checkbox-group v-model="appealContent">
-        <el-col v-for="item in tagInfo.tags" :key="item.id" :span="8">
-          <el-checkbox :label="item.name">{{ item.name }}</el-checkbox>
+        <el-col
+          v-for="item in tagInfo.tags"
+          :key="item.id"
+          class="mr-4"
+          :span="8"
+        >
+          <el-checkbox :label="item.id">{{ item.name }}</el-checkbox>
         </el-col>
       </el-checkbox-group>
     </el-row>
@@ -65,7 +70,7 @@ import * as AppealApi from '@/api/appealApi'
 import { newMessage } from '@/utils/message'
 import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
-import { ORGANIZATION_TYPE } from '@/model/Enumerate'
+import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
   name: 'AppealPop',
@@ -77,6 +82,7 @@ export default defineComponent({
     const store = useStore()
     const route = useRoute()
     const organizationType = inject('organizationType') as ORGANIZATION_TYPE
+    const type = inject('type') as SPOT_TYPE
 
     const tagInfo = computed(() => {
       return JSON.parse(props.appealInfo)
@@ -96,9 +102,10 @@ export default defineComponent({
      * @description 提交申诉
     */
     const submitAppeal = async () => {
-      if (appealContent.value.length === 0 || appealNote.value === '') return newMessage.warning('请完善申诉信息')
+      if (appealContent.value.length === 0) return newMessage.error('提交申诉失败，请勾选需要申诉的标签。')
+      if (!appealNote.value) return newMessage.error('提交申诉失败，请填写申诉原因。')
       const req = {
-        serviceType: '',
+        serviceType: type,
         serviceId: tagInfo.value.id,
         appealContent: appealContent.value,
         note: appealNote.value,
@@ -106,7 +113,7 @@ export default defineComponent({
       try {
         store.dispatch('settingStore/showLoading', route.name)
         await AppealApi.createAppeal(req, organizationType)
-        newMessage.success('申诉成功')
+        newMessage.success('提交申诉成功。')
         closeDialog()
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)

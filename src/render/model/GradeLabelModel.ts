@@ -16,6 +16,13 @@ export const gradeLevelToCN = {
   [GRADE_LEVEL.PLANT]: '种草'
 }
 
+export const CNLevelToType = {
+  '小': 'small',
+  '中': 'middle',
+  '拔草': 'pull',
+  '种草': 'plant'
+}
+
 // 三级
 export interface IGradeLevel {
   id: string | number

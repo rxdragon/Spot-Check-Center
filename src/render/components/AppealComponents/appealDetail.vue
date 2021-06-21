@@ -20,10 +20,15 @@
         </el-table>
       </div>
       <div class="panel-title mb-6">申诉信息</div>
-      <div class="grid grid-cols-4 mb-6">
+      <div class="grid mb-6">
         <div>
-          申诉标签：<el-tag size="medium">
-            {{ '速度快-暗暗' }}
+          申诉标签：<el-tag
+            v-for="(tagItem) in tagsList"
+            :key="tagItem.id"
+            :class="['type-tag', tagItem.type]"
+            size="medium"
+          >
+            {{ tagItem.name }}
           </el-tag>
         </div>
       </div>
@@ -32,7 +37,7 @@
         <span>{{ appealNote }}</span>
       </div>
       <div class="flex items-center mb-6">
-        <span class="mr-10">处理状态：审核中</span>
+        <span class="mr-10">处理状态：{{ statusCN }}</span>
         <span class="mr-10">初审人：{{ firstExamineInfo.examineName }}</span>
         <span class="mr-10">初审时间：{{ firstExamineInfo.date }}</span>
         <span class="mr-10">复审人 {{ secondExamineInfo.examineName }}</span>
@@ -40,7 +45,7 @@
       </div>
       <div class="flex items-start">
         <span class="flex-none">拒绝原因：</span>
-        <span>原因各种打算看高科技啊是高科技撒谎高科技萨科大概很快就撒个花开多久速度赶回家看撒的工行卡上速度快回归到卡上师大反攻倒算可就撒开的工行卡上更好阿克苏的工行卡时间原因好多原因</span>
+        <span>{{ rejectedNote }}</span>
       </div>
     </div>
     <div class="module-panel mb-6">
@@ -76,10 +81,10 @@
       </div>
     </div>
     <div v-if="type !== 'all'" class="text-center mb-6">
-      <el-button class="mr-14" type="danger">
+      <el-button class="mr-14" type="danger" @click="dialogVisible = true">
         审核拒绝
       </el-button>
-      <el-button type="primary">
+      <el-button type="primary" @click="submitPass">
         审核通过
       </el-button>
     </div>
@@ -119,12 +124,13 @@
 import { defineComponent, inject, reactive, ref, Ref } from 'vue'
 import PhotoBox from '@/components/PhotoBox/index.vue'
 import * as AppealApi from '@/api/appealApi'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store/index'
 import { ORGANIZATION_TYPE } from '@/model/Enumerate'
 import { IAppealOrder } from '@/model/AppealDetailModel'
 import { newMessage } from '@/utils/message'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
+import { APPEAL_STATUS } from '@/model/AppealModel'
 
 export default defineComponent({
   name: 'AppealDetail',
@@ -134,6 +140,7 @@ export default defineComponent({
   },
   setup () {
     const route = useRoute()
+    const router = useRouter()
     const store = useStore()
     const type = _.get(route,'query.type') || 'all'
     const organizationType = inject('organizationType', ORGANIZATION_TYPE.HIMO)
@@ -188,11 +195,17 @@ export default defineComponent({
     }
 
     /** 获取初审申诉绩效 */
+    const status = ref('')
+    const statusCN = ref('')
+    const rejectedNote = ref('')
+    const tagsList = ref<any[] | undefined>([])
     const getDetail = async () => {
       const req = {
         id: _.get(route,'query.id') || ''
       }
       const res = await AppealApi.getAppealDetail(req, organizationType)
+      status.value = res.status
+      statusCN.value = res.statusCN
       orderTableData.value = res.orderInfo
       photoList.value = res.photoList
       firstExamineInfo.date = _.get(res, 'firstExamineInfo.date')
@@ -200,29 +213,74 @@ export default defineComponent({
       secondExamineInfo.date = _.get(res, 'secondExamineInfo.date')
       secondExamineInfo.examineName = _.get(res, 'secondExamineInfo.examineName')
       appealNote.value = _.get(res, 'appealNote')
+      tagsList.value = _.get(res, 'tagsList')
       orderInfo = { ..._.get(res, 'streamInfo') }
     }
     getDetail()
 
-    /** 初审拒绝 */
-    const examineFirst = async () => {
-      const req = {
+    /** 初审审核 */
+    const examineFirst = async (result: string) => {
+      const req: AppealApi.IExamineParams = {
         id: _.get(route,'query.id') || '',
-        result: 'refuse',
-        note: refuseResult.value
+        result: result
+      }
+      if (refuseResult.value) req.note = refuseResult.value
+      if (result === 'refusal' && !refuseResult.value) {
+        newMessage.warning('请填写拒绝原因。')
+        return
       }
       try {
         store.dispatch('settingStore/showLoading', route.name)
         await AppealApi.examineFirst(req, organizationType)
         newMessage.success('提交成功')
         dialogVisible.value = false
+        router.back()
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
 
+    /** 复审审核 */
+    const examineSecond = async (result: string) => {
+      const req: AppealApi.IExamineParams = {
+        id: _.get(route,'query.id') || '',
+        result: result,
+      }
+      if (refuseResult.value) req.note = refuseResult.value
+      if (result === 'refusal' && !refuseResult.value) {
+        newMessage.warning('请填写拒绝原因。')
+        return
+      }
+      try {
+        store.dispatch('settingStore/showLoading', route.name)
+        await AppealApi.examineSecond(req, organizationType)
+        newMessage.success('提交成功')
+        dialogVisible.value = false
+        router.back()
+      } finally {
+        store.dispatch('settingStore/hiddenLoading', route.name)
+      }
+    }
+
+    const checkStatus = () => {
+      if ( status.value === APPEAL_STATUS.WAIT_FIRST_APPEAL || status.value === APPEAL_STATUS.FIRST_APPEAL) return 'first'
+      if ( status.value === APPEAL_STATUS.WAIT_SECOND_APPEAL || status.value === APPEAL_STATUS.SECOND_APPEAL) return 'second'
+    }
+
     const submitRefuse = async () => {
-      examineFirst()
+      if ( checkStatus() === 'first') {
+        examineFirst('refusal')
+      } else {
+        examineSecond('refusal')
+      }
+    }
+
+    const submitPass = async () => {
+      if ( checkStatus() === 'first') {
+        examineFirst('pass')
+      } else {
+        examineSecond('pass')
+      }
     }
 
     return {
@@ -238,8 +296,13 @@ export default defineComponent({
       previewPhoto,
       dialogVisible,
       refuseResult,
+      status,
+      statusCN,
+      rejectedNote,
+      tagsList,
       onSelectPhoto,
-      submitRefuse
+      submitRefuse,
+      submitPass
     }
   }
 })
@@ -254,6 +317,30 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: flex-start;
+  }
+
+  .type-tag {
+    margin-right: 10px;
+    margin-bottom: 10px;
+
+    &.plant {
+      color: #38bc7f;
+      background-color: #ecf7f2;
+      border-color: #7fd9af;
+    }
+
+    &.pull {
+      color: #ff3974;
+      background-color: #fff0f0;
+      border-color: #f99ab7;
+    }
+
+    &.middle,
+    &.small {
+      color: #ff8f00;
+      background-color: #fff7ed;
+      border-color: #ffce90;
+    }
   }
 
   .photo-box {

@@ -30,7 +30,7 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>伙伴</span>
-            <StaffSelect v-model="staffs" />
+            <StoreStaffSelect v-model="staffs" />
           </div>
         </el-col>
         <!-- 职能查询 -->
@@ -38,7 +38,7 @@
           <div class="search-item">
             <span>职能</span>
             <!-- TODO -->
-            <!-- <JobContentSelect v-model="jobContentIds" /> -->
+            <PositionStaffSelect v-model="jobContentIds" />
           </div>
         </el-col>
         <!-- 评价标签查询 -->
@@ -115,11 +115,12 @@ import { newMessage } from '@/utils/message'
 import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
-import StaffSelect from '@/components/SelectBox/StaffSelect/index.vue'
+import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
 import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import EvaluateHistoryModule from './components/EvaluateHistoryModule.vue'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
+import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
 
 import * as EvaluateApi from '@/api/evaluateApi'
@@ -129,7 +130,7 @@ import PoolRecordModel from '@/model/PoolRecordModel'
 
 export default defineComponent({
   name: 'EvaluateHistoryComponents',
-  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto },
+  components: { DatePicker, EvaluateHistoryModule, ProductSelect, StoreStaffSelect, EvaluateSelect, ScopeSearch, PreviewPhoto, EvaluatePhoto, PositionStaffSelect },
   data () {
     return {
       colConfig: {
@@ -169,24 +170,23 @@ export default defineComponent({
       if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
       try {
         store.dispatch('settingStore/showLoading', route.name)
-        const req = {
+        const req: EvaluateHistoryApi.IgetHistoryRecordsParams = {
           type,
           organizationType,
-          startAt: '',
-          endAt: '',
-          cloudOrderNum: '',
-          productIds: productIds.value,
-          staffIds: staffs.value,
-          supervisorArr: jobContentIds.value,
-          score: scopeData.value,
-          problemTagsIds: evaluateIds.value,
+          startTime: '',
+          endTime: '',
           page: pager.page,
           pageSize: pager.pageSize
         }
         if (timeSpan.value) {
-          req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
-          req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
+          req.startTime = TimeUtil.searchStartTime(timeSpan.value[0])
+          req.endTime = TimeUtil.searchEndTime(timeSpan.value[1])
         }
+        if (productIds.value.length > 0) req.productIds = productIds.value
+        if (staffs.value.length > 0) req.staffIds = staffs.value
+        if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value
+        if (scopeData.value.length > 0) req.score = scopeData.value
+        if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
         if (orderNum.value) {
           req.cloudOrderNum = orderNum.value
           // delete req.startAt

@@ -12,8 +12,8 @@ export interface interactionGradeLabelModel extends GradeLabelModel {
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getScoreConfigByEdit (params: IEvaluateAPi): Promise<interactionGradeLabelModel[]> {
-  const url = '/project_cloud/checkPool/getScoreConfig'
-  // const url = `${getApiUrl(params.type, params.organizationType)}/getScoreConfig`
+  // const url = '/project_cloud/checkPool/getScoreConfig'
+  const url = `${getApiUrl(params.type, params.organizationType)}/getScoreConfig`
 
   const res: any = await axios({
     url,

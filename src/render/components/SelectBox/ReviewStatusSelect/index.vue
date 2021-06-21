@@ -31,9 +31,6 @@ export default defineComponent({
     }, {
       label: appealStatusToCN[APPEAL_STATUS.FIRST_APPEAL],
       value: APPEAL_STATUS.FIRST_APPEAL
-    }, {
-      label: appealStatusToCN[APPEAL_STATUS.FIRST_APPEAL_REJECTED],
-      value: APPEAL_STATUS.FIRST_APPEAL_REJECTED
     }]
     /** 复审状态下拉选项 */
     const secondOptions = [{
@@ -42,9 +39,14 @@ export default defineComponent({
     }, {
       label: appealStatusToCN[APPEAL_STATUS.SECOND_APPEAL],
       value: APPEAL_STATUS.SECOND_APPEAL
+    }]
+
+    const otherOptions = [{
+      label: appealStatusToCN[APPEAL_STATUS.FINISH],
+      value: APPEAL_STATUS.FINISH
     }, {
-      label: appealStatusToCN[APPEAL_STATUS.SECOND_APPEAL_REJECTED],
-      value: APPEAL_STATUS.SECOND_APPEAL_REJECTED
+      label: appealStatusToCN[APPEAL_STATUS.EXPIRED],
+      value: APPEAL_STATUS.EXPIRED
     }]
 
     const placeholder = computed(() => {
@@ -63,7 +65,7 @@ export default defineComponent({
       } else if (props.reviewType === 'second') {
         return secondOptions
       } else {
-        return [...firstOptions, ...secondOptions]
+        return [...firstOptions, ...secondOptions, ...otherOptions]
       }
     })
     
