@@ -266,8 +266,7 @@ export default defineComponent({
         type,
         organizationType
       }
-      // TODO:Cf
-      await EvaluateApi.emptyPoolByStaffId(req)
+      await EvaluateApi.updateCommitHistory(req)
     }
 
     return {

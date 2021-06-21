@@ -133,8 +133,7 @@ export interface IGetTakeStaffListRes {
   id: number
 }
 export async function getTakeStaffList (params: IEvaluateAPi): Promise<IGetTakeStaffListRes[]> {
-  const url = '/project_cloud/checkPool/getTakeStaffList'
-  // const url = `${getApiUrl(params.type, params.organizationType)}/getTakeStaffList`
+  const url = `${getApiUrl(params.type, params.organizationType)}/getTakeStaffList`
   const res: any = await axios({
     url,
     method: 'GET'

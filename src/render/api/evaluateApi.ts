@@ -132,12 +132,17 @@ interface IGetSpotCheckResultListRes {
 // eslint-disable-next-line max-len
 export async function getSpotCheckResultList (params: IGetSpotCheckResultListParams): Promise<IGetSpotCheckResultListRes> {
   const url = `${getApiUrl(params.type, params.organizationType)}/getSpotCheckResultList`
+  const newParams = {
+    uuid: params.uuid,
+    skip: params.skip,
+    limit: params.limit
+  }
+
   const res: any = await axios({
     url,
     method: 'GET',
-    params
+    params: newParams
   })
-  const spotTotal = _.get(res, 'extend.processInfo[0].currentGroup')
   const processInfo = _.get(res, 'extend.processInfo') || {}
   const createData: PoolRecordModel[] = res.data.map((poolRecordItem: any, poolRecordIndex: number) => {
     const poolRecordModel = new PoolRecordModel(poolRecordItem)
@@ -145,7 +150,7 @@ export async function getSpotCheckResultList (params: IGetSpotCheckResultListPar
       page: params.page,
       pageSize: params.pageSize,
       index: poolRecordIndex,
-      total: spotTotal,
+      total: res.total,
     }
     poolRecordModel.getStreamInfo(poolRecordItem.streamOrder, pagerInfo)
     poolRecordModel.getPoolPhotoList()
@@ -153,7 +158,7 @@ export async function getSpotCheckResultList (params: IGetSpotCheckResultListPar
   })
   return {
     list: createData,
-    total: spotTotal,
+    total: res.total,
     processInfo: {
       formalStaffNum: processInfo.formalStaffNum,
       formalStaffStreamNum: processInfo.formalStaffStreamNum,
@@ -219,6 +224,7 @@ export async function skipStaff (params: ISkipStaffParams): Promise<boolean> {
  */
 interface IChangePoolParams extends IEvaluateAPi {
   poolItemId: string
+  uuid: idType
 }
 export async function changePool (params: IChangePoolParams): Promise<boolean | PoolRecordModel> {
   const url = `${getApiUrl(params.type, params.organizationType)}/changeItem`
@@ -246,13 +252,26 @@ interface IEmptyPoolByStaffIdParams extends IEvaluateAPi {
     score: number
   }[]
 }
-export async function emptyPoolByStaffId (params: IEmptyPoolByStaffIdParams): Promise<boolean> {
-  const url = `${getApiUrl(params.type, params.organizationType)}/emptyPoolByStaffId`
+export async function commitHistory (params: IEmptyPoolByStaffIdParams): Promise<boolean> {
+  const url = `${getApiUrl(params.type, params.organizationType)}/commitHistory`
   const res: any = await axios({
     url,
     method: 'POST',
     data: params
   })
 
+  return res
+}
+
+/**
+ * @description 重新评分
+ */
+export async function updateCommitHistory (params: IEmptyPoolByStaffIdParams): Promise<boolean> {
+  const url = `${getApiUrl(params.type, params.organizationType)}/updateCommitHistory`
+  const res: any = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
   return res
 }

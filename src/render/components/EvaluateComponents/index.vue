@@ -180,7 +180,7 @@ export default defineComponent({
         uuid: uuid.value,
         page: pager.page,
         pageSize: pager.pageSize,
-        skip: pager.page * pager.pageSize,
+        skip: (pager.page - 1) * pager.pageSize,
         limit: pager.pageSize,
         type,
         organizationType
@@ -375,7 +375,7 @@ export default defineComponent({
         type,
         organizationType
       }
-      await EvaluateApi.emptyPoolByStaffId(req)
+      await EvaluateApi.commitHistory(req)
       await goNextEvaluatePhoto()
     }
 
@@ -384,7 +384,7 @@ export default defineComponent({
       const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
       if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSkipStaff')
       const staffIds = type === SPOT_TYPE.MAKEUP ? findPoolItemData.streamInfo?.dresserInfo.staffIds : findPoolItemData.streamInfo?.photographyerInfo.staffIds
-      if (!staffIds) return newMessage.warning('未找到对应的伙伴id')
+      if (!staffIds || !staffIds.length) return newMessage.warning('未找到对应的伙伴id')
       const poolItemId = findPoolItemData.id
       const req = {
         staffIds,
@@ -400,33 +400,35 @@ export default defineComponent({
     /** 换一单 */
     const onChangePool = async () => {
       try {
-        store.dispatch('settingStore/showLoading', route.name)
+        if (!uuid.value) return newMessage.warning('没有找到对应批次uuid')
         const findPoolItemData = poolList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
         const willChangeIndex = poolList.value.findIndex(poolItem => poolItem.id === evaluatePoolRecordId.value)
         if (!findPoolItemData) return newMessage.warning('没有找到对应id')
         const poolItemId = findPoolItemData.id
         const req = {
           poolItemId,
+          uuid: uuid.value,
           type,
           organizationType
         }
-        const res = await EvaluateApi.changePool(req)
-        // TODO cf
-        if (res) {
+        store.dispatch('settingStore/showLoading', route.name)
+        try {
+          const res = await EvaluateApi.changePool(req)
           // 替换原来有的id未知
           poolList.value.splice(willChangeIndex, 1, res as PoolRecordModel)
           newMessage.success('换取照片成功')
-        } else {
+        } catch {
           // 没有更换的产品
           try {
             await ElMessageBox({
-              title: '改伙伴没有可以替换的订单',
+              title: '该伙伴没有可以替换的订单',
               message: h('div', null, '是否不评价改订单'),
               center: true,
               showClose: false,
               showCancelButton: true,
               confirmButtonText: '确定'
             })
+            // TODO:cf 删除订单接口
             // 删除订单
             await goNextEvaluatePhoto()
             const willDeleteIndex = poolList.value.findIndex(poolItem => poolItem.id === evaluatePoolRecordId.value)
