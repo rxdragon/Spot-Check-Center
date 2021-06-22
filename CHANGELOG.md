@@ -10,6 +10,7 @@
  - | 代码格式修改 | [5716de4](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/5716de4)
  - | 更改菜单ui | [36e8c27](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/36e8c27)
  - | 更改代码 | [08fb5de](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/08fb5de)
+ - | 更改ci | [735044d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/735044d)
  - | 更改ci | [b9e540c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/b9e540c)
  - | 更新保存用户信息接口信息 | [f12bed9](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f12bed9)
  - | 更新标记组件 | [dc84166](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dc84166)

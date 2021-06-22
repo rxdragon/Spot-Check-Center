@@ -276,7 +276,7 @@ export default defineComponent({
     useKeydown({ prePhoto, nextPhoto, closePreview, scaleNum, judgeHasZoom, changeDrawType })
 
     return {
-      loading,
+      loading, imgLoading,
       photoArray,
       photoIndex, prePhoto, nextPhoto, showPhoto,
       zoom, photoZoomStyle, scaleNum, inZoomIn,
@@ -285,7 +285,6 @@ export default defineComponent({
       fabricCanvas,
       submitData, gradeLabel,
       skipStaff, changePool
-
     }
   }
 })

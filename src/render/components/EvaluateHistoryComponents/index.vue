@@ -97,14 +97,17 @@
       :index="previewIndex"
     />
     <!-- 修改评分组件 -->
-    <EvaluatePhoto
-      v-if="showEvaluate"
-      v-model:showEvaluate="showEvaluate"
-      :imgarray="evaluatePhotos"
-      :index="evaluateIndex"
-      is-resume-evaluate
-      @submitData="onSubmitData"
-    />
+    <transition name="el-fade-in-linear">
+      <EvaluatePhoto
+        v-if="showEvaluate"
+        ref="evaluatePhotoDom"
+        v-model:showEvaluate="showEvaluate"
+        :imgarray="evaluatePhotos"
+        :index="evaluateIndex"
+        is-resume-evaluate
+        @submitData="onSubmitData"
+      />
+    </transition>
   </div>
 </template>
 
@@ -255,17 +258,28 @@ export default defineComponent({
       evaluatePhoto(poolItemId, photoIndex)
     }
     // 提交评分
+    const evaluatePhotoDom = ref(null)
     const onSubmitData = async (data: any) => {
       const findPoolItemData = evaluateRecordList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
       if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSubmitData')
-      const req = {
-        poolItemId: findPoolItemData.id,
-        photos: data.photos,
-        tags: data.tags,
-        type,
-        organizationType
+      try {
+        (evaluatePhotoDom.value as any).imgLoading = true
+        const req = {
+          poolItemId: findPoolItemData.id,
+          photos: data.photos,
+          tags: data.tags,
+          type,
+          organizationType
+        }
+        await EvaluateApi.updateCommitHistory(req)
+        newMessage.success('修改评分成功')
+        showEvaluate.value = false
+        await getHistoryRecords()
+      } finally {
+        if (evaluatePhotoDom.value) {
+          (evaluatePhotoDom.value as any).imgLoading = false
+        }
       }
-      await EvaluateApi.updateCommitHistory(req)
     }
 
     return {
@@ -273,6 +287,7 @@ export default defineComponent({
       timeSpan, orderNum, productIds, staffs, positionStaffIds, scopeData, evaluateIds,
       pager, evaluateRecordList, handlePage, getHistoryRecords,
       showPreview, previewPhotos, previewIndex, onPreviewPhotoList,
+      evaluatePhotoDom,
       onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate, onSubmitData
     }
   }

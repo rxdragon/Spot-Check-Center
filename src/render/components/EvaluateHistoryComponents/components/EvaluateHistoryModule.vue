@@ -12,19 +12,19 @@
         @click="onSelectPhoto(photoIndex)"
       >
         <template #otherInfo>
-          <div class="audio-ino">
+          <div v-if="photoItem.auditSpotModel" class="audio-ino">
             AI审核结果：
             <span
               v-if="type === SPOT_TYPE.MAKEUP"
-              :class="photoItem.makeupDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
+              :class="photoItem.auditSpotModel.makeupDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
             >
-              {{ photoItem.makeupDegree }}
+              {{ photoItem.auditSpotModel.makeupDegree }}
             </span>
             <span
               v-if="type === SPOT_TYPE.PHOTOGRAPHY"
-              :class="photoItem.photographyDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
+              :class="photoItem.auditSpotModel.photographyDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
             >
-              {{ photoItem.photographyDegree }}
+              {{ photoItem.auditSpotModel.photographyDegree }}
             </span>
           </div>
         </template>
@@ -49,13 +49,15 @@
     <!-- 化妆师信息 -->
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">
-        化妆师：{{ streamInfo.dresserInfo.name || '-' }}
+        {{ type === SPOT_TYPE.MAKEUP ? '化妆师' : '摄影师' }}：{{ streamInfo.dresserInfo.name || '-' }}
+        <!-- TODO: cf 新增新人标记 -->
+        <el-tag type="warning" size="small">新人</el-tag>
       </div>
       <div class="info-item">
-        化妆督导：{{ streamInfo.dresserInfo.supervisorName || '-' }}
+        {{ type === SPOT_TYPE.MAKEUP ? '化妆督导' : '摄影督导' }}：{{ streamInfo.dresserInfo.supervisorName || '-' }}
       </div>
       <div class="info-item">
-        化妆专家：{{ streamInfo.dresserInfo.expertsName || '-' }}
+        {{ type === SPOT_TYPE.MAKEUP ? '化妆专家' : '摄影专家' }}：{{ streamInfo.dresserInfo.expertsName || '-' }}
       </div>
     </div>
     <!-- 备注信息 -->
@@ -70,11 +72,13 @@
     </div>
     <el-divider />
     <!-- 评价信息 -->
-    <div class="panel-title grid grid-cols-12 mb-6">
+    <div class="panel-title mb-4">
       <div class="col-start-1 col-end-4">评价信息</div>
-      <div class="evaluate-title-info grid grid-cols-3 col-end-13 col-span-4">
-        <div>总评分：{{ tagInfo.totalScore }}</div>
-        <div>评分人：{{ tagInfo.raterName }}</div>
+      <div class="flex items-center panel-slot">
+        <div class="mr-4">总评分：{{ tagInfo.totalScore }}</div>
+        <el-tag v-if="tagInfo.isReEvaluate" type="warning" size="small">已修改</el-tag>
+
+        <div class="mr-4">评分人：{{ tagInfo.raterName }}</div>
         <div>
           <el-button
             size="small"
@@ -107,25 +111,25 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject } from 'vue'
+import { computed, defineComponent, inject, PropType } from 'vue'
+
+import type PoolRecordModel from '@/model/PoolRecordModel'
+import type StreamOrderModel from '@/model/StreamOrderModel'
+import type PoolPhotoModel from '@/model/PoolPhotoModel'
+import type EvaluateTagsModel from '@/model/EvaluateTagsModel'
+
 import { SPOT_TYPE } from '@/model/Enumerate'
-// import type PoolRecordModel from '@/model/PoolRecordModel'
 import PhotoBox from '@/components/PhotoBox/index.vue'
 
 export default defineComponent({
   name: 'EvaluateHistoryModule',
   components: { PhotoBox },
   props: {
-    recordInfo: { type: Object, required: true }
+    recordInfo: { type: Object as PropType<PoolRecordModel>, required: true }
   },
   emits: ['previewPhoto', 'evaluatePhoto'],
-  data () {
-    return {
-      SPOT_TYPE
-    }
-  },
   setup (props, { emit }) {
-    const type = inject('type')
+    const type = inject('type') as SPOT_TYPE
    
     /** 照片预览 */
     const onSelectPhoto = (photoIndex: string | number | symbol) => {
@@ -157,16 +161,16 @@ export default defineComponent({
     }
 
     // 照片列表
-    const photoList = computed (() => props.recordInfo.photoList)
+    const photoList = computed(() => props.recordInfo.photoList as PoolPhotoModel[])
     // 订单流水信息
-    const streamInfo = computed (() => props.recordInfo.streamInfo)
+    const streamInfo = computed(() => props.recordInfo.streamInfo as StreamOrderModel)
     // 标价信息
-    const tagInfo = computed (() => props.recordInfo.tagInfo)
+    const tagInfo = computed(() => props.recordInfo.tagInfo as EvaluateTagsModel)
     
     return {
       onSelectPhoto,
       onEvaluatePhoto,
-      type,
+      type, SPOT_TYPE,
       photoList,
       streamInfo,
       tagInfo
@@ -186,14 +190,6 @@ export default defineComponent({
   .order-info {
     font-size: 14px;
     word-break: break-all;
-  }
-
-  .evaluate-title-info {
-    display: flex;
-
-    .change-evaluate-btn {
-      padding: 9px;
-    }
   }
 
   .type-tag {
