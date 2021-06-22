@@ -1,7 +1,5 @@
 <template>
   <div class="appeal-detail">
-    {{ organizationType }}
-    {{ type }}
     <div class="module-panel mb-6">
       <div class="panel-title mb-6">订单信息</div>
       <div class="panel-content mb-6">
@@ -14,9 +12,42 @@
           <el-table-column align="center" prop="num" label="订单号" />
           <el-table-column align="center" prop="productName" label="产品名称" />
           <el-table-column align="center" prop="storeName" label="所属门店" />
-          <el-table-column align="center" prop="dresser" label="化妆师" />
-          <el-table-column align="center" prop="supervisor" label="化妆督导" />
-          <el-table-column align="center" prop="experts" label="化妆专家" />
+          <el-table-column
+            v-if="type === SPOT_TYPE.MAKEUP"
+            align="center"
+            prop="dresser"
+            label="化妆师"
+          />
+          <el-table-column
+            v-if="type === SPOT_TYPE.MAKEUP"
+            align="center"
+            prop="dresserSupervisor"
+            label="化妆督导"
+          />
+          <el-table-column
+            v-if="type === SPOT_TYPE.MAKEUP"
+            align="center"
+            prop="dresserExperts"
+            label="化妆专家"
+          />
+          <el-table-column
+            v-if="type === SPOT_TYPE.PHOTOGRAPHY"
+            align="center"
+            prop="photographer"
+            label="摄影师"
+          />
+          <el-table-column
+            v-if="type === SPOT_TYPE.PHOTOGRAPHY"
+            align="center"
+            prop="photographerSupervisor"
+            label="摄影督导"
+          />
+          <el-table-column
+            v-if="type === SPOT_TYPE.PHOTOGRAPHY"
+            align="center"
+            prop="photographerExperts"
+            label="摄影专家"
+          />
         </el-table>
       </div>
       <div class="panel-title mb-6">申诉信息</div>
@@ -80,7 +111,7 @@
         </div>
       </div>
     </div>
-    <div v-if="type !== 'all'" class="text-center mb-6">
+    <div v-if="isHistory === 'false'" class="text-center mb-6">
       <el-button class="mr-14" type="danger" @click="dialogVisible = true">
         审核拒绝
       </el-button>
@@ -126,11 +157,12 @@ import PhotoBox from '@/components/PhotoBox/index.vue'
 import * as AppealApi from '@/api/appealApi'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store/index'
-import { ORGANIZATION_TYPE } from '@/model/Enumerate'
+import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import { IAppealOrder } from '@/model/AppealDetailModel'
 import { newMessage } from '@/utils/message'
 import PreviewPhoto from '@/components/PreviewPhoto/index.vue'
 import { APPEAL_STATUS } from '@/model/AppealModel'
+import PoolPhotoModel from '~/render/model/PoolPhotoModel'
 
 export default defineComponent({
   name: 'AppealDetail',
@@ -142,19 +174,9 @@ export default defineComponent({
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
-    const type = _.get(route,'query.type') || 'all'
+    const type = _.get(route,'query.type') || ''
+    const isHistory = _.get(route,'query.isHistory') || 'false'
     const organizationType = inject('organizationType', ORGANIZATION_TYPE.HIMO)
-    const orderTableData: Ref<undefined | IAppealOrder[]> = ref([])
-    const photoList: Ref<any[] | undefined> = ref([])
-    const firstExamineInfo = reactive({
-      date: '',
-      examineName: ''
-    })
-    const secondExamineInfo = reactive({
-      date: '',
-      examineName: ''
-    })
-    const appealNote = ref('')
 
     /**
      * @description 审核弹窗相关
@@ -174,31 +196,22 @@ export default defineComponent({
       showPreview.value = true
     }
 
-    
-    
-    const onSelectPhoto = (photoIndex: number) => {
-      const photos = photoList.value || []
-      const photoData = photos.map((photoItem: any, index: number) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        return {
-          title: `第${index + 1}张图`,
-          ...photoItem,
-          orderInfo
-        }
-      })
-      
-      const data = {
-        photoData,
-        photoIndex
-      }
-      onPreviewPhotoList(data)
-    }
-
     /** 获取初审申诉绩效 */
     const status = ref('')
     const statusCN = ref('')
     const rejectedNote = ref('')
     const tagsList = ref<any[] | undefined>([])
+    const orderTableData: Ref<undefined | IAppealOrder[]> = ref([])
+    const photoList: Ref<PoolPhotoModel[]> = ref([])
+    const firstExamineInfo = reactive({
+      date: '',
+      examineName: ''
+    })
+    const secondExamineInfo = reactive({
+      date: '',
+      examineName: ''
+    })
+    const appealNote = ref('')
     const getDetail = async () => {
       const req = {
         id: _.get(route,'query.id') || ''
@@ -267,6 +280,24 @@ export default defineComponent({
       if ( status.value === APPEAL_STATUS.WAIT_SECOND_APPEAL || status.value === APPEAL_STATUS.SECOND_APPEAL) return 'second'
     }
 
+    const onSelectPhoto = (photoIndex: number) => {
+      const photos = photoList.value || []
+      const photoData = photos.map((photoItem: any, index: number) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        return {
+          title: `第${index + 1}张图`,
+          ...photoItem,
+          orderInfo
+        }
+      })
+      
+      const data = {
+        photoData,
+        photoIndex
+      }
+      onPreviewPhotoList(data)
+    }
+
     const submitRefuse = async () => {
       if ( checkStatus() === 'first') {
         examineFirst('refusal')
@@ -285,6 +316,7 @@ export default defineComponent({
 
     return {
       type,
+      isHistory,
       organizationType,
       orderTableData,
       photoList,
@@ -302,7 +334,8 @@ export default defineComponent({
       tagsList,
       onSelectPhoto,
       submitRefuse,
-      submitPass
+      submitPass,
+      SPOT_TYPE
     }
   }
 })

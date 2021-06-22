@@ -22,11 +22,18 @@ const familyAppealCenter = {
       meta: { title: '摄影申述', icon: '', breadcrumb: true }
     },
     {
-      path: 'family-appeal-history',
-      name: 'FamilyAppealHistory',
+      path: 'family-appeal-makeup-history',
+      name: 'FamilyAppealMakeupHistory',
       // eslint-disable-next-line max-len
-      component: () => import(/* webpackChunkName: "FamilyAppealHistory" */ '@/views/family-appeal-center/family-appeal-history.vue'),
-      meta: { title: '申诉历史记录', icon: '', breadcrumb: true }
+      component: () => import(/* webpackChunkName: "FamilyAppealMakeupHistory" */ '@/views/family-appeal-center/family-appeal-makeup-history.vue'),
+      meta: { title: '化妆申诉历史记录', icon: '', breadcrumb: true }
+    },
+    {
+      path: 'family-appeal-photography-history',
+      name: 'FamilyAppealPhotographyHistory',
+      // eslint-disable-next-line max-len
+      component: () => import(/* webpackChunkName: "FamilyAppealPhotographyHistory" */ '@/views/family-appeal-center/family-appeal-photography-history.vue'),
+      meta: { title: '摄影申诉历史记录', icon: '', breadcrumb: true }
     },
     {
       path: 'family-appeal-detail',

@@ -61,8 +61,7 @@ export default class PoolRecordModel {
   }
 
   // 获取评价信息
-  getTags (externalTagInfo?: any) {
-    const tagInfo = externalTagInfo || _.get(this.base, 'tags') || {}
-    this.tagInfo = new EvaluateTagsModel(tagInfo)
+  getTags () {
+    this.tagInfo = new EvaluateTagsModel(this.base)
   }
 }

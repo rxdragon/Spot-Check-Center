@@ -47,6 +47,9 @@ export default defineComponent({
     }, {
       label: appealStatusToCN[APPEAL_STATUS.EXPIRED],
       value: APPEAL_STATUS.EXPIRED
+    }, {
+      label: appealStatusToCN[APPEAL_STATUS.APPEAL_REJECTED],
+      value: APPEAL_STATUS.APPEAL_REJECTED
     }]
 
     const placeholder = computed(() => {

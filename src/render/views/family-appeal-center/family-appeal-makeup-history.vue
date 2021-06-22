@@ -1,5 +1,5 @@
 <template>
-  <div class="himo-appeal-history">
+  <div class="family-appeal-makeup-history">
     <AppealComponents />
   </div>
 </template>
@@ -7,13 +7,15 @@
 <script lang="ts">
 import { defineComponent, provide } from 'vue'
 import AppealComponents from '@/components/AppealComponents/index.vue'
-import { ORGANIZATION_TYPE } from '@/model/Enumerate'
+import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
-  name: 'HimoAppealHistory',
+  name: 'FamilyAppealMakeupHistory',
   components: { AppealComponents },
   setup () {
-    provide('organizationType', ORGANIZATION_TYPE.HIMO)
+    provide('type', SPOT_TYPE.MAKEUP)
+    provide('organizationType', ORGANIZATION_TYPE.FAMILY)
+    provide('history', true)
   }
 })
 </script>

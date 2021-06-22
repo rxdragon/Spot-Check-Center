@@ -34,7 +34,7 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>职能</span>
-            <PositionStaffSelect v-model="positionStaffIds" />
+            <PositionStaffSelect v-model="positionStaffIds" :type="type" />
           </div>
         </el-col>
         <!-- 评价标签查询 -->

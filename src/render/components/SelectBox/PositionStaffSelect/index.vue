@@ -27,11 +27,14 @@ import { newMessage } from '~/render/utils/message'
 
 export default defineComponent({
   name: 'PositionStaffSelect',
-  setup () {
+  props: {
+    type: { type: String, default: '' }
+  },
+  setup (props) {
     /** 确认配置选项 */
     const deafultProps = reactive({
       multiple: true,
-      emitPath: false
+      emitPath: true
     })
 
     const staffStoreLoading = ref(true)
@@ -40,8 +43,11 @@ export default defineComponent({
     /** 获取门店分级的修图师列表 */
     const getStaffList = async () => {
       try {
+        const req = {
+          type: props.type
+        }
         staffStoreLoading.value = true
-        options.value = await CommonalityApi.getPositionStaffs()
+        options.value = await CommonalityApi.getPositionStaffs(req)
         staffStoreLoading.value = false
       } catch (error) {
         newMessage.error(String(error))

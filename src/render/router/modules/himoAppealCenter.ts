@@ -22,11 +22,18 @@ const himoAppealCenter = {
       meta: { title: '摄影申述', icon: '', breadcrumb: true }
     },
     {
-      path: 'himo-appeal-history',
-      name: 'HimoAppealHistory',
+      path: 'himo-appeal-makeup-history',
+      name: 'HimoAppealMakeupHistory',
       // eslint-disable-next-line max-len
-      component: () => import(/* webpackChunkName: "HimoAppealHistory" */ '@/views/himo-appeal-center/himo-appeal-history.vue'),
-      meta: { title: '申诉历史记录', icon: '', breadcrumb: true }
+      component: () => import(/* webpackChunkName: "HimoAppealMakeupHistory" */ '@/views/himo-appeal-center/himo-appeal-makeup-history.vue'),
+      meta: { title: '化妆申诉历史记录', icon: '', breadcrumb: true }
+    },
+    {
+      path: 'himo-appeal-photography-history',
+      name: 'HimoAppealPhotographyHistory',
+      // eslint-disable-next-line max-len
+      component: () => import(/* webpackChunkName: "HimoAppealPhotographyHistory" */ '@/views/himo-appeal-center/himo-appeal-photography-history.vue'),
+      meta: { title: '摄影申诉历史记录', icon: '', breadcrumb: true }
     },
     {
       path: 'himo-appeal-detail',

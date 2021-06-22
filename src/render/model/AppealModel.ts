@@ -5,8 +5,11 @@ import _ from 'lodash'
 interface IAppealOrder {
   num: string
   dresser: string
-  supervisor: string
-  experts: string
+  dresserSupervisor: string
+  dresserExperts: string
+  photographer: string
+  photographerSupervisor: string
+  photographerExperts: string
   storeName: string
 }
 
@@ -20,7 +23,9 @@ export enum APPEAL_STATUS {
   FIRST_APPEAL = 'first_appeal', // 第一次审核
   WAIT_SECOND_APPEAL = 'wait_second_appeal', // 等待第二次审核
   SECOND_APPEAL = 'second_appeal', // 第二次审核
-  APPEAL_REJECTED = 'first_appeal_rejected,second_appeal_rejected', // 第二次审核拒绝
+  APPEAL_REJECTED = 'first_appeal_rejected,second_appeal_rejected', // 审核拒绝
+  FIRST_APPEAL_REJECTED = 'first_appeal_rejected', // 第一次审核拒绝
+  SECOND_APPEAL_REJECTED = 'second_appeal_rejected', // 第二次审核拒绝
   FINISH = 'finish', // 审核通过
   EXPIRED = 'expired' // 过期未处理
 }
@@ -32,6 +37,8 @@ export const appealStatusToCN = {
   [APPEAL_STATUS.WAIT_SECOND_APPEAL]: '待复审',
   [APPEAL_STATUS.SECOND_APPEAL]: '复审中',
   [APPEAL_STATUS.APPEAL_REJECTED]: '审核拒绝',
+  [APPEAL_STATUS.FIRST_APPEAL_REJECTED]: '审核拒绝',
+  [APPEAL_STATUS.SECOND_APPEAL_REJECTED]: '审核拒绝',
   [APPEAL_STATUS.FINISH]: '审核通过',
   [APPEAL_STATUS.EXPIRED]: '过期未处理'
 }
@@ -58,16 +65,18 @@ export class AppealListModel {
   orderInfo?: IAppealOrder
   appealDate: string
   status: string
+  statusCN: string
   firstExamineInfo?: IExamineInfo
   secondExamineInfo?: IExamineInfo
 
   constructor (data: any) {
     this.base = data
     this.id = _.get(data, 'id') || ''
-    this.appealName = _.get(data, 'name') || '一一'
+    this.appealName = _.get(data, 'applicantInfo.nickname') || '-'
     this.appealDate = _.get(data, 'created_at') || '2011-10-11'
     const status: APPEAL_STATUS = _.get(data, 'status') || 'wait_first_appeal'
     this.status = status
+    this.statusCN = appealStatusToCN[status]
     this.getOrderInfo()
     this.getFirstExamineInfo()
     this.getSecondExamineInfo()
@@ -77,10 +86,13 @@ export class AppealListModel {
   getOrderInfo () {
     const info = {
       num: _.get(this.base, 'stream_order.order_num') || '-',
-      dresser: _.get(this.base, 'streamOrder.dressers.nickname') || '二二',
-      supervisor: getName(_.get(this.base, 'stream_order.dressers.supervisor') || []).name,
-      experts: getName(_.get(this.base, 'stream_order.dressers.experts') || []).name,
-      storeName: _.get(this.base, 'store.name') || '门店',
+      dresser: getName(_.get(this.base, 'stream_order.dressers.staffs') || []).name,
+      dresserSupervisor: getName(_.get(this.base, 'stream_order.dressers.supervisor') || []).name,
+      dresserExperts: getName(_.get(this.base, 'stream_order.dressers.experts') || []).name,
+      photographer: getName(_.get(this.base, 'stream_order.photographers.staffs') || []).name,
+      photographerSupervisor: getName(_.get(this.base, 'stream_order.photographers.supervisor') || []).name,
+      photographerExperts: getName(_.get(this.base, 'stream_order.photographers.experts') || []).name,
+      storeName: _.get(this.base, 'store.name') || '-',
     }
     this.orderInfo = Object.assign(info)
   }
@@ -88,7 +100,7 @@ export class AppealListModel {
   // 获取初审相关信息
   getFirstExamineInfo () {
     const info = {
-      examineName: getName(_.get(this.base, 'firstReviewerInfo')).name || '-',
+      examineName: _.get(this.base, 'firstReviewerInfo').name || '-',
       date: _.get(this.base, 'first_pass_at') || '-'
     }
     this.firstExamineInfo = Object.assign(info)
@@ -97,7 +109,7 @@ export class AppealListModel {
   // 获取复审相关信息
   getSecondExamineInfo () {
     const info = {
-      examineName: getName(_.get(this.base, 'secondReviewerInfo')).name || '-',
+      examineName: _.get(this.base, 'secondReviewerInfo').name || '-',
       date: _.get(this.base, 'second_pass_at') || '-'
     }
     this.secondExamineInfo = Object.assign(info)

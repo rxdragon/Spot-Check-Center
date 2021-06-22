@@ -33,5 +33,6 @@ interface IPermissionStore {
   routes: RouteRecordRaw[]
   addRoutes: RouteRecordRaw[]
   personageRouters: RouteRecordRaw[]
-  roles: string[]
+  roles: string[],
+  showAppealBtn: boolean
 }

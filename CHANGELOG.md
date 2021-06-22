@@ -1,4 +1,4 @@
-# 0.1.0 (2021-06-21)
+# 0.1.0 (2021-06-22)
 
 ### 🌟 新功能
 范围|描述|commitId
@@ -25,6 +25,7 @@
  - | 更新用户信息修改后列表页面的操作 | [b40abb0](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/b40abb0)
  - | 更新暂无数据时候的图形显示 | [5c08094](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/5c08094)
  - | 更新ci | [94557ec](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/94557ec)
+ - | 合并代码 | [93274c2](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/93274c2)
  - | 接口对接 | [d5daefe](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/d5daefe)
  - | 历史记录相关的数据模块以及接口查询 | [c4114c5](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4114c5)
  - | 联动完成角色组相关功能，完成保存账号部分功能 | [bc44cde](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bc44cde)
