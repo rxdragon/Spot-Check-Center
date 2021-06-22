@@ -6,7 +6,7 @@
       <PhotoBox
         v-for="(photoItem, photoIndex) in photoList"
         :key="photoItem.id"
-        :src="photoItem.auditSpotModel.path"
+        :src="photoItem.path"
         version=""
         class="mr-4"
         @click="onSelectPhoto(photoIndex)"
@@ -37,7 +37,7 @@
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">订单号：{{ streamInfo.orderNum }}</div>
       <div class="info-item">产品名称：{{ streamInfo.productName }}</div>
-      <div class="info-item">照片张数：{{ streamInfo.photoCount }}</div>
+      <div class="info-item">照片张数：{{ recordInfo.photoCount }}</div>
       <div class="info-item">
         门店类型：{{ streamInfo.storeTypeCN }}
         <div class="standard-icon">
@@ -49,24 +49,24 @@
     <!-- 化妆师信息 -->
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">
-        化妆师：{{ dresserInfo.name }}
+        化妆师：{{ streamInfo.dresserInfo.name || '-' }}
       </div>
       <div class="info-item">
-        化妆督导：{{ dresserInfo.supervisorName }}
+        化妆督导：{{ streamInfo.dresserInfo.supervisorName || '-' }}
       </div>
       <div class="info-item">
-        化妆专家：{{ dresserInfo.expertsName }}
+        化妆专家：{{ streamInfo.dresserInfo.expertsName || '-' }}
       </div>
     </div>
     <!-- 备注信息 -->
     <div class="order-info grid grid-cols-1 mb-4">
-      <div class="info-item">订单备注：{{ note.orderNote }}</div>
+      <div class="info-item">订单备注：{{ streamInfo.note.orderNote }}</div>
     </div>
     <div class="order-info grid grid-cols-1 mb-4">
-      <div class="info-item">摄影备注：{{ note.photographyNote }}</div>
+      <div class="info-item">摄影备注：{{ streamInfo.note.photographyNote }}</div>
     </div>
     <div class="order-info grid grid-cols-1 mb-4">
-      <div class="info-item">化妆备注：{{ note.dresserNote }}</div>
+      <div class="info-item">化妆备注：{{ streamInfo.note.dresserNote }}</div>
     </div>
     <el-divider />
     <!-- 评价信息 -->
@@ -80,25 +80,27 @@
             size="small"
             class="change-evaluate-btn"
             type="primary"
-            @click="onEvaluatePhoto(0)"
+            @click="onEvaluatePhoto"
           >
             修改评分
           </el-button>
         </div>
       </div>
     </div>
-    <div class="order-info grid grid-cols-4 mb-4">
-      <div class="info-item">
-        评价标签：
-        <el-tag
-          v-for="tagItem in tagInfo.tags"
-          :key="tagItem.id"
-          class="text-center"
-          :class="['type-tag', tagItem.type]"
-          size="medium"
-        >
-          {{ tagItem.name }}
-        </el-tag>
+    <div class="order-info">
+      <div class="info-item flex">
+        <div class="info-title flex-none">评价标签：</div>
+        <div class="info-content">
+          <el-tag
+            v-for="tagItem in tagInfo.tags"
+            :key="tagItem.id"
+            class="text-center"
+            :class="['type-tag', tagItem.type]"
+            size="medium"
+          >
+            {{ tagItem.name }}
+          </el-tag>
+        </div>
       </div>
     </div>
   </div>
@@ -124,9 +126,8 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     const type = inject('type')
-    /** 
-     * @description 照片预览 
-     */
+   
+    /** 照片预览 */
     const onSelectPhoto = (photoIndex: string | number | symbol) => {
       const photoData = props.recordInfo.photoList?.map((photoItem: any, index: number) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -143,38 +144,24 @@ export default defineComponent({
       }
       emit('previewPhoto', data)
     }
-    /** 
-     * @description 修改评分
-     */
-    const onEvaluatePhoto = (photoIndex: string | number | symbol) => {
+
+    /** 修改评分 */
+    const onEvaluatePhoto = () => {
       const poolItemId = props.recordInfo.id
 
       const data = {
         poolItemId,
-        photoIndex
+        photoIndex: 0
       }
       emit('evaluatePhoto', data)
     }
 
-    const photoList = computed (() => {
-      return props.recordInfo.photoList
-    })
-
-    const streamInfo = computed (() => {
-      return props.recordInfo.streamInfo
-    })
-
-    const note = computed (() => {
-      return props.recordInfo.streamInfo?.note
-    })
-
-    const dresserInfo = computed (() => {
-      return props.recordInfo.streamInfo?.dresserInfo
-    })
-
-    const tagInfo = computed (() => {
-      return props.recordInfo.tagInfo
-    })
+    // 照片列表
+    const photoList = computed (() => props.recordInfo.photoList)
+    // 订单流水信息
+    const streamInfo = computed (() => props.recordInfo.streamInfo)
+    // 标价信息
+    const tagInfo = computed (() => props.recordInfo.tagInfo)
     
     return {
       onSelectPhoto,
@@ -182,8 +169,6 @@ export default defineComponent({
       type,
       photoList,
       streamInfo,
-      note,
-      dresserInfo,
       tagInfo
     }
   }

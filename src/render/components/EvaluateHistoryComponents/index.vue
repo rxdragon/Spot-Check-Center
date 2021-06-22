@@ -102,6 +102,7 @@
       v-model:showEvaluate="showEvaluate"
       :imgarray="evaluatePhotos"
       :index="evaluateIndex"
+      is-resume-evaluate
       @submitData="onSubmitData"
     />
   </div>
@@ -113,7 +114,6 @@ import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
 import { newMessage } from '@/utils/message'
-import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
 import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
@@ -125,7 +125,9 @@ import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/inde
 import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
 import NoData from '@/components/NoData/index.vue'
 
+import * as TimeUtil from '@/utils/TimeUtil'
 import * as EvaluateApi from '@/api/evaluateApi'
+import * as PhotoTool from '@/utils/photoTool'
 import * as EvaluateHistoryApi from '@/api/evaluateHistoryApi'
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import PoolRecordModel from '@/model/PoolRecordModel'
@@ -159,30 +161,23 @@ export default defineComponent({
     })
 
     /** 查询历史记录相关数据 */
-    const productIds = ref([])
-    const staffs = ref([])
-    const positionStaffIds = ref([])
+    const productIds = ref<idType[]>([])
+    const staffs = ref<idType[]>([])
+    const positionStaffIds = ref<idType[]>([])
     const scopeData = ref([])
-    const evaluateIds = ref([])
+    const evaluateIds = ref<idType[]>([])
     const evaluateRecordList = ref<PoolRecordModel[]>([])
     const orderNum = ref('')
 
     const getHistoryRecords = async (page?: number) => {
       pager.page = page ? page : pager.page
       if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
+
       try {
         store.dispatch('settingStore/showLoading', route.name)
         const req: EvaluateHistoryApi.IgetHistoryRecordsParams = {
           type,
           organizationType,
-          startTime: '',
-          endTime: '',
-          cloudOrderNum: '',
-          productIds: productIds.value,
-          staffIds: staffs.value,
-          supervisorArr: positionStaffIds.value,
-          score: scopeData.value,
-          problemTagsIds: evaluateIds.value,
           page: pager.page,
           pageSize: pager.pageSize
         }
@@ -193,22 +188,21 @@ export default defineComponent({
         }
         if (productIds.value.length > 0) req.productIds = productIds.value
         if (staffs.value.length > 0) req.staffIds = staffs.value
-        if (positionStaffIds.value.length > 0) req.supervisorArr = positionStaffIds.value
         if (scopeData.value.length > 0) req.score = scopeData.value
         if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
-        if (orderNum.value) {
-          req.cloudOrderNum = orderNum.value
-          // delete req.startAt
-          // delete req.endAt
-        }
+        if (orderNum.value) req.orderNum = orderNum.value
+
+        if (positionStaffIds.value.length > 0) req.supervisorArr = positionStaffIds.value
         const res = await EvaluateHistoryApi.getHistoryRecords(req)
         pager.total = res.total
         evaluateRecordList.value = res.list
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
-      
     }
+    // TODO 调试
+    timeSpan.value = ['2021-06-21', '2021-06-21']
+    getHistoryRecords()
     // 分页逻辑
     const handlePage = () => {
       getHistoryRecords()
@@ -225,7 +219,7 @@ export default defineComponent({
       showPreview.value = true
     }
 
-    /** 显示打分数据 */
+    /** 重新评分 */
     const evaluatePhotos = ref<any>([])
     const evaluateIndex = ref(0)
     const showEvaluate = ref(false)
@@ -242,10 +236,10 @@ export default defineComponent({
           aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
         }
         return {
-          // todo photoModel 增加完成src
           id: photoItem.id,
           title: `原片（${index + 1}/${findPoolItemData.photoList?.length}）`,
-          src: photoItem.path,
+          src: PhotoTool.compleImagePath(photoItem.path),
+          compressSrc: PhotoTool.compleCompressImagePath(photoItem.path),
           photoInfo,
           markPath: '',
           markJson: '',

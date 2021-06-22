@@ -110,12 +110,17 @@ export default defineComponent({
 
   width: 100%;
   min-height: 400px;
+  max-height: calc(100% - 60px);
+  overflow: overlay;
   font-size: 12px;
   color: #eee;
   user-select: none;
 
   .label-header {
+    position: sticky;
+    top: 0;
     padding: 14px 12px;
+    background-color: #535353;
 
     .panel-title {
       color: #eee;

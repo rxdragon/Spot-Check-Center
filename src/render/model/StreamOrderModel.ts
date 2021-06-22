@@ -1,4 +1,5 @@
 import { STORE_TYPE, storeTypeToCN } from '@/model/Enumerate'
+import { v4 as uuid } from 'uuid'
 
 export interface IPagerInfo {
   page: number
@@ -57,7 +58,6 @@ export default class StreamOrderModel {
   storeName: string
   storeType: STORE_TYPE
   storeTypeCN: string
-  photoCount: number
   note: {
     orderNote: string
     dresserNote: string
@@ -65,7 +65,7 @@ export default class StreamOrderModel {
   }
 
   constructor (data: any, pager?: IPagerInfo) {
-    this.id = _.get(data, 'id') || 1
+    this.id = _.get(data, 'id') || uuid()
     this.orderNum = _.get(data, 'order_num') || '异常'
     this.dresserInfo = getStaffInfo(_.get(data, 'dressers') || {})
     this.photographyerInfo = getStaffInfo(_.get(data, 'photographers') || {})
@@ -73,7 +73,6 @@ export default class StreamOrderModel {
     this.storeName = _.get(data, 'store.name') || '异常'
     this.storeType = _.get(data, 'store.store_type') || STORE_TYPE.UNUSUAL
     this.storeTypeCN = storeTypeToCN[this.storeType]
-    this.photoCount = _.get(data, 'photoNum') || 0
     this.note = {
       orderNote: _.get(data, 'order_note') || '-',
       dresserNote: _.get(data, 'dresser_note') || '-',

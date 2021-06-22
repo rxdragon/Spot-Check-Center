@@ -13,7 +13,7 @@
         <PhotoMap ref="photoMap" v-model:scaleNum="scaleNum" :show-photo="showPhoto" />
         <MarkTool :canvas-option="canvasOption" @changeTool="changeDrawType" />
         <PhotoInfo :order-info="showPhoto.photoInfo" />
-        <div class="button-box">
+        <div v-if="!isResumeEvaluate" class="button-box">
           <el-button type="primary" @click="skipStaff">跳过伙伴</el-button>
           <el-button class="change-btn" @click="changePool">换一单</el-button>
         </div>
@@ -93,6 +93,7 @@ export default defineComponent({
     imgarray: { type: Array, required: true },
     index: { type: Number, default: 0 },
     showEvaluate: { type: Boolean, required: true },
+    isResumeEvaluate: { type: Boolean }
   },
   emits: ['update:showEvaluate', 'submitData', 'change', 'skipStaff', 'changePool'],
   setup (props, { emit }) {
