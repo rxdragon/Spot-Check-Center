@@ -15,6 +15,7 @@
  - | 更新保存用户信息接口信息 | [f12bed9](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f12bed9)
  - | 更新标记组件 | [dc84166](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dc84166)
  - | 更新打分组件 | [ce28726](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/ce28726)
+ - | 更新代码 | [bd64664](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bd64664)
  - | 更新代码 | [620c601](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/620c601)
  - | 更新代码 | [d01b35d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/d01b35d)
  - | 更新代码 | [768e589](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/768e589)
