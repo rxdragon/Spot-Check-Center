@@ -17,6 +17,17 @@
             :alt="showPhoto.title"
             @load="loadingPhoto"
           >
+          <!-- 批注图 -->
+          <div v-if="showPhoto.markPath" v-show="tagShow" class="mask-photo">
+            <img
+              :src="showPhoto.markPath"
+              alt=""
+              :style="{
+                width: `${showImageRect.width}px`,
+                height: `${showImageRect.height}px`
+              }"
+            >
+          </div>
           <!-- 放大图片 -->
           <div id="_magnifier_layer" ref="magnifier_layer" />
         </div>
@@ -38,6 +49,15 @@
         </button>
       </div>
       <PhotoMap ref="photoMap" v-model:scaleNum="scaleNum" :show-photo="showPhoto" />
+      <el-button
+        v-if="showPhoto.markPath"
+        class="tag-btn"
+        :class="!tagShow && 'tag-show-btn'"
+        type="info"
+        @click="showMarkPhoto"
+      >
+        {{ tagShow ? '隐藏标记' : '显示标记' }}
+      </el-button>
       <PhotoInfo :order-info="showPhoto.orderInfo" />
       <AiCheckResult :result-info="showPhoto" />
     </div>
@@ -46,6 +66,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, Ref, getCurrentInstance } from 'vue'
+import type { IPhotoPreviewItem } from './index.d'
 import usePhotoIndex from './composables/usePhotoIndex'
 import usePhotoZoom from './composables/usePhotoZoom'
 import useKeydown from './composables/useKeydown'
@@ -53,6 +74,7 @@ import useKeydown from './composables/useKeydown'
 import PhotoMap from './components/PhotoMap.vue'
 import PhotoInfo from './components/PhotoInfo.vue'
 import AiCheckResult from './components/AiCheckResult.vue'
+
 
 export default defineComponent({
   name: 'PreviewPhoto',
@@ -67,7 +89,7 @@ export default defineComponent({
     const vm: any = getCurrentInstance()
     const loading = ref(true)
     
-    const photoArray: Ref<any[]> = ref([])
+    const photoArray: Ref<IPhotoPreviewItem[]> = ref([])
 
     /** 上下图片 */
     const { photoIndex, prePhoto, nextPhoto, showPhoto } = usePhotoIndex({
@@ -107,19 +129,29 @@ export default defineComponent({
       const isOverIn = _.get(vm.refs['magnifier_layer'], 'style.width')
       if (isOverIn && vm.refs['photoMap']) vm.refs['photoMap'].handOver()
     }
-
     const { zoom, photoZoomStyle, scaleNum, inZoomIn } = usePhotoZoom({})
+    
+
+    /** 显示图片 */
+    const tagShow = ref(true)
+    const showMarkPhoto = () => {
+      if (!showPhoto.value.markPath) return
+      tagShow.value = !tagShow.value
+    }
+
+
     /** 快捷指令 */
-    useKeydown({ prePhoto, nextPhoto, closePreview, scaleNum, judgeHasZoom })
+    useKeydown({ prePhoto, nextPhoto, closePreview, scaleNum, judgeHasZoom, showMarkPhoto })
 
     return {
       photoIndex, prePhoto, nextPhoto, showPhoto,
       zoom, photoZoomStyle, scaleNum, inZoomIn,
       loading,
       photoArray,
-      OrginImg,
+      OrginImg, showImageRect,
       loadingPhoto,
       closePreview,
+      showMarkPhoto, tagShow
     }
   }
 })
@@ -337,6 +369,20 @@ export default defineComponent({
           }
         }
       }
+    }
+
+    .tag-btn {
+      width: 100%;
+      background-color: #666;
+      border-color: #666;
+
+      &:hover {
+        background-color: #535353;
+      }
+    }
+
+    .tag-show-btn {
+      background: linear-gradient(90deg, rgba(79, 136, 255, 1) 0%, rgba(70, 105, 251, 1) 100%);
     }
   }
 }

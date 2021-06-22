@@ -106,6 +106,7 @@ export default defineComponent({
     const photoArray: Ref<IPhotoItemData[]> = ref([])
 
     /** 上下图片 */
+    // showPhoto as IPhotoItemData
     const { photoIndex, prePhoto, nextPhoto, showPhoto } = usePhotoIndex({
       photoArray,
       loading: imgLoading,

@@ -43,6 +43,7 @@
  - | 新增本地服务器和indexDB | [ade2c85](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/ade2c85)
  - | 新增编辑窗口 | [c45813d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c45813d)
  - | 新增角色组功能 | [9109ea7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9109ea7)
+ - | 新增历史模块显示 | [b586138](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/b586138)
  - | 新增添加评分项目动效 | [08d1da6](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/08d1da6)
  - | 新增添加账号功能 | [4b15860](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/4b15860)
  - | 新增electron下载模块内容 | [f96ccff](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f96ccff)

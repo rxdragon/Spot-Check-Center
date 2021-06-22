@@ -21,13 +21,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, PropType, reactive, ref } from 'vue'
 import * as CommonalityApi from '@/api/commonalityApi'
 import { newMessage } from '~/render/utils/message'
+import { STORE_TYPE, SPOT_TYPE, ORGANIZATION_TYPE } from '@/model/Enumerate'
+
 
 export default defineComponent({
   name: 'StoreStaffSelect',
-  setup () {
+  props: {
+    spotType: { type: String as PropType<SPOT_TYPE>, default: '' },
+    organizationType: { type: String as PropType<ORGANIZATION_TYPE>, required: true }
+  },
+  setup (props) {
     /** 确认配置选项 */
     const deafultProps = reactive({
       multiple: true,
@@ -41,7 +47,26 @@ export default defineComponent({
     const getStaffList = async () => {
       try {
         staffStoreLoading.value = true
-        const req = {}
+
+        let storeState: STORE_TYPE[] = []
+        if (props.organizationType === ORGANIZATION_TYPE.HIMO) {
+          storeState = [
+            STORE_TYPE.BLUE,
+            STORE_TYPE.GOLD,
+            STORE_TYPE.MASTER,
+          ]
+        }
+        if (props.organizationType === ORGANIZATION_TYPE.FAMILY) {
+          storeState = [
+            STORE_TYPE.KIDS,
+            STORE_TYPE.FAMILY,
+          ]
+        }
+        const req: CommonalityApi.IGetStoreStaffTreeParams = {
+          state: storeState,
+        }
+        if (props.spotType) req.type = props.spotType
+
         const list = await CommonalityApi.getStoreStaffTree(req)
         options.value = list
         staffStoreLoading.value = false

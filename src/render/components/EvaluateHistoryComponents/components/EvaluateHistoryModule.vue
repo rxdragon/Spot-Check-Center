@@ -49,15 +49,30 @@
     <!-- 化妆师信息 -->
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">
-        {{ type === SPOT_TYPE.MAKEUP ? '化妆师' : '摄影师' }}：{{ streamInfo.dresserInfo.name || '-' }}
-        <!-- TODO: cf 新增新人标记 -->
-        <el-tag type="warning" size="small">新人</el-tag>
+        <template v-if="type === SPOT_TYPE.MAKEUP">
+          化妆师：{{ streamInfo.dresserInfo.name || '-' }}
+          <el-tag v-if="streamInfo.dresserInfo.isNewStaff" type="warning" size="small">新人</el-tag>
+        </template>
+        <template v-else>
+          摄影师：{{ streamInfo.photographyerInfo.name || '-' }}
+          <el-tag v-if="streamInfo.photographyerInfo.isNewStaff" type="warning" size="small">新人</el-tag>
+        </template>
       </div>
       <div class="info-item">
-        {{ type === SPOT_TYPE.MAKEUP ? '化妆督导' : '摄影督导' }}：{{ streamInfo.dresserInfo.supervisorName || '-' }}
+        <template v-if="type === SPOT_TYPE.MAKEUP">
+          化妆督导：{{ streamInfo.dresserInfo.supervisorName || '-' }}
+        </template>
+        <template v-else>
+          摄影督导：{{ streamInfo.photographyerInfo.supervisorName || '-' }}
+        </template>
       </div>
       <div class="info-item">
-        {{ type === SPOT_TYPE.MAKEUP ? '化妆专家' : '摄影专家' }}：{{ streamInfo.dresserInfo.expertsName || '-' }}
+        <template v-if="type === SPOT_TYPE.MAKEUP">
+          化妆专家：{{ streamInfo.dresserInfo.expertsName || '-' }}
+        </template>
+        <template v-else>
+          摄影专家：{{ streamInfo.photographyerInfo.expertsName || '-' }}
+        </template>
       </div>
     </div>
     <!-- 备注信息 -->
@@ -120,6 +135,7 @@ import type EvaluateTagsModel from '@/model/EvaluateTagsModel'
 
 import { SPOT_TYPE } from '@/model/Enumerate'
 import PhotoBox from '@/components/PhotoBox/index.vue'
+import * as PhotoTool from '@/utils/photoTool'
 
 export default defineComponent({
   name: 'EvaluateHistoryModule',
@@ -134,12 +150,12 @@ export default defineComponent({
     /** 照片预览 */
     const onSelectPhoto = (photoIndex: string | number | symbol) => {
       const photoData = props.recordInfo.photoList?.map((photoItem: any, index: number) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { ...orderInfo } = props.recordInfo.streamInfo
         return {
-          title: `第${index + 1}张图`,
           ...photoItem.auditSpotModel,
-          orderInfo
+          title: `第${index + 1}张图`,
+          src: PhotoTool.compleImagePath(photoItem.path),
+          markPath: PhotoTool.compleImagePath(photoItem.markPath),
+          orderInfo: props.recordInfo.streamInfo
         }
       })
       const data = {

@@ -27,7 +27,7 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>伙伴</span>
-            <StoreStaffSelect v-model="staffs" />
+            <StoreStaffSelect v-model="staffs" :spot-type="type" :organization-type="organizationType" />
           </div>
         </el-col>
         <!-- 职能查询 -->
@@ -52,9 +52,11 @@
           </div>
         </el-col>
         <!-- 查询按钮 -->
-        <el-col v-bind="{...colConfig, sm: 4, md: 4}">
+        <el-col v-bind="{...colConfig}" class="text-right">
           <div class="search-item">
-            <el-button type="primary" @click="getHistoryRecords(1)">查询</el-button>
+            <el-checkbox v-model="onlyNew" @change="changeOnlyNew">只看新人</el-checkbox>
+            <el-checkbox v-model="onlyOld" @change="changeOnlyOld">只看正式伙伴</el-checkbox>
+            <el-button class="ml-4" type="primary" @click="getHistoryRecords(1)">查询</el-button>
           </div>
         </el-col>
       </el-row>
@@ -163,6 +165,12 @@ export default defineComponent({
       total: 10
     })
 
+    /** 只看新人和只看正式伙伴互斥 */
+    const onlyNew = ref(false)
+    const onlyOld = ref(false)
+    const changeOnlyNew = () => { if (onlyNew.value) onlyOld.value = false }
+    const changeOnlyOld = () => { if (onlyOld.value) onlyNew.value = false }
+
     /** 查询历史记录相关数据 */
     const productIds = ref<idType[]>([])
     const staffs = ref<idType[]>([])
@@ -194,6 +202,8 @@ export default defineComponent({
         if (scopeData.value.length > 0) req.score = scopeData.value
         if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
         if (orderNum.value) req.orderNum = orderNum.value
+        if (onlyNew.value) req.onlyNew = onlyNew.value
+        if (onlyOld.value) req.onlyOld = onlyOld.value
 
         if (positionStaffIds.value.length > 0) req.supervisorArr = positionStaffIds.value
         const res = await EvaluateHistoryApi.getHistoryRecords(req)
@@ -288,7 +298,8 @@ export default defineComponent({
       pager, evaluateRecordList, handlePage, getHistoryRecords,
       showPreview, previewPhotos, previewIndex, onPreviewPhotoList,
       evaluatePhotoDom,
-      onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate, onSubmitData
+      onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate, onSubmitData,
+      onlyNew, onlyOld, changeOnlyNew, changeOnlyOld
     }
   }
 })

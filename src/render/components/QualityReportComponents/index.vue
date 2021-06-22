@@ -32,7 +32,7 @@
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>伙伴</span>
-          <StoreStaffSelect v-model="staffs" />
+          <StoreStaffSelect v-model="staffs" :spot-type="type" :organization-type="organizationType" />
         </div>
       </el-col>
       <el-col v-bind="{ ...colConfig }">
@@ -157,7 +157,7 @@ export default defineComponent({
       sm: 10,
       xs: 24
     })
-    const type: string = inject('type') as SPOT_TYPE
+    const type = inject('type') as SPOT_TYPE
     const organizationType = inject('organizationType') as ORGANIZATION_TYPE
     const rangeType = inject('rangeType', 'all')
     const pager = reactive({
@@ -261,6 +261,7 @@ export default defineComponent({
     watch(jobContentIds, (val) => {
       if (val.length > 0) staffs.value = []
     })
+
     /** 只看新人和只看正式伙伴互斥 */
     const changeOnlyNew = () => {
       if (onlyNew.value) onlyOld.value = false
@@ -268,6 +269,7 @@ export default defineComponent({
     const changeOnlyOld = () => {
       if (onlyOld.value) onlyNew.value = false
     }
+
     /** 统一调用质检报告模块 */
     const getResultAndQuota = () => {
       const req: QualityApi.IgetQualityParams = {

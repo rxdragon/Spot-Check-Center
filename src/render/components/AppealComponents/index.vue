@@ -32,7 +32,7 @@
           <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
             <div class="search-item">
               <span>伙伴</span>
-              <StoreStaffSelect v-model="staffs" />
+              <!-- <StoreStaffSelect v-model="staffs" /> -->
             </div>
           </el-col>
           <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
@@ -146,7 +146,7 @@ import { useStore } from '@/store/index'
 import { useRouter, useRoute } from 'vue-router'
 import { defineComponent, inject, reactive, Ref, ref, watch } from 'vue'
 import DatePicker from '@/components/DatePicker/index.vue'
-import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
+// import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
 import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import ReviewStatusSelect from '@/components/SelectBox/ReviewStatusSelect/index.vue'
 import { ORGANIZATION_TYPE } from '@/model/Enumerate'
@@ -157,7 +157,7 @@ import dayjs from 'dayjs'
  
 export default defineComponent({
   name: 'AppealComponents',
-  components: { DatePicker, StoreStaffSelect, ReviewStatusSelect, PositionStaffSelect },
+  components: { DatePicker, ReviewStatusSelect, PositionStaffSelect },
   setup () {
     const router = useRouter()
     const route = useRoute()

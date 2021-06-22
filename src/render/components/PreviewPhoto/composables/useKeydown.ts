@@ -5,6 +5,7 @@ interface IUseKeydown {
   closePreview: any
   scaleNum: any
   judgeHasZoom: any
+  showMarkPhoto: any
 }
 
 export default function ({
@@ -12,7 +13,8 @@ export default function ({
   nextPhoto,
   closePreview,
   scaleNum,
-  judgeHasZoom
+  judgeHasZoom,
+  showMarkPhoto
 }: IUseKeydown) {
   onMounted (() => {
     document.onkeydown = (e) => {
@@ -26,6 +28,7 @@ export default function ({
           nextPhoto()
           break
         case 'AltRight':
+        case 'Escape':
         case 'KeyS':
           closePreview()
           break
@@ -42,6 +45,9 @@ export default function ({
             scaleNum.value += 5
           }
           judgeHasZoom()
+          break
+        case 'KeyX':
+          showMarkPhoto()
           break
         default:
           break

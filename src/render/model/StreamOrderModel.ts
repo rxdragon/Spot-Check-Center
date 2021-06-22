@@ -11,6 +11,7 @@ export interface IPagerInfo {
 export interface IStaffInfo {
   staffIds: number[]
   name: string
+  isNewStaff: boolean
   expertsName: string
   groupLeaderName: string
   supervisorName: string
@@ -24,6 +25,8 @@ function getStaffInfo (staffInfo: { staffs: any[], experts: any[], group_leader:
   let staffIds = staffsInfo.map(item => item.id)
   staffIds = staffIds.filter(item => item)
   const staffsName = staffsNames.join('、')
+
+  const isNewStaff = staffsInfo.some(item => item.is_new_staff)
 
   const expertsInfo = staffInfo.experts || []
   const expertsNames = expertsInfo.map(item => item.nickname || item.name || '异常')
@@ -39,6 +42,7 @@ function getStaffInfo (staffInfo: { staffs: any[], experts: any[], group_leader:
 
   return {
     staffIds,
+    isNewStaff,
     name: staffsName,
     expertsName,
     groupLeaderName,
