@@ -19,13 +19,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, PropType, reactive, ref } from 'vue'
 import { getEvaluateSelectList } from '@/api/evaluateHistoryApi'
+import { SPOT_TYPE, ORGANIZATION_TYPE } from '@/model/Enumerate'
 
 export default defineComponent({
   name: 'EvaluateSelect',
   props: {
-    type: { type: String, default: '' }
+    spotType: { type: String as PropType<SPOT_TYPE>, required: true },
+    organizationType: { type: String as PropType<ORGANIZATION_TYPE>, required: true }
   },
   setup (props) {
     /** 组件基本属性 */
@@ -44,7 +46,8 @@ export default defineComponent({
       try {
         loading.value = true
         const req = {
-          type: props.type
+          type: props.spotType,
+          organizationType: props.organizationType
         }
         const res: any[] = await getEvaluateSelectList(req)
         options.value = res

@@ -45,7 +45,7 @@
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>评价标签</span>
-          <EvaluateSelect v-model="evaluateIds" :type="type" />
+          <EvaluateSelect v-model="evaluateIds" :spot-type="type" :organization-type="organizationType" />
         </div>
       </el-col>
       <!-- 分数 -->
