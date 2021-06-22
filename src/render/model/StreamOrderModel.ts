@@ -1,4 +1,5 @@
 import { STORE_TYPE, storeTypeToCN } from '@/model/Enumerate'
+import { v4 as uuid } from 'uuid'
 
 export interface IPagerInfo {
   page: number
@@ -10,6 +11,7 @@ export interface IPagerInfo {
 export interface IStaffInfo {
   staffIds: number[]
   name: string
+  isNewStaff: boolean
   expertsName: string
   groupLeaderName: string
   supervisorName: string
@@ -23,6 +25,8 @@ function getStaffInfo (staffInfo: { staffs: any[], experts: any[], group_leader:
   let staffIds = staffsInfo.map(item => item.id)
   staffIds = staffIds.filter(item => item)
   const staffsName = staffsNames.join('、')
+
+  const isNewStaff = staffsInfo.some(item => item.is_new_staff)
 
   const expertsInfo = staffInfo.experts || []
   const expertsNames = expertsInfo.map(item => item.nickname || item.name || '异常')
@@ -38,6 +42,7 @@ function getStaffInfo (staffInfo: { staffs: any[], experts: any[], group_leader:
 
   return {
     staffIds,
+    isNewStaff,
     name: staffsName,
     expertsName,
     groupLeaderName,
@@ -66,7 +71,7 @@ export default class StreamOrderModel {
   }
 
   constructor (data: any, pager?: IPagerInfo) {
-    this.id = _.get(data, 'id') || 1
+    this.id = _.get(data, 'id') || uuid()
     this.orderNum = _.get(data, 'order_num') || '异常'
     this.dresserInfo = getStaffInfo(_.get(data, 'dressers') || {})
     this.photographyerInfo = getStaffInfo(_.get(data, 'photographers') || {})

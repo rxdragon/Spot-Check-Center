@@ -2,7 +2,8 @@
   <div v-if="degree" class="ai-check-result">
     <div class="panel-title mb-3">AI审核结果</div>
     <div class="panel-content">
-      <el-tag :type="degreeType === 'normal' ? '' : 'danger'">{{ degree }}</el-tag>
+      <el-tag v-if="degree" :type="degreeType === 'normal' ? '' : 'danger'">{{ degree }}</el-tag>
+      <span v-else>-</span>
     </div>
   </div>
 </template>

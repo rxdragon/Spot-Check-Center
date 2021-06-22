@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-import { store } from '@/store/index'
 
 enum AI_STATE {
   SUCCESS = 'success',
@@ -8,9 +7,7 @@ enum AI_STATE {
 
 export default class AuditSpotPhotoModel {
   base: any
-  id: string // 照片审核id
-  path: string // 照片路径
-  src: string // 完整照片路径
+  id: idType // 照片审核id
   makeupDegree: string | undefined // 化妆评分
   makeupDegreeType: string | undefined // 化妆评分类型
   photographyDegree: string | undefined // 摄影评分
@@ -19,8 +16,6 @@ export default class AuditSpotPhotoModel {
   constructor (data: any) {
     this.base = data
     this.id = data._id
-    this.path = data.path
-    this.src = `${store.state.settingStore.imgDomain}${this.path}`
     this.getAiState()
   }
 

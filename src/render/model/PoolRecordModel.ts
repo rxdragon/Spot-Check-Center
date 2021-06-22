@@ -27,6 +27,7 @@ export default class PoolRecordModel {
   base: any
   id: string // 抽片记录id
   businessId: number | string
+  photoCount: number
   commitInfo?: ICommitInfo
   streamInfo?: StreamOrderModel
   photoList?: PoolPhotoModel[]
@@ -37,6 +38,8 @@ export default class PoolRecordModel {
     this.base = data
     this.id = _.get(data, '_id') || uuid()
     this.businessId = _.get(data, 'businessId') || '-'
+    const photos = _.get(this.base, 'photos') || []
+    this.photoCount = photos.length
     
     // todo: cf 添加commitInfo
     // const commitInfo = _.get(data, 'commitInfo')
@@ -61,7 +64,8 @@ export default class PoolRecordModel {
   }
 
   // 获取评价信息
-  getTags () {
-    this.tagInfo = new EvaluateTagsModel(this.base)
+  getTags (externalTagInfo?: any) {
+    const tagInfo = externalTagInfo || this.base || {}
+    this.tagInfo = new EvaluateTagsModel(tagInfo)
   }
 }

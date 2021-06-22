@@ -24,7 +24,7 @@
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>伙伴</span>
-          <StoreStaffSelect v-model="staffs" />
+          <StoreStaffSelect v-model="staffs" :spot-type="type" :organization-type="organizationType" />
         </div>
       </el-col>
       <!-- 分数 -->
@@ -110,7 +110,7 @@ import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
 import { newMessage } from '@/utils/message'
-
+import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ArraignmentRecordModule from './ArraignmentRecordModule.vue'
@@ -139,7 +139,8 @@ export default defineComponent({
   setup () {
     const route = useRoute()
     const store = useStore()
-    const type: string = inject('type', '')
+    const type = inject('type') as SPOT_TYPE
+    const organizationType = inject('organizationType') as ORGANIZATION_TYPE
 
     const timeSpan: Ref<string | never | any[]> = ref('')
     const orderNum = ref('')
@@ -254,6 +255,7 @@ export default defineComponent({
     getPhotoList()
 
     return {
+      type, organizationType,
       timeSpan,
       orderNum,
       pager,

@@ -275,3 +275,20 @@ export async function updateCommitHistory (params: IEmptyPoolByStaffIdParams): P
   })
   return res
 }
+
+/**
+ * @description 删除订单
+ */
+interface IDeleteHistoryParams extends IEvaluateAPi {
+  poolItemId: idType
+  uuid: idType
+}
+export async function deleteHistory (params: IDeleteHistoryParams): Promise<boolean> {
+  const url = `${getApiUrl(params.type, params.organizationType)}/deleteHistory`
+  const res: any = await axios({
+    url,
+    method: 'POST',
+    data: params
+  })
+  return res
+}

@@ -217,6 +217,7 @@ export default defineComponent({
         staffPermission.value = staffInfo.value.permissions.map(item => item.id)
         defaultCheckedKeys.value = staffInfo.value.configStore
         configStaffIds.value = staffInfo.value.configStaffIds
+        staffNum.value = staffInfo.value.id
 
         if (activeRoleId.value) {
           await getRoleInfo(activeRoleId.value)

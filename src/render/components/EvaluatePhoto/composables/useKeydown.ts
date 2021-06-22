@@ -32,6 +32,7 @@ export default function ({
           break
         case 'AltRight':
         case 'KeyS':
+        case 'Escape':
           closePreview()
           break
         case 'KeyQ':

@@ -70,9 +70,19 @@ export default defineComponent({
     getLoginSsoUrl () {
       let redirectPath = '/login.html'
       
+      // 只有web端才走这里
       if (window.location.pathname.includes(__APP_INFO__.pkg.name)) {
-        redirectPath = `/${__APP_INFO__.pkg.name}/login.html`
+        const pathnameArr = window.location.pathname.split('/')
+
+        for (const pathItem of pathnameArr) {
+          if (pathItem.includes(__APP_INFO__.pkg.name)) {
+            redirectPath = `/${pathItem}/login.html`
+            break
+          }
+        }
       }
+
+      
       const query = JSON.stringify({
         title: '缦图云端',
         redirect: `${window.location.origin}${redirectPath}#/?token=`

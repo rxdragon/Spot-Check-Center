@@ -37,7 +37,7 @@ export function setSavePath (value: string) {
  * @param {*} value
  */
 export function updateSavePath (value: string) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>((resolve) => {
     window.CloudDb.update({
       tableName: 'setting',
       condition: (item: { settingKey: string }) => item.settingKey === 'savePath',
@@ -87,7 +87,7 @@ export function setSetting (key: string, value: string) {
  * @param {*} value
  */
 export function updateSetting (key: string, value: string | number) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>((resolve) => {
     window.CloudDb.update({
       tableName: 'setting',
       condition: (item: { settingKey: string }) => item.settingKey === key,

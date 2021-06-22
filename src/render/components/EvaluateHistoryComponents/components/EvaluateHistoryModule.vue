@@ -6,25 +6,25 @@
       <PhotoBox
         v-for="(photoItem, photoIndex) in photoList"
         :key="photoItem.id"
-        :src="photoItem.auditSpotModel.path"
+        :src="photoItem.path"
         version=""
         class="mr-4"
         @click="onSelectPhoto(photoIndex)"
       >
         <template #otherInfo>
-          <div class="audio-ino">
+          <div v-if="photoItem.auditSpotModel" class="audio-ino">
             AI审核结果：
             <span
               v-if="type === SPOT_TYPE.MAKEUP"
-              :class="photoItem.makeupDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
+              :class="photoItem.auditSpotModel.makeupDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
             >
-              {{ photoItem.makeupDegree }}
+              {{ photoItem.auditSpotModel.makeupDegree }}
             </span>
             <span
               v-if="type === SPOT_TYPE.PHOTOGRAPHY"
-              :class="photoItem.photographyDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
+              :class="photoItem.auditSpotModel.photographyDegreeType === 'normal' ? 'text-blue-600' : 'text-red-500'"
             >
-              {{ photoItem.photographyDegree }}
+              {{ photoItem.auditSpotModel.photographyDegree }}
             </span>
           </div>
         </template>
@@ -37,7 +37,7 @@
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">订单号：{{ streamInfo.orderNum }}</div>
       <div class="info-item">产品名称：{{ streamInfo.productName }}</div>
-      <div class="info-item">照片张数：{{ streamInfo.photoCount }}</div>
+      <div class="info-item">照片张数：{{ recordInfo.photoCount }}</div>
       <div class="info-item">
         门店类型：{{ streamInfo.storeTypeCN }}
         <div class="standard-icon">
@@ -49,92 +49,113 @@
     <!-- 化妆师信息 -->
     <div class="order-info grid grid-cols-5 mb-4">
       <div class="info-item">
-        化妆师：{{ dresserInfo.name }}
+        <template v-if="type === SPOT_TYPE.MAKEUP">
+          化妆师：{{ streamInfo.dresserInfo.name || '-' }}
+          <el-tag v-if="streamInfo.dresserInfo.isNewStaff" type="warning" size="small">新人</el-tag>
+        </template>
+        <template v-else>
+          摄影师：{{ streamInfo.photographyerInfo.name || '-' }}
+          <el-tag v-if="streamInfo.photographyerInfo.isNewStaff" type="warning" size="small">新人</el-tag>
+        </template>
       </div>
       <div class="info-item">
-        化妆督导：{{ dresserInfo.supervisorName }}
+        <template v-if="type === SPOT_TYPE.MAKEUP">
+          化妆督导：{{ streamInfo.dresserInfo.supervisorName || '-' }}
+        </template>
+        <template v-else>
+          摄影督导：{{ streamInfo.photographyerInfo.supervisorName || '-' }}
+        </template>
       </div>
       <div class="info-item">
-        化妆专家：{{ dresserInfo.expertsName }}
+        <template v-if="type === SPOT_TYPE.MAKEUP">
+          化妆专家：{{ streamInfo.dresserInfo.expertsName || '-' }}
+        </template>
+        <template v-else>
+          摄影专家：{{ streamInfo.photographyerInfo.expertsName || '-' }}
+        </template>
       </div>
     </div>
     <!-- 备注信息 -->
     <div class="order-info grid grid-cols-1 mb-4">
-      <div class="info-item">订单备注：{{ note.orderNote }}</div>
+      <div class="info-item">订单备注：{{ streamInfo.note.orderNote }}</div>
     </div>
     <div class="order-info grid grid-cols-1 mb-4">
-      <div class="info-item">摄影备注：{{ note.photographyNote }}</div>
+      <div class="info-item">摄影备注：{{ streamInfo.note.photographyNote }}</div>
     </div>
     <div class="order-info grid grid-cols-1 mb-4">
-      <div class="info-item">化妆备注：{{ note.dresserNote }}</div>
+      <div class="info-item">化妆备注：{{ streamInfo.note.dresserNote }}</div>
     </div>
     <el-divider />
     <!-- 评价信息 -->
-    <div class="panel-title grid grid-cols-12 mb-6">
+    <div class="panel-title mb-4">
       <div class="col-start-1 col-end-4">评价信息</div>
-      <div class="evaluate-title-info grid grid-cols-3 col-end-13 col-span-4">
-        <div>总评分：{{ tagInfo.totalScore }}</div>
-        <div>评分人：{{ tagInfo.raterName }}</div>
+      <div class="flex items-center panel-slot">
+        <div class="mr-4">总评分：{{ tagInfo.totalScore }}</div>
+        <el-tag v-if="tagInfo.isReEvaluate" type="warning" size="small">已修改</el-tag>
+
+        <div class="mr-4">评分人：{{ tagInfo.raterName }}</div>
         <div>
           <el-button
             size="small"
             class="change-evaluate-btn"
             type="primary"
-            @click="onEvaluatePhoto(0)"
+            @click="onEvaluatePhoto"
           >
             修改评分
           </el-button>
         </div>
       </div>
     </div>
-    <div class="order-info grid grid-cols-4 mb-4">
-      <div class="info-item">
-        评价标签：
-        <el-tag
-          v-for="tagItem in tagInfo.tags"
-          :key="tagItem.id"
-          class="text-center"
-          :class="['type-tag', tagItem.type]"
-          size="medium"
-        >
-          {{ tagItem.name }}
-        </el-tag>
+    <div class="order-info">
+      <div class="info-item flex">
+        <div class="info-title flex-none">评价标签：</div>
+        <div class="info-content">
+          <el-tag
+            v-for="tagItem in tagInfo.tags"
+            :key="tagItem.id"
+            class="text-center"
+            :class="['type-tag', tagItem.type]"
+            size="medium"
+          >
+            {{ tagItem.name }}
+          </el-tag>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject } from 'vue'
+import { computed, defineComponent, inject, PropType } from 'vue'
+
+import type PoolRecordModel from '@/model/PoolRecordModel'
+import type StreamOrderModel from '@/model/StreamOrderModel'
+import type PoolPhotoModel from '@/model/PoolPhotoModel'
+import type EvaluateTagsModel from '@/model/EvaluateTagsModel'
+
 import { SPOT_TYPE } from '@/model/Enumerate'
-// import type PoolRecordModel from '@/model/PoolRecordModel'
 import PhotoBox from '@/components/PhotoBox/index.vue'
+import * as PhotoTool from '@/utils/photoTool'
 
 export default defineComponent({
   name: 'EvaluateHistoryModule',
   components: { PhotoBox },
   props: {
-    recordInfo: { type: Object, required: true }
+    recordInfo: { type: Object as PropType<PoolRecordModel>, required: true }
   },
   emits: ['previewPhoto', 'evaluatePhoto'],
-  data () {
-    return {
-      SPOT_TYPE
-    }
-  },
   setup (props, { emit }) {
-    const type = inject('type')
-    /** 
-     * @description 照片预览 
-     */
+    const type = inject('type') as SPOT_TYPE
+   
+    /** 照片预览 */
     const onSelectPhoto = (photoIndex: string | number | symbol) => {
       const photoData = props.recordInfo.photoList?.map((photoItem: any, index: number) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { ...orderInfo } = props.recordInfo.streamInfo
         return {
-          title: `第${index + 1}张图`,
           ...photoItem.auditSpotModel,
-          orderInfo
+          title: `第${index + 1}张图`,
+          src: PhotoTool.compleImagePath(photoItem.path),
+          markPath: PhotoTool.compleImagePath(photoItem.markPath),
+          orderInfo: props.recordInfo.streamInfo
         }
       })
       const data = {
@@ -143,47 +164,31 @@ export default defineComponent({
       }
       emit('previewPhoto', data)
     }
-    /** 
-     * @description 修改评分
-     */
-    const onEvaluatePhoto = (photoIndex: string | number | symbol) => {
+
+    /** 修改评分 */
+    const onEvaluatePhoto = () => {
       const poolItemId = props.recordInfo.id
 
       const data = {
         poolItemId,
-        photoIndex
+        photoIndex: 0
       }
       emit('evaluatePhoto', data)
     }
 
-    const photoList = computed (() => {
-      return props.recordInfo.photoList
-    })
-
-    const streamInfo = computed (() => {
-      return props.recordInfo.streamInfo
-    })
-
-    const note = computed (() => {
-      return props.recordInfo.streamInfo?.note
-    })
-
-    const dresserInfo = computed (() => {
-      return props.recordInfo.streamInfo?.dresserInfo
-    })
-
-    const tagInfo = computed (() => {
-      return props.recordInfo.tagInfo
-    })
+    // 照片列表
+    const photoList = computed(() => props.recordInfo.photoList as PoolPhotoModel[])
+    // 订单流水信息
+    const streamInfo = computed(() => props.recordInfo.streamInfo as StreamOrderModel)
+    // 标价信息
+    const tagInfo = computed(() => props.recordInfo.tagInfo as EvaluateTagsModel)
     
     return {
       onSelectPhoto,
       onEvaluatePhoto,
-      type,
+      type, SPOT_TYPE,
       photoList,
       streamInfo,
-      note,
-      dresserInfo,
       tagInfo
     }
   }
@@ -201,14 +206,6 @@ export default defineComponent({
   .order-info {
     font-size: 14px;
     word-break: break-all;
-  }
-
-  .evaluate-title-info {
-    display: flex;
-
-    .change-evaluate-btn {
-      padding: 9px;
-    }
   }
 
   .type-tag {

@@ -89,6 +89,7 @@ export function handleCommitInfo (issueLabel: any) {
  * @returns 
  */
 export function compleImagePath (path: string) {
+  if (!path) return ''
   if (path.includes('http')) return path
   if (path.includes('blob')) return path
   return `${store.getters.imgDomain}${path}`
@@ -100,6 +101,7 @@ export function compleImagePath (path: string) {
  * @returns 
  */
 export function compleCompressImagePath (path: string) {
+  if (!path) return ''
   if (path.includes('http')) return path
   if (path.includes('blob')) return path
   return `${store.getters.imgCompressDomain}${path}`

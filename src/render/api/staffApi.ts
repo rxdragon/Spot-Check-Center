@@ -94,7 +94,6 @@ export async function disableStaff (params: IDisableStaffParams): Promise<boolea
 }
 export async function enableStaff (params: IEnableStaffParams): Promise<boolean> {
   const res: any = await axios({
-    // TODO:cf
     url: '/project_photo_quality/staff/enableStaff',
     method: 'PUT',
     data: params
@@ -152,7 +151,7 @@ export interface IStoreInfo {
 export async function getAllStore (disabledId: any[] = []) {
   const res: any = await axios({
     url: '/project_photo_quality/common/getAllStore',
-    method: 'GET',
+    method: 'POST',
   })
   let createData: IStoreInfo[] = [
     {

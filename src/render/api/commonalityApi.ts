@@ -1,4 +1,5 @@
 import axios from '@/plugins/axios'
+import { STORE_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
 /**
  * @description 获取七牛云接口
@@ -18,8 +19,9 @@ export async function getSignature () {
 /**
  * @description 获取门店小伙伴级联树
  */
-interface IGetStoreStaffTreeParams {
-  needDelete?: boolean
+export interface IGetStoreStaffTreeParams {
+  state: STORE_TYPE[]
+  type?: SPOT_TYPE
 }
 interface IStaffItem {
   label: string
@@ -31,7 +33,6 @@ export interface ICascaderSelect {
   children: IStaffItem[]
 }
 export async function getStoreStaffTree (params: IGetStoreStaffTreeParams) {
-  // TODO: cf 优化，将数据存储在sesssion内
   const res: any = await axios({
     url: '/project_photo_quality/common/getStoreStaffTree',
     method: 'POST',

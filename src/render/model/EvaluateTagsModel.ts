@@ -5,12 +5,16 @@ import * as GetTags from '@/utils/getTags'
  */
 export default class EvaluateTagsModel {
   totalScore: string // 总评分
-  RaterName: string // 评分人
-  tags?: GetTags.ITags[] // 评价标签
+  raterName: string // 评分人
+  isReEvaluate: boolean // 重新评价
+  tags: GetTags.ITags[] // 评价标签
+
   constructor (data: any) {
     // TODO: lj
     this.totalScore = _.get(data, 'commitInfo.score') || ''
-    this.RaterName = _.get(data, 'takeStaffInfo.name') || ''
+    this.raterName = _.get(data, 'takeStaffInfo.name') || ''
+    this.isReEvaluate = Boolean(_.get(data, 'commitInfo.oldTakeStaffInfo'))
+
     const tags = _.get(data, 'tags') || []
     this.tags = GetTags.getTagInfo(tags).parentData
   }

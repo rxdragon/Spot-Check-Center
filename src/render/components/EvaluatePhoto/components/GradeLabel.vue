@@ -46,6 +46,7 @@ export default defineComponent({
     const activeNames = ref([])
 
     /** 获取全部标签信息 */
+    let backUpLabelData: ILabelClass[] = []
     const labelClass = ref<ILabelClass[]>([])
     const chainLine = ref<any[]>([])
     const getAllLabel = async () => {
@@ -53,6 +54,7 @@ export default defineComponent({
         loading.value = true
         const req = { type, organizationType }
         const res = await EvaluateApi.getScoreConfigList(req)
+        backUpLabelData = JSON.parse(JSON.stringify(res.labelClass))
         labelClass.value = res.labelClass
         chainLine.value = res.chainLine
       } finally {
@@ -75,6 +77,7 @@ export default defineComponent({
     // 重置标签
     const resetSelectLabel = () => {
       selectAllData.value = {}
+      labelClass.value = JSON.parse(JSON.stringify(backUpLabelData))
     }
     // 获取全部标签
     const getAllSelectLabel = () => {
@@ -107,12 +110,17 @@ export default defineComponent({
 
   width: 100%;
   min-height: 400px;
+  max-height: calc(100% - 60px);
+  overflow: overlay;
   font-size: 12px;
   color: #eee;
   user-select: none;
 
   .label-header {
+    position: sticky;
+    top: 0;
     padding: 14px 12px;
+    background-color: #535353;
 
     .panel-title {
       color: #eee;

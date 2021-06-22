@@ -27,7 +27,7 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>伙伴</span>
-            <StoreStaffSelect v-model="staffs" />
+            <StoreStaffSelect v-model="staffs" :spot-type="type" :organization-type="organizationType" />
           </div>
         </el-col>
         <!-- 职能查询 -->
@@ -41,7 +41,7 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>评价标签</span>
-            <EvaluateSelect v-model="evaluateIds" />
+            <EvaluateSelect v-model="evaluateIds" :spot-type="type" :organization-type="organizationType" />
           </div>
         </el-col>
         <!-- 分数查询 -->
@@ -52,9 +52,11 @@
           </div>
         </el-col>
         <!-- 查询按钮 -->
-        <el-col v-bind="{...colConfig, sm: 4, md: 4}">
+        <el-col v-bind="{...colConfig}" class="text-right">
           <div class="search-item">
-            <el-button type="primary" @click="getHistoryRecords(1)">查询</el-button>
+            <el-checkbox v-model="onlyNew" @change="changeOnlyNew">只看新人</el-checkbox>
+            <el-checkbox v-model="onlyOld" @change="changeOnlyOld">只看正式伙伴</el-checkbox>
+            <el-button class="ml-4" type="primary" @click="getHistoryRecords(1)">查询</el-button>
           </div>
         </el-col>
       </el-row>
@@ -97,13 +99,17 @@
       :index="previewIndex"
     />
     <!-- 修改评分组件 -->
-    <EvaluatePhoto
-      v-if="showEvaluate"
-      v-model:showEvaluate="showEvaluate"
-      :imgarray="evaluatePhotos"
-      :index="evaluateIndex"
-      @submitData="onSubmitData"
-    />
+    <transition name="el-fade-in-linear">
+      <EvaluatePhoto
+        v-if="showEvaluate"
+        ref="evaluatePhotoDom"
+        v-model:showEvaluate="showEvaluate"
+        :imgarray="evaluatePhotos"
+        :index="evaluateIndex"
+        is-resume-evaluate
+        @submitData="onSubmitData"
+      />
+    </transition>
   </div>
 </template>
 
@@ -113,7 +119,6 @@ import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
 import { newMessage } from '@/utils/message'
-import * as TimeUtil from '@/utils/TimeUtil'
 import DatePicker from '@/components/DatePicker/index.vue'
 import ProductSelect from '@/components/SelectBox/ProductSelect/index.vue'
 import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
@@ -125,7 +130,9 @@ import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/inde
 import EvaluatePhoto from '@/components/EvaluatePhoto/index.vue'
 import NoData from '@/components/NoData/index.vue'
 
+import * as TimeUtil from '@/utils/TimeUtil'
 import * as EvaluateApi from '@/api/evaluateApi'
+import * as PhotoTool from '@/utils/photoTool'
 import * as EvaluateHistoryApi from '@/api/evaluateHistoryApi'
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import PoolRecordModel from '@/model/PoolRecordModel'
@@ -158,31 +165,30 @@ export default defineComponent({
       total: 10
     })
 
+    /** 只看新人和只看正式伙伴互斥 */
+    const onlyNew = ref(false)
+    const onlyOld = ref(false)
+    const changeOnlyNew = () => { if (onlyNew.value) onlyOld.value = false }
+    const changeOnlyOld = () => { if (onlyOld.value) onlyNew.value = false }
+
     /** 查询历史记录相关数据 */
-    const productIds = ref([])
-    const staffs = ref([])
-    const positionStaffIds = ref([])
+    const productIds = ref<idType[]>([])
+    const staffs = ref<idType[]>([])
+    const positionStaffIds = ref<idType[]>([])
     const scopeData = ref([])
-    const evaluateIds = ref([])
+    const evaluateIds = ref<idType[]>([])
     const evaluateRecordList = ref<PoolRecordModel[]>([])
     const orderNum = ref('')
 
     const getHistoryRecords = async (page?: number) => {
       pager.page = page ? page : pager.page
       if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
+
       try {
         store.dispatch('settingStore/showLoading', route.name)
         const req: EvaluateHistoryApi.IgetHistoryRecordsParams = {
           type,
           organizationType,
-          startTime: '',
-          endTime: '',
-          cloudOrderNum: '',
-          productIds: productIds.value,
-          staffIds: staffs.value,
-          supervisorArr: positionStaffIds.value,
-          score: scopeData.value,
-          problemTagsIds: evaluateIds.value,
           page: pager.page,
           pageSize: pager.pageSize
         }
@@ -193,22 +199,23 @@ export default defineComponent({
         }
         if (productIds.value.length > 0) req.productIds = productIds.value
         if (staffs.value.length > 0) req.staffIds = staffs.value
-        if (positionStaffIds.value.length > 0) req.supervisorArr = positionStaffIds.value
         if (scopeData.value.length > 0) req.score = scopeData.value
         if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
-        if (orderNum.value) {
-          req.cloudOrderNum = orderNum.value
-          // delete req.startAt
-          // delete req.endAt
-        }
+        if (orderNum.value) req.orderNum = orderNum.value
+        if (onlyNew.value) req.onlyNew = onlyNew.value
+        if (onlyOld.value) req.onlyOld = onlyOld.value
+
+        if (positionStaffIds.value.length > 0) req.supervisorArr = positionStaffIds.value
         const res = await EvaluateHistoryApi.getHistoryRecords(req)
         pager.total = res.total
         evaluateRecordList.value = res.list
       } finally {
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
-      
     }
+    // TODO 调试
+    timeSpan.value = ['2021-06-21', '2021-06-21']
+    getHistoryRecords()
     // 分页逻辑
     const handlePage = () => {
       getHistoryRecords()
@@ -225,7 +232,7 @@ export default defineComponent({
       showPreview.value = true
     }
 
-    /** 显示打分数据 */
+    /** 重新评分 */
     const evaluatePhotos = ref<any>([])
     const evaluateIndex = ref(0)
     const showEvaluate = ref(false)
@@ -242,10 +249,10 @@ export default defineComponent({
           aiSpotLabel: type === SPOT_TYPE.MAKEUP ? photoItem.auditSpotModel?.makeupDegree : photoItem.auditSpotModel?.photographyDegree,
         }
         return {
-          // todo photoModel 增加完成src
           id: photoItem.id,
           title: `原片（${index + 1}/${findPoolItemData.photoList?.length}）`,
-          src: photoItem.path,
+          src: PhotoTool.compleImagePath(photoItem.path),
+          compressSrc: PhotoTool.compleCompressImagePath(photoItem.path),
           photoInfo,
           markPath: '',
           markJson: '',
@@ -261,17 +268,28 @@ export default defineComponent({
       evaluatePhoto(poolItemId, photoIndex)
     }
     // 提交评分
+    const evaluatePhotoDom = ref(null)
     const onSubmitData = async (data: any) => {
       const findPoolItemData = evaluateRecordList.value.find(poolItem => poolItem.id === evaluatePoolRecordId.value)
       if (!findPoolItemData) return newMessage.warning('未找到对应抽片记录，onSubmitData')
-      const req = {
-        poolItemId: findPoolItemData.id,
-        photos: data.photos,
-        tags: data.tags,
-        type,
-        organizationType
+      try {
+        (evaluatePhotoDom.value as any).imgLoading = true
+        const req = {
+          poolItemId: findPoolItemData.id,
+          photos: data.photos,
+          tags: data.tags,
+          type,
+          organizationType
+        }
+        await EvaluateApi.updateCommitHistory(req)
+        newMessage.success('修改评分成功')
+        showEvaluate.value = false
+        await getHistoryRecords()
+      } finally {
+        if (evaluatePhotoDom.value) {
+          (evaluatePhotoDom.value as any).imgLoading = false
+        }
       }
-      await EvaluateApi.updateCommitHistory(req)
     }
 
     return {
@@ -279,7 +297,9 @@ export default defineComponent({
       timeSpan, orderNum, productIds, staffs, positionStaffIds, scopeData, evaluateIds,
       pager, evaluateRecordList, handlePage, getHistoryRecords,
       showPreview, previewPhotos, previewIndex, onPreviewPhotoList,
-      onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate, onSubmitData
+      evaluatePhotoDom,
+      onEvaluatePhoto, evaluatePhotos, evaluateIndex, showEvaluate, onSubmitData,
+      onlyNew, onlyOld, changeOnlyNew, changeOnlyOld
     }
   }
 })
