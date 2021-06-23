@@ -33,6 +33,7 @@ interface IPermissionStore {
   routes: RouteRecordRaw[]
   addRoutes: RouteRecordRaw[]
   personageRouters: RouteRecordRaw[]
-  roles: string[],
-  showAppealBtn: boolean
+  roles: string[]
+  showToAppeal: boolean
+  showResetScore: boolean
 }

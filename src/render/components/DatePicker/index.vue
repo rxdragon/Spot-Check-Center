@@ -19,8 +19,8 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name: 'DatePicker',
   props: {
-    type: { type: String, default: 'daterange' },
-    valueFormat: { type: String, default: 'YYYY-MM-DD' },
+    type: { type: String, default: 'datetimerange' },
+    valueFormat: { type: String, default: 'YYYY-MM-DD HH:mm:ss' },
     shortcuts: { type: Boolean },
     future: { type: Boolean }
   },

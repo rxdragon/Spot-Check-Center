@@ -48,6 +48,7 @@
  - | 新功能开发 | [729606c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/729606c)
  - | 新增本地服务器和indexDB | [ade2c85](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/ade2c85)
  - | 新增编辑窗口 | [c45813d](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c45813d)
+ - | 新增抽片记录 | [147c1ba](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/147c1ba)
  - | 新增角色组功能 | [9109ea7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9109ea7)
  - | 新增历史模块显示 | [b586138](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/b586138)
  - | 新增添加评分项目动效 | [08d1da6](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/08d1da6)
