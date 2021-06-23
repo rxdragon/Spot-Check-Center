@@ -290,7 +290,7 @@ export default defineComponent({
       if (scopeData.value.length > 0) req.score = scopeData.value
       if (productIds.value.length > 0) req.productIds = productIds.value
       if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
-      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value
+      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value.reduce( (a: string[], b: string[]) => { return a.concat(b) }, [] as any)
       if (staffs.value.length > 0) req.staffIds = staffs.value
       if (onlyNew.value) req.onlyNew = onlyNew.value
       if (onlyOld.value) req.onlyOld = onlyOld.value

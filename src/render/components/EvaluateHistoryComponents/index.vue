@@ -174,7 +174,7 @@ export default defineComponent({
     /** 查询历史记录相关数据 */
     const productIds = ref<idType[]>([])
     const staffs = ref<idType[]>([])
-    const positionStaffIds = ref<idType[]>([])
+    const positionStaffIds = ref([])
     const scopeData = ref([])
     const evaluateIds = ref<idType[]>([])
     const evaluateRecordList = ref<PoolRecordModel[]>([])
@@ -205,7 +205,8 @@ export default defineComponent({
         if (onlyNew.value) req.onlyNew = onlyNew.value
         if (onlyOld.value) req.onlyOld = onlyOld.value
 
-        if (positionStaffIds.value.length > 0) req.supervisorArr = positionStaffIds.value
+        if (positionStaffIds.value.length > 0) req.supervisorArr = positionStaffIds.value.reduce( (a: string[], b: string[]) => { return a.concat(b) }, [] as string[])
+
         const res = await EvaluateHistoryApi.getHistoryRecords(req)
         pager.total = res.total
         evaluateRecordList.value = res.list

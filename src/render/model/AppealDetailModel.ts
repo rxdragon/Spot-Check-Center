@@ -39,7 +39,7 @@ export default class AppealListModel {
   base: any
   id: string
   appealNote: string
-  orderInfo?: IAppealOrder[]
+  orderInfo: IAppealOrder[]
   status: string
   statusCN: string
   rejectedNote: string
@@ -58,6 +58,7 @@ export default class AppealListModel {
     this.appealNote = _.get(data, 'appeal.note') || ''
     this.rejectedNote = _.get(data, 'rejected_note') || ''
     this.photoList = []
+    this.orderInfo = []
     this.getOrderInfo()
     this.getFirstExamineInfo()
     this.getSecondExamineInfo()

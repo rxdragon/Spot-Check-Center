@@ -9,7 +9,7 @@
       </el-tabs>
       <div
         class="module-panel"
-        :class="{'rounded-tl-none': appealType === APPEAL_STEP.FIRST && type !== APPEAL_STEP.ALL}"
+        :class="{'rounded-tl-none': appealType === APPEAL_STEP.FIRST && !history}"
       >
         <el-row class="search-box" :gutter="20">
           <!-- 评分时间 -->
@@ -28,7 +28,7 @@
           <el-col v-if="!history" v-bind="{ ...colConfig }">
             <div class="search-item">
               <span>伙伴</span>
-              <!-- <StoreStaffSelect v-model="staffs" /> -->
+              <StoreStaffSelect v-model="staffs" :spot-type="type" :organization-type="organizationType" />
             </div>
           </el-col>
           <el-col v-if="!history" v-bind="{ ...colConfig }">
@@ -58,7 +58,7 @@
           </el-col>
         <!-- 申诉人 -->
         </el-row>
-        <div v-if="type !== 'all'" class="top-msg flex items-center mb-6">
+        <div v-if="!history" class="top-msg flex items-center mb-6">
           <span class="mr-6">申诉总单量:{{ appealCount }}单</span>
           <span>初审拒绝率:{{ (appealRefuseCount / (appealCount === 0 ? 1 : appealCount) * 100).toFixed() }}%</span>
         </div>
@@ -137,7 +137,7 @@ import { useStore } from '@/store/index'
 import { useRouter, useRoute } from 'vue-router'
 import { defineComponent, inject, reactive, Ref, ref, watch } from 'vue'
 import DatePicker from '@/components/DatePicker/index.vue'
-// import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
+import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
 import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import ReviewStatusSelect from '@/components/SelectBox/ReviewStatusSelect/index.vue'
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
@@ -155,13 +155,13 @@ export enum APPEAL_STEP {
  
 export default defineComponent({
   name: 'AppealComponents',
-  components: { DatePicker, ReviewStatusSelect, PositionStaffSelect },
+  components: { DatePicker, ReviewStatusSelect, PositionStaffSelect, StoreStaffSelect },
   setup () {
     const router = useRouter()
     const route = useRoute()
     const store = useStore()
 
-    const type = inject('type', 'all')
+    const type = inject('type') as SPOT_TYPE
     const organizationType = inject('organizationType', ORGANIZATION_TYPE.HIMO)
     const history = inject('history', false)
     const colConfig = reactive({
@@ -248,7 +248,7 @@ export default defineComponent({
       if (inputStaffId.value) req.inputStaffId = inputStaffId.value
       if (staffs.value.length > 0) req.staffIds = staffs.value
       if (appealStatus.value) req.appealStatus = appealStatus.value.split(',')
-      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value
+      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value.reduce( (a: string[], b: string[]) => { return a.concat(b) }, [] as any)
       if (history) {
         getAppealHistory(req)
       } else {

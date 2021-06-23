@@ -189,7 +189,7 @@ export default defineComponent({
     const statusCN = ref('')
     const rejectedNote = ref('')
     const tagsList = ref<any[] | undefined>([])
-    const orderTableData: Ref<undefined | IAppealOrder[]> = ref([])
+    const orderTableData = ref<IAppealOrder[]>([])
     const photoList: Ref<PoolPhotoModel[]> = ref([])
     const firstExamineInfo = reactive({
       date: '',
