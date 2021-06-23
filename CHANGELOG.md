@@ -23,6 +23,7 @@
  - | 更新代码 | [397fa4c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/397fa4c)
  - | 更新代码 | [877aff9](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/877aff9)
  - | 更新接口部分联跳 | [970f46c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/970f46c)
+ - | 更新评分人 | [80b5f91](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/80b5f91)
  - | 更新评价历史记录根组件 | [9384490](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/9384490)
  - | 更新评价配置和历史相关组件 | [49697eb](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/49697eb)
  - | 更新相关带啊么 | [a2321a1](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/a2321a1)
