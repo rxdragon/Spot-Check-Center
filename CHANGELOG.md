@@ -51,6 +51,7 @@
  - | 新增添加账号功能 | [4b15860](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/4b15860)
  - | 新增electron下载模块内容 | [f96ccff](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/f96ccff)
  - | 新增staffinfo | [11338e7](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/11338e7)
+ - | 修改表格判断展示 | [d98e889](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/d98e889)
  - | 修改请求接口组合参数的写法 | [014d247](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/014d247)
  - | 优化代码 | [dd4083c](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/dd4083c)
  - | 增加代码提示 | [2044fd3](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/2044fd3)

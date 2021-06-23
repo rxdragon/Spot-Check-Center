@@ -10,7 +10,7 @@
     >
       <div class="flex items-center">
         <span class="empty-title">选择清空对象:</span>
-        <ScorerSelect v-model="emptyPeople" :spot-type="type" :organization-type="organizationType" />
+        <ScorerSelect v-model="emptyPeople" :spot-type="type" />
         <span v-if="!emptyPeople.length" class="all-empty-warning">默认清空全部人员评分</span>
       </div>
       <template #footer>
