@@ -2,6 +2,7 @@ import axios from '@/plugins/axios'
 import { SPOT_TYPE } from '@/model/Enumerate'
 import SpotCheckRecordModel from '@/model/SpotCheckRecordModel'
 import AuditSpotPhotoModel from '@/model/AuditSpotPhotoModel'
+import PoolPhotoModel from '@/model/PoolPhotoModel'
 
 export interface IgetAuditRecordTotalParams {
   type: SPOT_TYPE | string
@@ -97,7 +98,7 @@ export async function getAuditRecords (params: IgetAuditRecordsParams): Promise<
     const photoQuality = _.get(item, 'photo_quality') || []
     const arraignmentData: ISpotCheckRecordList = {
       ...new SpotCheckRecordModel(item),
-      photoList: photoQuality.map((photoItem: any) => new AuditSpotPhotoModel(photoItem))
+      photoList: photoQuality.map((photoItem: any) => new PoolPhotoModel(photoItem))
     }
     return arraignmentData
   })

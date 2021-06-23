@@ -12,42 +12,30 @@
           <el-table-column align="center" prop="num" label="订单号" />
           <el-table-column align="center" prop="productName" label="产品名称" />
           <el-table-column align="center" prop="storeName" label="所属门店" />
+          <el-table-column align="center" :label="type === SPOT_TYPE.MAKEUP ? '化妆师' : '摄影师'">
+            <template #default="{ row }">
+              <span v-if="type === SPOT_TYPE.MAKEUP">{{ row.dresser }}</span>
+              <span v-if="type === SPOT_TYPE.PHOTOGRAPHY">{{ row.photographer }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
-            v-if="type === SPOT_TYPE.MAKEUP"
             align="center"
-            prop="dresser"
-            label="化妆师"
-          />
+            :label="type === SPOT_TYPE.MAKEUP ? '化妆督导' : '摄影督导'"
+          >
+            <template #default="{ row }">
+              <span v-if="type === SPOT_TYPE.MAKEUP">{{ row.dresserSupervisor }}</span>
+              <span v-if="type === SPOT_TYPE.PHOTOGRAPHY">{{ row.photographerSupervisor }}</span>
+            </template>
+          </el-table-column>
           <el-table-column
-            v-if="type === SPOT_TYPE.MAKEUP"
             align="center"
-            prop="dresserSupervisor"
-            label="化妆督导"
-          />
-          <el-table-column
-            v-if="type === SPOT_TYPE.MAKEUP"
-            align="center"
-            prop="dresserExperts"
-            label="化妆专家"
-          />
-          <el-table-column
-            v-if="type === SPOT_TYPE.PHOTOGRAPHY"
-            align="center"
-            prop="photographer"
-            label="摄影师"
-          />
-          <el-table-column
-            v-if="type === SPOT_TYPE.PHOTOGRAPHY"
-            align="center"
-            prop="photographerSupervisor"
-            label="摄影督导"
-          />
-          <el-table-column
-            v-if="type === SPOT_TYPE.PHOTOGRAPHY"
-            align="center"
-            prop="photographerExperts"
-            label="摄影专家"
-          />
+            :label="type === SPOT_TYPE.MAKEUP ? '化妆专家' : '摄影专家'"
+          >
+            <template #default="{ row }">
+              <span v-if="type === SPOT_TYPE.MAKEUP">{{ row.dresserExperts }}</span>
+              <span v-if="type === SPOT_TYPE.PHOTOGRAPHY">{{ row.photographerExperts }}</span>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
       <div class="panel-title mb-6">申诉信息</div>

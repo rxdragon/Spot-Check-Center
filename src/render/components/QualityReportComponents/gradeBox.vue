@@ -80,10 +80,10 @@
       <!-- 评价信息 -->
       <div class="panel-title grid grid-cols-12 mb-6">
         <div class="col-start-1 col-end-4">评价信息</div>
-        <div class="evaluate-title-info grid grid-cols-3 col-end-13 col-span-4">
+        <div class="evaluate-title-info grid grid-cols-3 col-end-13 col-span-4 place-items-center">
           <div>总评分：{{ item.tagInfo.totalScore }}</div>
-          <div>评分人：{{ item.tagInfo.RaterName }}</div>
-          <div v-if="item.streamInfo.showAppealBtn">
+          <div>评分人：{{ item.tagInfo.raterName }}</div>
+          <div v-if="item.streamInfo.showAppealBtn && item.tagInfo.tags.length > 0">
             <el-button
               size="small"
               class="change-evaluate-btn"

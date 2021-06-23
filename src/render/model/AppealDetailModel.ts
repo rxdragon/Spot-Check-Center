@@ -28,9 +28,7 @@ function getName (list: any[]) {
   const realList = (list instanceof Array) ? list : []
   const nameList: string[] = realList.map(item => item.nickname || item.name || '-')
   const name = nameList.join(',')
-  return {
-    name
-  }
+  return name
 }
 
 /**
@@ -73,12 +71,12 @@ export default class AppealListModel {
     const info = {
       num: _.get(this.base, 'stream_order.order_num') || '',
       productName: _.get(this.base, 'stream_order.product.name') || '',
-      dresser: getName(_.get(this.base, 'stream_order.dressers.staffs') || []).name,
-      dresserSupervisor: getName(_.get(this.base, 'stream_order.dressers.supervisor') || []).name,
-      dresserExperts: getName(_.get(this.base, 'stream_order.dressers.experts') || []).name,
-      photographer: getName(_.get(this.base, 'stream_order.photographers.staffs') || []).name,
-      photographerSupervisor: getName(_.get(this.base, 'stream_order.photographers.supervisor') || []).name,
-      photographerExperts: getName(_.get(this.base, 'stream_order.photographers.experts') || []).name,
+      dresser: getName(_.get(this.base, 'stream_order.dressers.staffs')) || '-',
+      dresserSupervisor: getName(_.get(this.base, 'stream_order.dressers.supervisor')) || '-',
+      dresserExperts: getName(_.get(this.base, 'stream_order.dressers.experts')) || '-',
+      photographer: getName(_.get(this.base, 'stream_order.photographers.staffs')) || '-',
+      photographerSupervisor: getName(_.get(this.base, 'stream_order.photographers.supervisor')) || '-',
+      photographerExperts: getName(_.get(this.base, 'stream_order.photographers.experts')) || '-',
       storeName: _.get(this.base, 'store.name') || '门店',
     }
     this.orderInfo = [info]
