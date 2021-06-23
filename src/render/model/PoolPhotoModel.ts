@@ -12,7 +12,7 @@ export default class PoolPhotoModel {
   src: string
   constructor (data: any) {
     this.id = _.get(data, 'id') || ''
-    this.path = _.get(data, 'path') || _.get(data, 'photo_quality.path') || ''
+    this.path = _.get(data, 'path') || ''
     this.src = `${store.state.settingStore.imgDomain}${this.path}`
     this.markPath = data.mark_path
     if (data.photo_quality) {

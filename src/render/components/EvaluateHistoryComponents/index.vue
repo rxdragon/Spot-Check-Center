@@ -20,7 +20,11 @@
         <el-col v-bind="{ ...colConfig }">
           <div class="search-item">
             <span>产品</span>
-            <ProductSelect v-model="productIds" />
+            <ProductSelect
+              v-model="productIds"
+              :himo-product="organizationType === ORGANIZATION_TYPE.HIMO"
+              :family-product="organizationType === ORGANIZATION_TYPE.FAMILY"
+            />
           </div>
         </el-col>
         <!-- 伙伴查询 -->
@@ -175,7 +179,7 @@ export default defineComponent({
     const productIds = ref<idType[]>([])
     const staffs = ref<idType[]>([])
     const positionStaffIds = ref<idType[]>([])
-    const scopeData = ref([])
+    const scopeData = ref()
     const evaluateIds = ref<idType[]>([])
     const evaluateRecordList = ref<PoolRecordModel[]>([])
     const orderNum = ref('')
@@ -199,7 +203,7 @@ export default defineComponent({
         }
         if (productIds.value.length > 0) req.productIds = productIds.value
         if (staffs.value.length > 0) req.staffIds = staffs.value
-        if (scopeData.value.length > 0) req.score = scopeData.value
+        if (scopeData.value && scopeData.value.length > 0) req.score = scopeData.value
         if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
         if (orderNum.value) req.orderNum = orderNum.value
         if (onlyNew.value) req.onlyNew = onlyNew.value
@@ -213,9 +217,7 @@ export default defineComponent({
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
-    // TODO 调试
-    timeSpan.value = ['2021-06-21', '2021-06-21']
-    getHistoryRecords()
+    
     // 分页逻辑
     const handlePage = () => {
       getHistoryRecords()
@@ -293,7 +295,7 @@ export default defineComponent({
     }
 
     return {
-      type, organizationType,
+      type, organizationType, ORGANIZATION_TYPE,
       timeSpan, orderNum, productIds, staffs, positionStaffIds, scopeData, evaluateIds,
       pager, evaluateRecordList, handlePage, getHistoryRecords,
       showPreview, previewPhotos, previewIndex, onPreviewPhotoList,

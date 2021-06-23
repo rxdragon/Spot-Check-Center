@@ -10,13 +10,13 @@
     <el-col v-bind="{ ...colConfig }">
       <div class="search-item">
         <span>正式伙伴抽查单量：</span>
-        <PeopleNumber v-model="fullMember" />
+        <PeopleNumber v-model="fullMember" clearable />
       </div>
     </el-col>
     <el-col v-bind="{ ...colConfig }">
       <div class="search-item">
         <span>新人伙伴抽查单量：</span>
-        <PeopleNumber v-model="newMember" />
+        <PeopleNumber v-model="newMember" clearable />
       </div>
     </el-col>
     <el-col v-bind="{ ...colConfig, sm: 4, md: 4 }">

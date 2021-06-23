@@ -68,8 +68,7 @@ interface IProductParams {
  */
 export async function getClassificationProductTree (params: IProductParams) {
   const res: any = await axios({
-    // TODO: cf 模拟数据
-    url: '/project_cloud/common/getProductCategoryTree',
+    url: '/project_photo_quality/common/getProductCategoryTree',
     method: 'GET',
     params
   })

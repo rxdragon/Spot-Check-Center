@@ -63,9 +63,8 @@ export async function getStoreStaffTree (params: IGetStoreStaffTreeParams) {
  interface IGetPositionStaffsParams {
   type: string
 }
+// todo: cf 缺少入参，根据伙伴id和类型获取下一级成员
 export async function getPositionStaffs (params: IGetPositionStaffsParams) {
-  // TODO: cf 优化，将数据存储在sesssion内
-
   const res: any = await axios({
     url: '/project_photo_quality/common/getPositionStaffs',
     method: 'GET',
