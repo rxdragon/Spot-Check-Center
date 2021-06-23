@@ -80,7 +80,6 @@ const actions: ActionTree<IPermissionStore, State> = {
           newRolesArr = [...newRolesArr, ...componentNames]
         }
       })
-
       commit('SET_ROLES', newPermissionArr)
       
       newRolesArr = [...new Set(newRolesArr)]

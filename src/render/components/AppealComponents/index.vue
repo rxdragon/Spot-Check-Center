@@ -224,12 +224,12 @@ export default defineComponent({
     }
 
     const orderNum = ref('')
-    const staffs = ref([])
-    const jobContentIds = ref([])
+    const staffs = ref<idType[]>([])
+    const jobContentIds = ref<idType[][]>([])
     const appealStatus = ref()
-    const inputStaffId = ref('')
+    const inputStaffId = ref<idType>('')
     const timeSpan: Ref<string | never | any[]> = ref('')
-    const startAt = dayjs().subtract(36, 'hour').format('YYYY-MM-DD 00:00:00')
+    const startAt = dayjs().subtract(7, 'day').format('YYYY-MM-DD 00:00:00')
     const endAt = dayjs().format('YYYY-MM-DD 00:00:00')
     timeSpan.value = [startAt, endAt]
     const getAppealData = () => {
@@ -248,7 +248,7 @@ export default defineComponent({
       if (inputStaffId.value) req.inputStaffId = inputStaffId.value
       if (staffs.value.length > 0) req.staffIds = staffs.value
       if (appealStatus.value) req.appealStatus = appealStatus.value.split(',')
-      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value.reduce( (a: string[], b: string[]) => { return a.concat(b) }, [] as any)
+      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value.reduce( (a: idType[], b: idType[]) => { return a.concat(b) }, [] as idType[])
       if (history) {
         getAppealHistory(req)
       } else {

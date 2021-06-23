@@ -1,4 +1,3 @@
-// TODO lj
 import axios from '@/plugins/axios'
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import SpotQuotaModel from '@/model/SpotQuotaModel'
@@ -27,10 +26,10 @@ export function getApiUrl (type: SPOT_TYPE, organizationType: ORGANIZATION_TYPE)
 export interface IgetQualityParams extends IEvaluateAPi {
   startTime: string
   endTime: string
-  productIds?: number[],
-  problemTagsIds?: string[],
-  supervisorArr?: string[],
-  staffIds?: string[],
+  productIds?: idType[],
+  problemTagsIds?: idType[],
+  supervisorArr?: idType[],
+  staffIds?: idType[],
   score?: number[],
   orderNum?: string,
   onlyNew?: boolean,

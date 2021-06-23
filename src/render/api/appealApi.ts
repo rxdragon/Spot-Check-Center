@@ -46,9 +46,9 @@ export interface IGetAppealParams {
   cloudOrderNum?: string
   serviceType?: string
   appealStatus?: string[]
-  inputStaffId?: string,
-  staffIds?: string[],
-  supervisorArr?: string[],
+  inputStaffId?: idType,
+  staffIds?: idType[],
+  supervisorArr?: idType[],
   page: number
   pageSize: number
 }

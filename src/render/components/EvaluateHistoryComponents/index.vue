@@ -118,7 +118,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive, Ref, ref } from 'vue'
+import { defineComponent, inject, reactive, Ref, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from '@/store/index'
 
@@ -140,6 +140,7 @@ import * as PhotoTool from '@/utils/photoTool'
 import * as EvaluateHistoryApi from '@/api/evaluateHistoryApi'
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import PoolRecordModel from '@/model/PoolRecordModel'
+import dayjs from 'dayjs'
 
 export default defineComponent({
   name: 'EvaluateHistoryComponents',
@@ -162,7 +163,6 @@ export default defineComponent({
     const type = inject('type') as SPOT_TYPE
     const organizationType = inject('organizationType') as ORGANIZATION_TYPE
 
-    const timeSpan: Ref<string | never | any[]> = ref('')
     const pager = reactive({
       page: 1,
       pageSize: 10,
@@ -175,15 +175,22 @@ export default defineComponent({
     const changeOnlyNew = () => { if (onlyNew.value) onlyOld.value = false }
     const changeOnlyOld = () => { if (onlyOld.value) onlyNew.value = false }
 
-    /** 查询历史记录相关数据 */
-    const productIds = ref<idType[]>([])
+    /** 伙伴和职能互斥 */
     const staffs = ref<idType[]>([])
     const positionStaffIds = ref<idType[][]>([])
+    watch(staffs, (val) => { if (val.length > 0) positionStaffIds.value = [] })
+    watch(positionStaffIds, (val) => { if (val.length > 0) staffs.value = [] })
+
+    /** 查询历史记录相关数据 */
+    const productIds = ref<idType[]>([])
     const scopeData = ref()
     const evaluateIds = ref<idType[]>([])
     const evaluateRecordList = ref<PoolRecordModel[]>([])
     const orderNum = ref('')
-
+    const timeSpan: Ref<string | never | any[]> = ref('')
+    const startAt = dayjs().subtract(7, 'day').format('YYYY-MM-DD 00:00:00')
+    const endAt = dayjs().format('YYYY-MM-DD 00:00:00')
+    timeSpan.value = [startAt, endAt]
     const getHistoryRecords = async (page?: number) => {
       pager.page = page ? page : pager.page
       if (!orderNum.value && !timeSpan.value) return newMessage.warning('请输入评分时间')
@@ -218,6 +225,7 @@ export default defineComponent({
         store.dispatch('settingStore/hiddenLoading', route.name)
       }
     }
+    getHistoryRecords()
     
     // 分页逻辑
     const handlePage = () => {

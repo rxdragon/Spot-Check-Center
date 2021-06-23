@@ -57,8 +57,8 @@ export interface IgetAuditRecordsParams {
   auditState?: string
   page: number
   pageSize: number
-  supervisorArr?: string[]
-  staffIds?: string[]
+  supervisorArr?: idType[]
+  staffIds?: idType[]
   orderNum?: string
   onlyNew?: boolean,
   onlyOld?: boolean

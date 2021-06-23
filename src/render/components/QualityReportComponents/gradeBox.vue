@@ -106,6 +106,7 @@
           >
             {{ tagItem.name }}
           </el-tag>
+          <span v-if="item.tagInfo.tags.length === 0">-</span>
         </div>
       </div>
     </div>

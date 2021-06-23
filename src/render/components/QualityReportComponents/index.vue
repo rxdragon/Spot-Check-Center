@@ -237,26 +237,10 @@ export default defineComponent({
       quotaData.storeAvgScore = res.data.storeAvgScore
       quotaData.supervisorAvgScore = res.data.supervisorAvgScore
     }
-
-    /**
-     * @description 页面数据
-    */
-    const productIds = ref([])
-    const staffs = ref([])
-    const evaluateIds = ref([])
-    const jobContentIds = ref([])
-    const scopeData = ref()
-    const onlyNew = ref(false)
-    const onlyOld = ref(false)
-    const orderNum = ref('')
-    const aiTag = ref('')
-    const timeSpan: Ref<string | never | any[]> = ref('')
-    const aiTimeSpan: Ref<string | never | any[]> = ref('')
-    const startAt = dayjs().subtract(36, 'hour').format('YYYY-MM-DD 00:00:00')
-    const endAt = dayjs().format('YYYY-MM-DD 00:00:00')
-    timeSpan.value = [startAt, endAt]
-    aiTimeSpan.value = [startAt, endAt]
+    
     /** 伙伴和职能互斥 */
+    const staffs = ref<idType[]>([])
+    const jobContentIds = ref<idType[][]>([])
     watch(staffs, (val) => {
       if (val.length > 0) jobContentIds.value = []
     })
@@ -265,6 +249,8 @@ export default defineComponent({
     })
 
     /** 只看新人和只看正式伙伴互斥 */
+    const onlyNew = ref(false)
+    const onlyOld = ref(false)
     const changeOnlyNew = () => {
       if (onlyNew.value) onlyOld.value = false
     }
@@ -273,6 +259,17 @@ export default defineComponent({
     }
 
     /** 统一调用质检报告模块 */
+    const aiTag = ref('')
+    const orderNum = ref('')
+    const scopeData = ref()
+    const evaluateIds = ref<idType[]>([])
+    const productIds = ref([])
+    const timeSpan: Ref<string | never | any[]> = ref('')
+    const aiTimeSpan: Ref<string | never | any[]> = ref('')
+    const startAt = dayjs().subtract(7, 'day').format('YYYY-MM-DD 00:00:00')
+    const endAt = dayjs().format('YYYY-MM-DD 00:00:00')
+    timeSpan.value = [startAt, endAt]
+    aiTimeSpan.value = [startAt, endAt]
     const getResultAndQuota = async (init = false) => {
       const req: QualityApi.IgetQualityParams = {
         page: pager.page,
@@ -290,7 +287,7 @@ export default defineComponent({
       if (scopeData.value && scopeData.value.length > 0) req.score = scopeData.value
       if (productIds.value.length > 0) req.productIds = productIds.value
       if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
-      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value.reduce( (a: string[], b: string[]) => { return a.concat(b) }, [] as any)
+      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value.reduce( (a: idType[], b: idType[]) => { return a.concat(b) }, [] as idType[])
       if (staffs.value.length > 0) req.staffIds = staffs.value
       if (onlyNew.value) req.onlyNew = onlyNew.value
       if (onlyOld.value) req.onlyOld = onlyOld.value
@@ -319,7 +316,7 @@ export default defineComponent({
       }
       if (orderNum.value) req.cloudOrderNum = orderNum.value
       if (aiTag.value.length > 0) req.auditState = aiTag.value
-      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value
+      if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value.reduce( (a: idType[], b: idType[]) => { return a.concat(b) }, [] as idType[])
       if (staffs.value.length > 0) req.staffIds = staffs.value
       if (onlyNew.value) req.onlyNew = onlyNew.value
       if (onlyOld.value) req.onlyOld = onlyOld.value
