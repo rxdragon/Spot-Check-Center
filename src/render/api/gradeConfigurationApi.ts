@@ -132,11 +132,15 @@ export interface IGetTakeStaffListRes {
   nickname: string
   id: number
 }
-export async function getTakeStaffList (params: IEvaluateAPi): Promise<IGetTakeStaffListRes[]> {
-  const url = `${getApiUrl(params.type, params.organizationType)}/getTakeStaffList`
+interface IGetTakeStaffListParams {
+  type: IEvaluateAPi['type']
+}
+export async function getTakeStaffList (params: IGetTakeStaffListParams): Promise<IGetTakeStaffListRes[]> {
+  const url = `/project_photo_quality/common/getTakeStaffList`
   const res: any = await axios({
     url,
-    method: 'GET'
+    method: 'GET',
+    params
   })
   const list: IGetTakeStaffListRes[] = res.map((item: any) => {
     return {
