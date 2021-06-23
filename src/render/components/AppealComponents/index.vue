@@ -1,19 +1,15 @@
 <template>
   <div class="quality-report-components">
-    申诉 -
-    {{ type }} -
-    {{ organizationType }}
-
     <div class="mt-6">
       <!-- 更换标签 -->
-      <el-tabs v-if="type !== 'all'" v-model="appealType">
+      <el-tabs v-if="!history" v-model="appealType">
         <el-tab-pane :label="`初审（${firstAppealsNum}）`" name="first" />
         <el-tab-pane :label="`复审（${secondAppealsNum}）`" name="second" />
         <el-tab-pane :label="`全部（${allAppealsNum}）`" name="all" />
       </el-tabs>
       <div
         class="module-panel"
-        :class="{'rounded-tl-none': appealType === 'first' && type !== 'all'}"
+        :class="{'rounded-tl-none': appealType === APPEAL_STEP.FIRST && type !== APPEAL_STEP.ALL}"
       >
         <el-row class="search-box" :gutter="20">
           <!-- 评分时间 -->
@@ -29,30 +25,30 @@
               <el-input v-model="orderNum" placeholder="请输入订单号" clearable />
             </div>
           </el-col>
-          <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
+          <el-col v-if="!history" v-bind="{ ...colConfig }">
             <div class="search-item">
               <span>伙伴</span>
               <!-- <StoreStaffSelect v-model="staffs" /> -->
             </div>
           </el-col>
-          <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
+          <el-col v-if="!history" v-bind="{ ...colConfig }">
             <div class="search-item">
               <span>职能</span>
-              <PositionStaffSelect v-model="jobContentIds" />
+              <PositionStaffSelect v-model="jobContentIds" :type="type" />
             </div>
           </el-col>
-          <el-col v-if="type !== 'all'" v-bind="{ ...colConfig }">
+          <el-col v-if="!history" v-bind="{ ...colConfig }">
             <div class="search-item">
               <span>申诉人</span>
-              <el-input v-model="inputStaffIds" placeholder="请输入申诉人" clearable />
+              <el-input v-model="inputStaffId" placeholder="请输入申诉人" clearable />
             </div>
           </el-col>
           <el-col v-bind="{ ...colConfig }">
             <div class="search-item">
-              <span v-if="appealType === 'first' && type !== 'all'">初审状态</span>
-              <span v-if="appealType === 'second' && type !== 'all'">复审状态</span>
-              <span v-if="appealType === 'all' || type === 'all'">审核状态</span>
-              <ReviewStatusSelect v-model="appealStatus" :review-type="type === 'all' ? type : appealType" />
+              <span v-if="appealType === APPEAL_STEP.FIRST && !history">初审状态</span>
+              <span v-if="appealType === APPEAL_STEP.SECOND && !history">复审状态</span>
+              <span v-if="appealType === APPEAL_STEP.ALL || history">审核状态</span>
+              <ReviewStatusSelect v-model="appealStatus" :review-type="history ? 'all' : appealType" />
             </div>
           </el-col>
           <el-col v-bind="{lg: 2, md: 2}">
@@ -73,18 +69,14 @@
             style="width: 100%;"
             :header-cell-style="{'text-align':'center'}"
           >
-            <el-table-column
-              width="100"
-              align="center"
-              prop="appealName"
-              label="申诉人"
-            />
-            <el-table-column width="200" prop="orderNum" label="订单号">
+            <el-table-column align="center" prop="appealName" label="申诉人" />
+            <el-table-column width="250" prop="orderNum" label="订单号">
               <template #default="{ row }">
                 <p>订单号：{{ row.orderInfo.num }}</p>
                 <p>化妆师：{{ row.orderInfo.dresser }}</p>
-                <p>督导：{{ row.orderInfo.supervisor }}</p>
-                <p>专家：{{ row.orderInfo.experts }}</p>
+                <p>摄影师：{{ row.orderInfo.photographer }}</p>
+                <p>督导：{{ type === SPOT_TYPE.MAKEUP ? row.orderInfo.dresserSupervisor : row.orderInfo.photographerSupervisor }}</p>
+                <p>专家：{{ type === SPOT_TYPE.MAKEUP ? row.orderInfo.dresserExperts : row.orderInfo.photographerExperts }}</p>
                 <p>门店：{{ row.orderInfo.storeName }}</p>
               </template>
             </el-table-column>
@@ -100,18 +92,17 @@
               prop="status"
               label="处理状态"
             >
-              <!-- TODO lj -->
-              <!-- <template #default="{ row }">
-                {{ getStatus(row.status) }}
-              </template> -->
+              <template #default="{ row }">
+                {{ row.statusCN }}
+              </template>
             </el-table-column>
-            <el-table-column width="243" prop="updatedAt" label="初审信息">
+            <el-table-column width="250" prop="updatedAt" label="初审信息">
               <template #default="{ row }">
                 <p>初审人：{{ row.firstExamineInfo.examineName }}</p>
                 <p>初审通过时间：{{ row.firstExamineInfo.date }}</p>
               </template>
             </el-table-column>
-            <el-table-column width="243" prop="updatedName" label="复审信息">
+            <el-table-column width="250" prop="updatedName" label="复审信息">
               <template #default="{ row }">
                 <p>复审人：{{ row.secondExamineInfo.examineName }}</p>
                 <p>复审通过时间：{{ row.secondExamineInfo.date }}</p>
@@ -149,11 +140,18 @@ import DatePicker from '@/components/DatePicker/index.vue'
 // import StoreStaffSelect from '@/components/SelectBox/StoreStaffSelect/index.vue'
 import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import ReviewStatusSelect from '@/components/SelectBox/ReviewStatusSelect/index.vue'
-import { ORGANIZATION_TYPE } from '@/model/Enumerate'
+import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 import * as TimeUtil from '@/utils/TimeUtil'
 import * as AppealApi from '@/api/appealApi'
 import { AppealListModel, appealStatusToCN, APPEAL_STATUS } from '@/model/AppealModel'
 import dayjs from 'dayjs'
+
+/* eslint-disable no-unused-vars */
+export enum APPEAL_STEP {
+  FIRST = 'first',
+  SECOND = 'second',
+  ALL = 'all'
+}
  
 export default defineComponent({
   name: 'AppealComponents',
@@ -165,6 +163,7 @@ export default defineComponent({
 
     const type = inject('type', 'all')
     const organizationType = inject('organizationType', ORGANIZATION_TYPE.HIMO)
+    const history = inject('history', false)
     const colConfig = reactive({
       span: 24,
       xl: 5,
@@ -185,22 +184,33 @@ export default defineComponent({
      * @description 获取操作栏下按钮的名称
     */
     const getBtnText = (status: string) => {
-      if (status === APPEAL_STATUS.WAIT_FIRST_APPEAL || status === APPEAL_STATUS.FIRST_APPEAL) {
-        return '初审'
-      } else if (status === APPEAL_STATUS.WAIT_SECOND_APPEAL) {
-        return '复审'
-      } else {
+      if (history) {
         return '详情'
+      } else {
+        if (status === APPEAL_STATUS.WAIT_FIRST_APPEAL || status === APPEAL_STATUS.FIRST_APPEAL) {
+          return '初审'
+        } else if (status === APPEAL_STATUS.WAIT_SECOND_APPEAL) {
+          return '复审'
+        } else {
+          return '详情'
+        }
       }
+      
     }
 
     /**
      * @description 页面数据
     */
-    /** 获取申诉列表 */
     const tableData = ref<AppealListModel[]>([])
+    /** 获取申诉列表 */
     const getAppealByPage = async (req: AppealApi.IGetAppealParams) => {
       const res = await AppealApi.getAppealByPage(req, organizationType)
+      pager.total = res.total
+      tableData.value = res.list
+    }
+    /** 获取申诉历史记录 */
+    const getAppealHistory = async (req: AppealApi.IGetAppealParams) => {
+      const res = await AppealApi.getAppealHistory(req, organizationType)
       pager.total = res.total
       tableData.value = res.list
     }
@@ -217,7 +227,7 @@ export default defineComponent({
     const staffs = ref([])
     const jobContentIds = ref([])
     const appealStatus = ref()
-    const inputStaffIds = ref('')
+    const inputStaffId = ref('')
     const timeSpan: Ref<string | never | any[]> = ref('')
     const startAt = dayjs().subtract(36, 'hour').format('YYYY-MM-DD 00:00:00')
     const endAt = dayjs().format('YYYY-MM-DD 00:00:00')
@@ -232,15 +242,20 @@ export default defineComponent({
         req.startAt = TimeUtil.searchStartTime(timeSpan.value[0])
         req.endAt = TimeUtil.searchEndTime(timeSpan.value[1])
       }
-      if ( appealType.value === 'first' ) { req.appealStatus = [APPEAL_STATUS.WAIT_FIRST_APPEAL, APPEAL_STATUS.FIRST_APPEAL] }
-      if ( appealType.value === 'second' ) { req.appealStatus = [APPEAL_STATUS.WAIT_SECOND_APPEAL, APPEAL_STATUS.SECOND_APPEAL] }
+      if ( appealType.value === 'first' && !history ) { req.appealStatus = [APPEAL_STATUS.WAIT_FIRST_APPEAL, APPEAL_STATUS.FIRST_APPEAL] }
+      if ( appealType.value === 'second' && !history ) { req.appealStatus = [APPEAL_STATUS.WAIT_SECOND_APPEAL, APPEAL_STATUS.SECOND_APPEAL] }
       if (orderNum.value) req.cloudOrderNum = orderNum.value
-      if (inputStaffIds.value) req.inputStaffIds = inputStaffIds.value
-      if (staffs.value.length > 0) req.staffId = staffs.value
+      if (inputStaffId.value) req.inputStaffId = inputStaffId.value
+      if (staffs.value.length > 0) req.staffIds = staffs.value
       if (appealStatus.value) req.appealStatus = appealStatus.value.split(',')
       if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value
-      getAppealByPage(req)
-      getAppealQuota(req)
+      if (history) {
+        getAppealHistory(req)
+      } else {
+        getAppealByPage(req)
+        getAppealQuota(req)
+      }
+      
     }
 
     /** 获取全部数据 */
@@ -268,7 +283,7 @@ export default defineComponent({
       const res = await AppealApi.getAppealCount(req, organizationType)
       firstAppealsNum.value = res.firstCount
       secondAppealsNum.value = res.secondCount
-      allAppealsNum.value = res.firstCount + res.secondCount
+      allAppealsNum.value = res.total
     }
     getAppealCount()
 
@@ -280,25 +295,20 @@ export default defineComponent({
       staffs.value = []
       jobContentIds.value = []
       appealStatus.value = ''
-      inputStaffIds.value = ''
+      inputStaffId.value = ''
       timeSpan.value = [startAt, endAt]
     }
-    watch(appealType, (val) => {
+    watch(appealType, () => {
       initParams()
-      // if (val === 'first') {
-      //   appealStatus.value = APPEAL_STATUS.WAIT_FIRST_APPEAL + ',' + APPEAL_STATUS.FIRST_APPEAL
-      // }
-      // if (val === 'second') {
-      //   appealStatus.value = APPEAL_STATUS.WAIT_SECOND_APPEAL + ',' + APPEAL_STATUS.SECOND_APPEAL
-      // }
       searchData(1)
     })
 
     const routerGo = (id: string) => {
+      const isHistory = history ? 'true' : 'false'
       const base = organizationType === ORGANIZATION_TYPE.HIMO ? 'himo-appeal-center/himo-' : 'family-appeal-center/family-'
       router.push({
         path: `/${base}appeal-detail`,
-        query: { id, type }
+        query: { id, type, isHistory }
       })
     }
 
@@ -352,7 +362,7 @@ export default defineComponent({
       timeSpan,
       orderNum,
       staffs,
-      inputStaffIds,
+      inputStaffId,
       appealStatus,
       jobContentIds,
       tableData,
@@ -366,6 +376,9 @@ export default defineComponent({
       appealStatusToCN,
       getBtnText,
       searchData,
+      APPEAL_STEP,
+      SPOT_TYPE,
+      history
     }
   }
 })

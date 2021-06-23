@@ -39,7 +39,9 @@ const state: IPermissionStore = {
   routes: [],
   addRoutes: [],
   personageRouters: [],
-  roles: []
+  roles: [],
+  showAppealBtn: false, // 质检报告是否显示我要申诉按钮
+
 }
 
 const mutations: MutationTree<IPermissionStore> = {
@@ -52,6 +54,7 @@ const mutations: MutationTree<IPermissionStore> = {
     state.roles = roles
 
     // 权限控制
+    state.showAppealBtn = roles.includes('AdminManage.performanceInquire.retoucherQuota')
   },
 
   SET_PERSONAGE_ROUTES (state, routes: RouteRecordRaw[]) {

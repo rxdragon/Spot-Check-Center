@@ -60,11 +60,16 @@ export async function getStoreStaffTree (params: IGetStoreStaffTreeParams) {
  * @param params 
  * @returns 
  */
-export async function getPositionStaffs () {
+ interface IGetPositionStaffsParams {
+  type: string
+}
+export async function getPositionStaffs (params: IGetPositionStaffsParams) {
   // TODO: cf 优化，将数据存储在sesssion内
+
   const res: any = await axios({
     url: '/project_photo_quality/common/getPositionStaffs',
     method: 'GET',
+    params
   })
 
   const createData: ICascaderSelect[] = res.map((positionItem: any) => {

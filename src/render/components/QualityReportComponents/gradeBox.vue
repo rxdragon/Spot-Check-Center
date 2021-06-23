@@ -1,5 +1,5 @@
 <template>
-  <div class="divide-y-4 divide-gray-200">
+  <div v-if="gradeBoxData.length > 0" class="divide-y-4 divide-gray-200">
     <div class="top-msg flex mb-6">
       <span class="flex-1">被评价单量: {{ quotaData.dresserQuantity }}</span>
       <span class="flex-1">被评价化妆师: {{ quotaData.expertAvgScore }}</span>
@@ -8,12 +8,7 @@
       <span class="flex-1">职能-专家平均分: {{ quotaData.storeAvgScore }}</span>
       <span class="flex-1">职能-督导平均分: {{ quotaData.supervisorAvgScore }}</span>
     </div>
-    <div
-      v-for="(item, index) in gradeBoxData"
-      :key="item.id"
-      class="grade-box mb-6"
-      :class="{'pt-6': index !== 0}"
-    >
+    <div v-for="item in gradeBoxData" :key="item.id" class="grade-box mb-6 pt-6">
       <!-- 列表 -->
       <!-- 照片信息 -->
       <div class="photo-panel mb-6">
@@ -88,7 +83,7 @@
         <div class="evaluate-title-info grid grid-cols-3 col-end-13 col-span-4">
           <div>总评分：{{ item.tagInfo.totalScore }}</div>
           <div>评分人：{{ item.tagInfo.RaterName }}</div>
-          <div v-if="item.showAppealBtn">
+          <div v-if="item.streamInfo.showAppealBtn">
             <el-button
               size="small"
               class="change-evaluate-btn"
@@ -116,6 +111,7 @@
     </div>
     <AppealPop v-model:modelValue="dialogVisible" :appeal-info="appealInfo" />
   </div>
+  <NoData v-else />
 </template>
 
 <script lang="ts">
@@ -123,10 +119,11 @@ import { defineComponent, inject, ref } from 'vue'
 import PhotoBox from '@/components/PhotoBox/index.vue'
 import AppealPop from './AppealPop.vue'
 import { SPOT_TYPE, storeTypeToCN } from '@/model/Enumerate'
+import NoData from '@/components/NoData/index.vue'
 
 export default defineComponent({
   name: 'GradeBox',
-  components: { PhotoBox, AppealPop },
+  components: { PhotoBox, AppealPop, NoData },
   props: {
     photoInfo: { type: Object, default: () => ({}) } // 照片数据
   },

@@ -62,6 +62,8 @@ export default class StreamOrderModel {
   storeName: string
   storeType: STORE_TYPE
   storeTypeCN: string
+  photoCount: number
+  showAppealBtn: boolean
   note: {
     orderNote: string
     dresserNote: string
@@ -77,6 +79,8 @@ export default class StreamOrderModel {
     this.storeName = _.get(data, 'store.name') || '异常'
     this.storeType = _.get(data, 'store.store_type') || STORE_TYPE.UNUSUAL
     this.storeTypeCN = storeTypeToCN[this.storeType]
+    this.photoCount = _.get(data, 'photoNum') || 0
+    this.showAppealBtn = _.get(data, 'process_appeal') ? false : true
     this.note = {
       orderNote: _.get(data, 'order_note') || '-',
       dresserNote: _.get(data, 'dresser_note') || '-',

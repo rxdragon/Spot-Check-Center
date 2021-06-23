@@ -1,7 +1,7 @@
 <template>
-  <div class="no-data">
+  <div class="no-data flex flex-col items-center">
     <div ref="lottieEmpty" class="lottie-content" />
-    <div class="no-data-desc">
+    <div class="no-data-desc -mt-8 mb-8">
       <slot>暂无数据</slot>
     </div>
   </div>
@@ -42,13 +42,13 @@ export default defineComponent({
 
 .lottie-content {
   width: 500px;
-  margin-left: calc(50% - 300px);
 }
 
 .no-data-desc {
-  margin-top: 100px;
-  margin-left: -100px;
+  // margin-top: 100px;
+  // margin-left: -100px;
   font-size: 18px;
   color: #ccd8de;
+  text-align: center;
 }
 </style>

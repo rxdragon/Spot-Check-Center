@@ -38,7 +38,7 @@
       <el-col v-bind="{ ...colConfig }">
         <div class="search-item">
           <span>职能</span>
-          <PositionStaffSelect v-model="jobContentIds" />
+          <PositionStaffSelect v-model="jobContentIds" :type="type" />
         </div>
       </el-col>
       <!-- 职能 -->
@@ -95,7 +95,7 @@
   <div class="page-box">
     <el-pagination
       v-model:current-page="pager.page"
-      :hide-on-single-page="true"
+      :hide-on-single-page="false"
       :page-size="pager.pageSize"
       layout="prev, pager, next"
       :total="pager.total"
@@ -128,6 +128,7 @@ import ScopeSearch from '@/components/ScopeSearch/index.vue'
 import PositionStaffSelect from '@/components/SelectBox/PositionStaffSelect/index.vue'
 import EvaluateSelect from '@/components/SelectBox/EvaluateSelect/index.vue'
 import GradeBox from './gradeBox.vue'
+
 import * as ArraignmentRecordApi from '@/api/arraignmentRecordApi'
 import * as QualityApi from '@/api/qualityApi'
 
@@ -135,9 +136,6 @@ import { ORGANIZATION_TYPE, QUALITY_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
 import dayjs from 'dayjs'
 
-/**
- * @description 页面组件
- */
 const QUALITY_COMPONENT = {
   GRADE_BOX: 'GradeBox', // 评价明细
   ARRAIGNMENT_RECORD_MODULE: 'ArraignmentRecordModule' // AI报告
@@ -199,7 +197,7 @@ export default defineComponent({
       pageTotal: 0,
       pageNum: 1
     }
-    const getSpotCheckResult = async (req: QualityApi.IgetQualityParams) => {
+    const getSpotCheckResult = async (req: QualityApi.IgetQualityParams, init = false) => {
       let res: QualityApi.IGetReportRes
       if (rangeType === 'all') {
         res = await QualityApi.getAllQualityReport(req)
@@ -209,6 +207,10 @@ export default defineComponent({
       spotPageData.pageTotal = res.total
       spotPageData.pageNum = pager.page
       gradeBoxData.value = res.list
+      if (init) {
+        pager.total = res.total
+        pager.page = pager.page
+      }
     }
 
     /** 质检报告绩效 */
@@ -271,7 +273,7 @@ export default defineComponent({
     }
 
     /** 统一调用质检报告模块 */
-    const getResultAndQuota = () => {
+    const getResultAndQuota = async (init = false) => {
       const req: QualityApi.IgetQualityParams = {
         page: pager.page,
         pageSize: pager.pageSize,
@@ -293,10 +295,10 @@ export default defineComponent({
       if (onlyNew.value) req.onlyNew = onlyNew.value
       if (onlyOld.value) req.onlyOld = onlyOld.value
 
-      getSpotCheckResult(req)
+      getSpotCheckResult(req, init)
       getQuota(req)
     }
-
+    
     /**
      * @description 获取AI报告
      */
@@ -364,7 +366,7 @@ export default defineComponent({
       }
     }
     /** 页面初始化调用 */
-    getResultAndQuota()
+    getResultAndQuota(true)
     getRecords()
 
     /** 监听预览图片 */
