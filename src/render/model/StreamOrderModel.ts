@@ -1,11 +1,12 @@
 import { STORE_TYPE, storeTypeToCN } from '@/model/Enumerate'
 import { v4 as uuid } from 'uuid'
 
-export interface IPagerInfo {
-  page: number
-  pageSize: number
-  index: number
+export interface ISpotRecordInfo {
   total: number
+  commitNum: number
+  deleteNum: number
+  skipNum: number
+  index: number
 }
 
 export interface IStaffInfo {
@@ -70,7 +71,7 @@ export default class StreamOrderModel {
     photographyNote: string
   }
 
-  constructor (data: any, pager?: IPagerInfo) {
+  constructor (data: any, spotRecordInfo?: ISpotRecordInfo) {
     this.id = _.get(data, 'id') || uuid()
     this.orderNum = _.get(data, 'order_num') || '异常'
     this.dresserInfo = getStaffInfo(_.get(data, 'dressers') || {})
@@ -87,14 +88,18 @@ export default class StreamOrderModel {
       photographyNote: _.get(data, 'photography_note') || '-'
     }
 
-    if (pager) {
-      this.getSpotNum(pager)
+    if (spotRecordInfo) {
+      this.getSpotNum(spotRecordInfo)
     }
   }
 
   // 获取编号
-  getSpotNum (pager: IPagerInfo) {
-    const spotNum = (pager.page - 1) * pager.pageSize + pager.index + 1
-    this.spotNum = `${pager.total}-${spotNum}`
+  getSpotNum (spotRecordInfo: ISpotRecordInfo) {
+    const spotNum = spotRecordInfo.commitNum
+      + spotRecordInfo.skipNum
+      + spotRecordInfo.deleteNum
+      + spotRecordInfo.index
+      + 1
+    this.spotNum = `${spotRecordInfo.total}-${spotNum}`
   }
 }

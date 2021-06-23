@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, ref, Ref, toRefs, reactive, watch, computed, h } from 'vue'
+import { defineComponent, getCurrentInstance, ref, Ref, toRefs, reactive, watch, computed, h, onUnmounted } from 'vue'
 
 import type { IOptionObj } from './composables/useCanvasTool'
 import type { IPhotoItemData, ISubmitData } from './index'
@@ -174,16 +174,6 @@ export default defineComponent({
       }
       canvasOption.drawType = type
     }
-
-    // 监听屏幕重置重新设置宽高 TODO:cf
-    // onWindowResize (e, item) {
-    //   this.getImgInfo()
-    //   if (!this.showCanvas) return
-    //   this.$nextTick(() => {
-    //     if (!this.$refs['fabric-canvas']) return
-    //     this.$refs['fabric-canvas'].resetCanvas()
-    //   })
-    // }
     
     /** 切换照片时候储存json到照片模型下 */
     watch(
@@ -215,6 +205,23 @@ export default defineComponent({
       }
       imgLoading.value = false
     }
+    const getImgInfo = () => {
+      canvasLoading.value = true
+      if (OrginImg.value) {
+        canvasOption.width = OrginImg.value.clientWidth
+        canvasOption.height = OrginImg.value.clientHeight
+      }
+      canvasLoading.value = false
+    }
+
+    /** 监听屏幕重置重新设置宽高 */
+    const onWindowResize = async () => {
+      getImgInfo()
+    }
+    window.addEventListener('resize', onWindowResize)
+    onUnmounted(() => {
+      window.removeEventListener('resize', onWindowResize)
+    })
 
     /** 放大功能 */
     // 放大

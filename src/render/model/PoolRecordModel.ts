@@ -1,4 +1,4 @@
-import StreamOrderModel, { IPagerInfo } from '@/model/StreamOrderModel'
+import StreamOrderModel, { ISpotRecordInfo } from '@/model/StreamOrderModel'
 import PoolPhotoModel from '@/model/PoolPhotoModel'
 import PoolAppealsModel from '@/model/PoolAppealsModel'
 import EvaluateTagsModel from '@/model/EvaluateTagsModel'
@@ -27,9 +27,9 @@ export default class PoolRecordModel {
   }
 
   // 获取流水信息
-  getStreamInfo (externalStreamData?: any, pagerInfo?: IPagerInfo) {
+  getStreamInfo (externalStreamData?: any, spotRecordInfo?: ISpotRecordInfo) {
     const streamData = externalStreamData || _.get(this.base, 'streamOrder') || {}
-    this.streamInfo = new StreamOrderModel(streamData, pagerInfo)
+    this.streamInfo = new StreamOrderModel(streamData, spotRecordInfo)
   }
 
   // 获取照片相关数据

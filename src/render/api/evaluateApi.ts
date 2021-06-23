@@ -144,13 +144,14 @@ export async function getSpotCheckResultList (params: IGetSpotCheckResultListPar
   const processInfo = _.get(res, 'extend.processInfo') || {}
   const createData: PoolRecordModel[] = res.data.map((poolRecordItem: any, poolRecordIndex: number) => {
     const poolRecordModel = new PoolRecordModel(poolRecordItem)
-    const pagerInfo = {
-      page: params.page,
-      pageSize: params.pageSize,
-      index: poolRecordIndex,
-      total: res.total,
+    const spotRecordInfo = {
+      total: _.get(res, 'staff_extract_record.extend.total_num') || 0,
+      commitNum: _.get(res, 'staff_extract_record.extend.commit_num') || 0,
+      deleteNum: _.get(res, 'staff_extract_record.extend.delete_num') || 0,
+      skipNum: _.get(res, 'staff_extract_record.extend.skip_num') || 0,
+      index: poolRecordIndex
     }
-    poolRecordModel.getStreamInfo(poolRecordItem.streamOrder, pagerInfo)
+    poolRecordModel.getStreamInfo(poolRecordItem.streamOrder, spotRecordInfo)
     poolRecordModel.getPoolPhotoList()
     return poolRecordModel
   })
