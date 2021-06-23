@@ -198,7 +198,8 @@ export default defineComponent({
 
     return {
       markCanvas,
-      exportJsonInfo, exportBase64, clearCanvas, loadMarkJson
+      exportJsonInfo, exportBase64, clearCanvas, loadMarkJson,
+      resetCanvas
     }
   }
 })

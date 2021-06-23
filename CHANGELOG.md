@@ -33,6 +33,7 @@
  - | 合并代码 | [93274c2](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/93274c2)
  - | 合并model,调接口 | [726d73e](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/726d73e)
  - | 接口对接 | [d5daefe](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/d5daefe)
+ - | 接口params定义优化 | [e32b568](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/e32b568)
  - | 历史记录相关的数据模块以及接口查询 | [c4114c5](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4114c5)
  - | 联动完成角色组相关功能，完成保存账号部分功能 | [bc44cde](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bc44cde)
  - | 模块化代码 | [b439cf1](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/b439cf1)
