@@ -18,7 +18,6 @@ export interface IgetHistoryRecordsParams extends IEvaluateAPi {
   orderNum?: string
   onlyNew?: boolean
   onlyOld?: boolean
-  // todo:cf
   supervisorArr?: idType[]
 }
 

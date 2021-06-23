@@ -1,28 +1,30 @@
 <template>
-  <div class="scope-search" @mouseenter="handleMouseEnter" @mouseleave="componentData.showClose = false">
+  <div class="scope-search" @mouseenter="handleMouseEnter" @mouseleave="showClose = false">
     <input
-      v-model="componentData.startInput"
+      v-model="startInput"
       v-numberOnly
       type="text"
       class="range-input"
       :min="0"
       :max="100"
-      :placeholder="props.startPlaceholder"
+      :placeholder="startPlaceholder"
       @change="handleChange"
     >
     <span class="range-separator">~</span>
     <input
-      v-model="componentData.endInput"
+      v-model="endInput"
       v-numberOnly
       type="text"
       class="range-input"
       :min="0"
       :max="100"
-      :placeholder="props.endPlaceholder"
+      :placeholder="endPlaceholder"
       @change="handleChange"
     >
     <i
-      :class="[componentData.showClose ? '' + 'el-icon-circle-close' : '']"
+      :class="{
+        'el-icon-circle-close': showClose
+      }"
       class="input__icon range__close-icon"
       @click="handleClickIcon"
     />
@@ -30,27 +32,31 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from 'vue'
+import { computed, defineComponent, ref, toRefs } from 'vue'
 export default defineComponent({
   name: 'ScopeSearch',
-  model: {
-    prop: 'value',
-    event: 'change'
-  },
   props: {
     startPlaceholder: { type: String, default: '请输入' },
     endPlaceholder: { type: String, default: '请输入' },
-    value: { type: Array, default: () => [] }
+    modelValue: { type: Array, default: () => [] }
   },
-  setup (props) {
-    const componentData = reactive({
-      showClose: false,
-      startInput: '',
-      endInput: ''
-    })
+  emits: ['update:modelValue'],
+  setup (props, { emit }) {
+    const startInput = ref('')
+    const endInput = ref('')
+    const showClose = ref(false)
 
+    const { modelValue } = toRefs(props)
+
+    /** 初始化范围值 */
+    if (Array.isArray(modelValue.value)) {
+      startInput.value = modelValue.value[0]
+      endInput.value = modelValue.value[1]
+    }
+
+    // 是否是空数组或者空字段
     const valueIsEmpty = computed(() => {
-      const val = props.value
+      const val = props.modelValue
       if (Array.isArray(val)) {
         for (let i = 0, len = val.length; i < len; i++) {
           if (val[i]) return false
@@ -61,31 +67,34 @@ export default defineComponent({
       return true
     })
 
-    /** nxnn */
     const handleClickIcon = () => {
-      if (componentData.showClose) {
-        componentData.startInput = ''
-        componentData.endInput = ''
-        // emit('change', null)
-      }
-    }
-    const handleMouseEnter = () => {
-      if (!valueIsEmpty.value) {
-        componentData.showClose = true
+      if (showClose.value) {
+        startInput.value = ''
+        endInput.value = ''
+        emit('update:modelValue', undefined)
       }
     }
 
-    /** sadasd */
-    // TODO
+    const handleMouseEnter = () => {
+      if (!valueIsEmpty.value) {
+        showClose.value = true
+      }
+    }
+
+    const startNum = computed(() => startInput.value ? Number(startInput.value) : '')
+    const endNum = computed(() => endInput.value ? Number(endInput.value) : '')
+
     const handleChange = () => {
-      // const data = [componentData.startInput || '', componentData.endInput || '']
-      // emit('change', data)
+      if (!startInput.value) startInput.value = '0'
+      if (!endInput.value) endInput.value = '100'
+      if (startNum.value > endNum.value) endInput.value = startInput.value
+      const data = [startNum.value, endNum.value]
+      emit('update:modelValue', data)
     }
 
     return {
-      props,
-      componentData,
       valueIsEmpty,
+      startInput, endInput, showClose,
       handleClickIcon,
       handleMouseEnter,
       handleChange

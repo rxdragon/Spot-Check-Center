@@ -35,6 +35,7 @@
  - | 接口对接 | [d5daefe](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/d5daefe)
  - | 历史记录相关的数据模块以及接口查询 | [c4114c5](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4114c5)
  - | 联动完成角色组相关功能，完成保存账号部分功能 | [bc44cde](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/bc44cde)
+ - | 模块化代码 | [b439cf1](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/b439cf1)
  - | 删除多余变量 | [0dc602e](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/0dc602e)
  - | 申诉中心 | [7a8d241](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/7a8d241)
  - | 完成评分配置组件 | [c4bc9cf](https://code.hzmantu.com/mantu-tech/web-frontend/spot-check-center/commits/c4bc9cf)

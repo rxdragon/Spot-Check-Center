@@ -58,7 +58,7 @@ module.exports = {
     config.plugin('define')
       .tap(args => {
         args[0].__APP_INFO__ = JSON.stringify(__APP_INFO__)
-        console.log(JSON.stringify(__APP_INFO__))
+        console.log('lastBuildTime', JSON.stringify(__APP_INFO__.lastBuildTime))
         return args
       })
   },

@@ -1,5 +1,3 @@
-// todo: cf
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ORGANIZATION_TYPE, SPOT_TYPE } from '@/model/Enumerate'
 
 import axios from '@/plugins/axios'

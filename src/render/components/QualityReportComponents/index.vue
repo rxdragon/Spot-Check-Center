@@ -245,7 +245,7 @@ export default defineComponent({
     const staffs = ref([])
     const evaluateIds = ref([])
     const jobContentIds = ref([])
-    const scopeData = ref([])
+    const scopeData = ref()
     const onlyNew = ref(false)
     const onlyOld = ref(false)
     const orderNum = ref('')
@@ -287,7 +287,7 @@ export default defineComponent({
         req.endTime = TimeUtil.searchEndTime(timeSpan.value[1])
       }
       if (orderNum.value) req.orderNum = orderNum.value
-      if (scopeData.value.length > 0) req.score = scopeData.value
+      if (scopeData.value && scopeData.value.length > 0) req.score = scopeData.value
       if (productIds.value.length > 0) req.productIds = productIds.value
       if (evaluateIds.value.length > 0) req.problemTagsIds = evaluateIds.value
       if (jobContentIds.value.length > 0) req.supervisorArr = jobContentIds.value.reduce( (a: string[], b: string[]) => { return a.concat(b) }, [] as any)

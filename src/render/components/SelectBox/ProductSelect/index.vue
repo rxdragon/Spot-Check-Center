@@ -51,6 +51,11 @@ export default defineComponent({
         himoProduct: props.himoProduct,
         familyProduct: props.familyProduct
       }
+      if (!props.showPicProduct && !props.himoProduct && !props.familyProduct) {
+        req.showPicProduct = true
+        req.himoProduct = true
+        req.familyProduct = true
+      }
       const list = await ProductClassificationApi.getClassificationProductTree(req)
       options.value = list
       loading.value = false

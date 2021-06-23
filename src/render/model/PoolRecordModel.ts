@@ -4,31 +4,15 @@ import PoolAppealsModel from '@/model/PoolAppealsModel'
 import EvaluateTagsModel from '@/model/EvaluateTagsModel'
 import { v4 as uuid } from 'uuid'
 
-interface IScoreConfigs {
-  id: number
-  name: string
-  score: number | string
-  type: string
-  from: string
-  isExtra: string
-}
-
-interface ICommitInfo {
-  scoreConfigs: IScoreConfigs
-  totalScore: string | number
-  status: string
-}
 
 /**
  * @description 抽片记录
  */
 export default class PoolRecordModel {
-  // TODO: cf
   base: any
   id: string // 抽片记录id
   businessId: number | string
   photoCount: number
-  commitInfo?: ICommitInfo
   streamInfo?: StreamOrderModel
   photoList?: PoolPhotoModel[]
   appealInfo?: PoolAppealsModel
@@ -40,9 +24,6 @@ export default class PoolRecordModel {
     this.businessId = _.get(data, 'businessId') || '-'
     const photos = _.get(this.base, 'photos') || []
     this.photoCount = photos.length
-    
-    // todo: cf 添加commitInfo
-    // const commitInfo = _.get(data, 'commitInfo')
   }
 
   // 获取流水信息
